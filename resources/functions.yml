@@ -1,0 +1,9 @@
+# Serverless Framework specific syntax
+
+healthcheck:
+    handler: src/functions/healthcheck.handler
+    description: Healthcheck to ensure the service is up
+    events:
+      - http:
+          path: healthcheck
+          method: get

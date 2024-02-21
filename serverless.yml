@@ -1,0 +1,15 @@
+service: api-tpe-digital
+
+plugins:
+  - serverless-esbuild
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: us-east-1
+  stage: ${opt:stage}
+  timeout: 30
+
+functions: ${file(./resources/functions.yml)}
+
