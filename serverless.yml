@@ -12,5 +12,9 @@ provider:
   stage: ${opt:stage}
   timeout: 30
 
+custom:
+  dotenv:
+    path: .env.develop
+
 functions: ${file(./resources/functions.yml)}
 
