@@ -1,4 +1,6 @@
 # Serverless Framework specific syntax
+check-authorizer:
+    handler: src/functions/checkAuthorizer.handler
 
 healthcheck:
     handler: src/functions/healthcheck.handler
@@ -7,3 +9,31 @@ healthcheck:
       - http:
           path: healthcheck
           method: get
+
+createUser:
+    handler: src/functions/createUser.handler
+    description: Create a new user
+    events:
+      - http:
+          path: users
+          method: post
+          cors: true
+
+listUsers:
+    handler: src/functions/listUsers.handler
+    description: List all users
+    events:
+      - http:
+          path: users
+          method: get
+          cors: true
+          authorizer: check-authorizer
+
+login:
+    handler: src/functions/login.handler
+    description: Login a user
+    events:
+      - http:
+          path: login
+          method: post
+          cors: true
