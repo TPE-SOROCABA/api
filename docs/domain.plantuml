@@ -1,0 +1,210 @@
+@startuml Domain
+
+enum EventType {
+    RECURRING
+    SPECIAL
+    ADDITIONAL
+}
+
+enum EventStatus {
+    OPEN
+    CLOSED
+}
+
+enum Weekday {
+    SUNDAY
+    MONDAY
+    TUESDAY
+    WEDNESDAY
+    THURSDAY
+    FRIDAY
+    SATURDAY
+    OTHER
+}
+
+entity Event {
+    * id : String <<PK>>
+    * participantId : String <<FK>>
+    __DOMAIN__
+    name : String
+    description : String
+    type : EventType
+    status : EventStatus
+    coordinator : Participant
+    weekday: Weekday
+}
+Event -- EventType
+Event -- EventStatus
+
+class ParticipantAuth {
+    * id : String <<PK>>
+    * participantId : String <<FK>>
+    __DOMAIN__
+    participant : Participant
+    password : String
+    resetPasswordCode : String
+    resetPasswordExpires : Date
+    ..
+    + generateResetPasswordCode(): String
+    + createToken(): String
+    + changePassword(code: String, newPassword: String): void
+    + comparePassword(password: String): Boolean
+    - validateResetPasswordCode(code: String): Boolean
+}
+
+enum ParticipantProfile {
+    COORDINATOR
+    ASSISTANT_COORDINATOR
+    CAPTAIN
+    ASSISTANT_CAPTAIN
+    PARTICIPANT
+    ADMIN_ANALYST
+}
+
+entity Participant {
+    * id : String <<PK>>
+    __DOMAIN__
+    cpf : String <<UNIQUE>>
+    name : String
+    sex : String
+    phone : String <<UNIQUE>>
+    profilePhoto : String
+    incidentHistories : List<IncidentHistory>
+    profile : ParticipantProfile
+}
+Participant -- ParticipantProfile
+Participant " 1 " -- " 0 " ParticipantAuth
+Participant " 1 " -- " n " Event
+
+class GroupParticipant {
+    * id : String <<PK>>
+    * participantID : Integer <<FK>>
+    * groupID : Integer <<FK>>
+
+}
+
+class GroupConfig {
+    startHour: Strind
+    endHour: String
+    minParticipants: Integer
+    maxParticipants: Integer
+    weekday: Weekday
+}
+GroupConfig -- Weekday
+
+entity Group {
+    * id : String <<PK>>
+    * designationSchemaId : String <<FK>>
+    * eventId : String <<FK>>
+    __DOMAIN__
+    name: String
+    event: Event
+    captains: List<Participant>
+    participants : List<Participant>
+    designationSchema : DesignationSchema
+    config: GroupConfig
+}
+Group -- GroupConfig
+
+entity DesignationSchema {
+    * id : String <<PK>>
+    __DOMAIN__
+    name : String
+    points : List<DesignationPointPublicationCart>
+}
+Group " 1 " -- " n " GroupParticipant
+GroupParticipant " n " -- " 1 " Participant
+Group " n " -- " 1 " Event
+Group " 1 " -left- " 1 " DesignationSchema
+
+class DesignationPointPublicationCart {
+    * id : String <<PK>>
+    * designationSchemaId : String <<FK>>
+    * pointPublicationCartId: String <<FK>>
+}
+
+class PointPublicationCart {
+    * id : String <<PK>>
+    * pointId : String <<FK>>
+    * publicationCartId : String <<FK>>
+    __DOMAIN__
+    point : Point
+    publicationCart : List<PublicationCart>
+    minParticipants : Integer
+    maxParticipants : Integer
+    status : Boolean
+}
+
+entity Point {
+    * id : String <<PK>>
+    __DOMAIN__
+    name : String
+    locationPhoto : String 
+}
+
+entity PublicationCart {
+    * id : String <<PK>>
+    __DOMAIN__
+    name: String
+    description: String
+    themePhoto: String 
+}
+DesignationSchema " 1 " -- " n " DesignationPointPublicationCart
+DesignationPointPublicationCart " 1 " -- " 1 " PointPublicationCart
+PointPublicationCart " n " -- " 1 " Point
+PointPublicationCart " n " -- " 1 " PublicationCart
+
+
+interface OutputDesignation {
+    id : String
+    participants : List<Participant>
+    point : Point
+}
+
+enum DesignationStatus {
+    OPEN
+    CANCELLED
+    CLOSED
+}
+
+entity Designation {
+    * id : String <<PK>>
+    * groupId : String <<FK>>
+    __DOMAIN__
+    group : Group
+    status: DesignationStatus
+    --
+    createdAt : Date
+    updatedAt : Date
+    ..
+    + generateDesignations(): List<OutputDesignation>
+}
+Designation -- DesignationStatus
+Designation -right- OutputDesignation
+Designation " 1 " -left- " 1 " Group
+
+enum IncidentStatus {
+    OPEN
+    CLOSED
+}
+
+entity IncidentHistory {
+    * id : String <<PK>>
+    * participantId : String <<FK>>
+    * reporterId : String <<FK>>
+    * designationId : String <<FK>>
+    __DOMAIN__
+    participant : Participant
+    reporter : Participant
+    designation : Designation
+    reasonForAbsence : String
+    status: IncidentStatus
+    --
+    createdAt : Date
+    updatedAt : Date
+}
+Participant " 1 " -right- " n " IncidentHistory
+IncidentHistory " n " -left- " 1 " Designation
+IncidentHistory -right- IncidentStatus
+
+@enduml
