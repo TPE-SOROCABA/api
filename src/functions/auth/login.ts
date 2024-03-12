@@ -1,6 +1,6 @@
 import type { Context, APIGatewayProxyStructuredResultV2, APIGatewayProxyEventV2, Handler } from "aws-lambda";
 import { ResponseHandler } from "../../shared/ResponseHandler";
-import { LoginParams } from "../../contracts/LoginParams";
+import { InputLogin } from "../../contracts/InputLogin";
 import { JsonHandler } from "../../shared/JsonHandler";
 import { Login } from "../../domain/Login";
 import { User } from "../../repositories/models/User";
@@ -11,8 +11,8 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
   try {
     await connectToDatabase();
     
-    const body = JsonHandler.parse<LoginParams>(_event.body);
-    const params = await LoginParams.create(body.cpf, body.password);
+    const body = JsonHandler.parse<InputLogin>(_event.body);
+    const params = await InputLogin.create(body.cpf, body.password);
     const login = Login.create(params);
     console.log(`Usuário ${login.cpf} está tentando logar`);
 

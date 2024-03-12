@@ -4,7 +4,7 @@ import { ResponseHandler } from "../../shared/ResponseHandler";
 import { User } from "../../repositories/models/User";
 import { connectToDatabase } from "../../infra/connectToDatabase";
 import { JsonHandler } from "../../shared/JsonHandler";
-import { RecoverPasswordParams } from "../../contracts/RecoverPasswordParams";
+import { InputRecoverPassword } from "../../contracts/InputRecoverPassword";
 import { Exception } from "../../shared/Exception";
 import { Z_APIWhatsAppAdapter } from '../../infra/adapter/Z_APIWhatsAppAdapter';
 
@@ -15,9 +15,9 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
   try {
     await connectToDatabase();
 
-    const body = JsonHandler.parse<RecoverPasswordParams>(_event.body || "{}");
+    const body = JsonHandler.parse<InputRecoverPassword>(_event.body || "{}");
     console.log(`Usuário ${body.cpf} está tentando recuperar a senha`);
-    const params = await RecoverPasswordParams.create(body.cpf);
+    const params = await InputRecoverPassword.create(body.cpf);
 
     const user = await User.findOne({ cpf: params.cpf });
     if (!user) {

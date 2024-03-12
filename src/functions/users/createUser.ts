@@ -1,5 +1,5 @@
 import type { Context, APIGatewayProxyStructuredResultV2, APIGatewayProxyEventV2, Handler } from "aws-lambda";
-import { CreateUserParams } from "../../contracts/CreateUserParams";
+import { InputUser } from "../../contracts/InputUser";
 import { ResponseHandler } from "../../shared/ResponseHandler";
 import { Login } from "../../domain/Login";
 import { User } from "../../repositories/models/User";
@@ -10,9 +10,9 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
   try {
     await connectToDatabase();
     
-    const body = JsonHandler.parse<CreateUserParams>(_event.body || "{}");
+    const body = JsonHandler.parse<InputUser>(_event.body || "{}");
     console.log(`Usuário ${body.name} está tentando criar uma conta com os dados: ${JSON.stringify({...body, password: "*****"})}`);
-    const params = await CreateUserParams.create({
+    const params = await InputUser.create({
       name: body.name,
       email: body.email,
       cpf: body.cpf,

@@ -1,7 +1,7 @@
-import { IsNotEmpty, IsOptional, IsString, Length } from "class-validator";
+import { IsOptional, IsString, Length } from "class-validator";
 import { BaseValidate } from "../shared/BaseValidate";
 
-type CreateUserParamsProps = {
+type InputUserProps = {
   name: string;
   email: string;
   cpf: string;
@@ -10,7 +10,7 @@ type CreateUserParamsProps = {
   avatar?: string;
 };
 
-export class CreateUserParams extends BaseValidate {
+export class InputUser extends BaseValidate {
   @Length(1, 255, { message: "A propriedade 'name' deve ter entre 1 e 255 caracteres" })
   @IsString({ message: "A propriedade 'name' deve ser uma string" })
   name: string;
@@ -45,9 +45,9 @@ export class CreateUserParams extends BaseValidate {
     this.phone = phone;
   }
 
-  static async create(params: CreateUserParamsProps): Promise<CreateUserParams> {
-    const createUser = new CreateUserParams(params.name, params.email, params.cpf, params.password, params.phone, params.avatar);
-    await CreateUserParams.validate(createUser);
+  static async create(params: InputUserProps): Promise<InputUser> {
+    const createUser = new InputUser(params.name, params.email, params.cpf, params.password, params.phone, params.avatar);
+    await InputUser.validate(createUser);
     return createUser;
   }
 }

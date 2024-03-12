@@ -1,7 +1,7 @@
-import { IsNotEmpty, IsString, Length } from "class-validator";
+import { IsString, Length } from "class-validator";
 import { BaseValidate } from "../shared/BaseValidate";
 
-export class RecoverPasswordParams extends BaseValidate {
+export class InputRecoverPassword extends BaseValidate {
   @Length(1, 11, { message: "A propriedade 'cpf' deve ter entre 1 e 11 caracteres" })
   @IsString({ message: "A propriedade 'cpf' deve ser uma string" })
   cpf: string;
@@ -11,9 +11,9 @@ export class RecoverPasswordParams extends BaseValidate {
     this.cpf = cpf;
   }
 
-  static async create(cpf: string): Promise<RecoverPasswordParams> {
-    const params = new RecoverPasswordParams(cpf);
-    await RecoverPasswordParams.validate(params);
+  static async create(cpf: string): Promise<InputRecoverPassword> {
+    const params = new InputRecoverPassword(cpf);
+    await InputRecoverPassword.validate(params);
     return params;
   }
 }

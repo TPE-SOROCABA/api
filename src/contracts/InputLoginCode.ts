@@ -1,7 +1,7 @@
-import { IsNotEmpty, IsString, Length } from "class-validator";
+import { IsString, Length } from "class-validator";
 import { BaseValidate } from "../shared/BaseValidate";
 
-export class LoginCodeParams extends BaseValidate {
+export class InputLoginCode extends BaseValidate {
   @Length(1, 11, { message: "A propriedade 'cpf' deve ter entre 1 e 11 caracteres" })
   @IsString({ message: "A propriedade 'cpf' deve ser uma string" })
   cpf: string;
@@ -17,9 +17,9 @@ export class LoginCodeParams extends BaseValidate {
     this.code = code;
   }
 
-  static async create(cpf: string, code: string): Promise<LoginCodeParams> {
-    const params = new LoginCodeParams(cpf, code);
-    await LoginCodeParams.validate(params);
+  static async create(cpf: string, code: string): Promise<InputLoginCode> {
+    const params = new InputLoginCode(cpf, code);
+    await InputLoginCode.validate(params);
     return params;
   }
 }

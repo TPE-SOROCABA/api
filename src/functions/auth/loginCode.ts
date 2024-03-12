@@ -3,7 +3,7 @@ import { ResponseHandler } from "../../shared/ResponseHandler";
 import { User } from "../../repositories/models/User";
 import { connectToDatabase } from "../../infra/connectToDatabase";
 import { JsonHandler } from "../../shared/JsonHandler";
-import { LoginCodeParams } from "../../contracts/LoginCodeParams";
+import { InputLoginCode } from "../../contracts/InputLoginCode";
 import { Exception } from "../../shared/Exception";
 import { Login } from '../../domain/Login';
 
@@ -11,9 +11,9 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
   try {
     await connectToDatabase();
 
-    const body = JsonHandler.parse<LoginCodeParams>(_event.body || "{}");
+    const body = JsonHandler.parse<InputLoginCode>(_event.body || "{}");
     console.log(`Usuário ${body.cpf} está tentando recuperar a senha`);
-    const params = await LoginCodeParams.create(body.cpf, body.code);
+    const params = await InputLoginCode.create(body.cpf, body.code);
 
     const user = await User.findOne({ cpf: params.cpf, codeRecoveryPassword: params.code });
     if (!user) {
