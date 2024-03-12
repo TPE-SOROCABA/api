@@ -6,6 +6,7 @@ type CreateUserParamsProps = {
   email: string;
   cpf: string;
   password: string;
+  phone: string;
   avatar?: string;
 };
 
@@ -30,21 +31,27 @@ export class CreateUserParams extends BaseValidate {
   @IsNotEmpty({ message: "A propriedade 'password' não pode ser vazia" })
   password: string;
 
+  @Length(1, 11, { message: "A propriedade 'phone' deve ter entre 1 e 16 caracteres" })
+  @IsString({ message: "A propriedade 'phone' deve ser uma string" })
+  @IsNotEmpty({ message: "A propriedade 'phone' não pode ser vazia" })
+  phone: string;
+
   @IsString({ message: "A propriedade 'email' deve ser uma string" })
   @IsOptional()
   avatar?: string;
 
-  private constructor(name: string, email: string, cpf: string, password: string, avatar?: string) {
+  private constructor(name: string, email: string, cpf: string, password: string, phone: string, avatar?: string) {
     super();
     this.name = name;
     this.email = email;
     this.avatar = avatar;
     this.cpf = cpf;
     this.password = password;
+    this.phone = phone;
   }
 
   static async create(params: CreateUserParamsProps): Promise<CreateUserParams> {
-    const createUser = new CreateUserParams(params.name, params.email, params.cpf, params.password, params.avatar);
+    const createUser = new CreateUserParams(params.name, params.email, params.cpf, params.password, params.phone, params.avatar);
     await CreateUserParams.validate(createUser);
     return createUser;
   }
