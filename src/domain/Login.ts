@@ -25,7 +25,7 @@ export class Login {
     return hash.digest("hex");
   }
 
-  createJWT(payload: Object): string {
+  static createJWT(payload: Object): string {
     return sign(payload, process.env.JWT_SECRET!, { expiresIn: "1h" });
   }
 

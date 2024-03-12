@@ -1,10 +1,10 @@
 import type { Context, APIGatewayProxyStructuredResultV2, APIGatewayProxyEventV2, Handler } from "aws-lambda";
-import { CreateUserParams } from "../contracts/CreateUserParams";
-import { ResponseHandler } from "../shared/ResponseHandler";
-import { Login } from "../domain/Login";
-import { User } from "../repositories/models/User";
-import { connectToDatabase } from "../infra/connectToDatabase";
-import { JsonHandler } from "../shared/JsonHandler";
+import { CreateUserParams } from "../../contracts/CreateUserParams";
+import { ResponseHandler } from "../../shared/ResponseHandler";
+import { Login } from "../../domain/Login";
+import { User } from "../../repositories/models/User";
+import { connectToDatabase } from "../../infra/connectToDatabase";
+import { JsonHandler } from "../../shared/JsonHandler";
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
   try {
@@ -18,6 +18,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       cpf: body.cpf,
       password: body.password,
       avatar: body.avatar,
+      phone: body.phone
     });
     const login = Login.create(params);
     console.log(`Usuário ${login.cpf} está tentando criar uma conta`);

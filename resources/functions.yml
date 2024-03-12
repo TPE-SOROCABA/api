@@ -1,6 +1,6 @@
 # Serverless Framework specific syntax
 check-authorizer:
-    handler: src/functions/checkAuthorizer.handler
+    handler: src/functions/auth/checkAuthorizer.handler
 
 healthcheck:
     handler: src/functions/healthcheck.handler
@@ -11,7 +11,7 @@ healthcheck:
           method: get
 
 createUser:
-    handler: src/functions/createUser.handler
+    handler: src/functions/users/createUser.handler
     description: Create a new user
     events:
       - http:
@@ -20,7 +20,7 @@ createUser:
           cors: true
 
 listUsers:
-    handler: src/functions/listUsers.handler
+    handler: src/functions/users/listUsers.handler
     description: List all users
     events:
       - http:
@@ -30,10 +30,37 @@ listUsers:
           authorizer: check-authorizer
 
 login:
-    handler: src/functions/login.handler
+    handler: src/functions/auth/login.handler
     description: Login a user
     events:
       - http:
           path: login
+          method: post
+          cors: true
+
+loginCode:
+    handler: src/functions/auth/loginCode.handler
+    description: Login a user with a code
+    events:
+      - http:
+          path: login-code
+          method: post
+          cors: true
+          
+recoverPassword:
+    handler: src/functions/auth/recoverPassword.handler
+    description: Recover a user's password
+    events:
+      - http:
+          path: recover-password
+          method: post
+          cors: true
+          
+resetPassword:
+    handler: src/functions/auth/resetPassword.handler
+    description: Reset a user's password
+    events:
+      - http:
+          path: reset-password
           method: post
           cors: true
