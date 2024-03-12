@@ -4,12 +4,10 @@ import { BaseValidate } from "../shared/BaseValidate";
 export class LoginParams extends BaseValidate {
   @Length(1, 11, { message: "A propriedade 'cpf' deve ter entre 1 e 11 caracteres" })
   @IsString({ message: "A propriedade 'cpf' deve ser uma string" })
-  @IsNotEmpty({ message: "A propriedade 'cpf' não pode ser vazia" })
   cpf: string;
 
   @Length(1, 16, { message: "A propriedade 'password' deve ter entre 1 e 16 caracteres" })
   @IsString({ message: "A propriedade 'password' deve ser uma string" })
-  @IsNotEmpty({ message: "A propriedade 'password' não pode ser vazia" })
   password: string;
 
  
