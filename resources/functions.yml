@@ -64,3 +64,13 @@ resetPassword:
           path: reset-password
           method: post
           cors: true
+
+listParticipants:
+    handler: src/functions/participants/listParticipants.handler
+    description: List all participants
+    events:
+      - http:
+          path: participants
+          method: get
+          cors: true
+          authorizer: check-authorizer

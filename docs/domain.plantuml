@@ -61,12 +61,17 @@ enum ParticipantProfile {
     ADMIN_ANALYST
 }
 
+enum ParticipantSex {
+    MALE
+    FEMALE
+}
+
 entity Participant {
     * id : String <<PK>>
     __DOMAIN__
     cpf : String <<UNIQUE>>
     name : String
-    sex : String
+    sex : ParticipantSex
     phone : String <<UNIQUE>>
     profilePhoto : String
     incidentHistories : List<IncidentHistory>

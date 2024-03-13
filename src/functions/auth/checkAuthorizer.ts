@@ -40,10 +40,15 @@ function checkAccessToken(accessToken: string): any {
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-function buildIAMPolicy(effect: string, userId:string, context?: object) {
+function buildIAMPolicy(effect: string, userId:string, context?: any) {
   const buildPolicyDocument = {} as any
   buildPolicyDocument.principalId = userId
   if (context) {
+    Object.keys(context).forEach((key: any) => {
+      if (context[key] === null) {
+        delete context[key]
+      }
+    })
     buildPolicyDocument.context = context
   }
 
