@@ -1,6 +1,7 @@
 service: api-tpe-digital
 
 plugins:
+  - serverless-dotenv-plugin
   - serverless-esbuild
   - serverless-offline
 
@@ -10,6 +11,10 @@ provider:
   region: us-east-1
   stage: ${opt:stage}
   timeout: 30
+
+custom:
+  dotenv:
+    path: .env.develop
 
 functions: ${file(./resources/functions.yml)}
 
