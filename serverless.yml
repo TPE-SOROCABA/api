@@ -11,6 +11,7 @@ provider:
   region: us-east-1
   stage: ${opt:stage}
   timeout: 30
+  memorySize: 128
 
 custom:
   dotenv:

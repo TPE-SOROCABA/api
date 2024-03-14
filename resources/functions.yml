@@ -64,6 +64,7 @@ resetPassword:
           path: reset-password
           method: post
           cors: true
+          authorizer: check-authorizer
 
 listParticipants:
     handler: src/functions/participants/listParticipants.handler
@@ -72,5 +73,40 @@ listParticipants:
       - http:
           path: participants
           method: get
+          cors: true
+          authorizer: check-authorizer
+
+createIncidences:
+    handler: src/functions/participants/incidences/createIncidences.handler
+    description: Create incidences for a participant
+    events:
+      - http:
+          path: participants/{participantId}/incidences
+          method: post
+          cors: true
+          authorizer: check-authorizer
+
+listIncidences:
+    handler: src/functions/participants/incidences/listIncidences.handler
+    description: List all incidences
+    events:
+        - http:
+            path: participants/{participantId}/incidences
+            method: get
+            cors: true
+            authorizer: check-authorizer
+        - http:
+            path: participants/{participantId}/incidences/{incidentId}
+            method: get
+            cors: true
+            authorizer: check-authorizer
+
+updateIncidences:
+    handler: src/functions/participants/incidences/updateIncidences.handler
+    description: Update incidences for a participant
+    events:
+      - http:
+          path: participants/{participantId}/incidences/{incidentId}
+          method: put
           cors: true
           authorizer: check-authorizer

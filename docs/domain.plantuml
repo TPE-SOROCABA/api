@@ -191,6 +191,13 @@ Designation " 1 " -left- " 1 " Group
 enum IncidentStatus {
     OPEN
     CLOSED
+    CANCELLED
+    IGNORED
+}
+
+enum IncidentType {
+    ABSENCE
+    OTHER
 }
 
 entity IncidentHistory {
@@ -202,14 +209,16 @@ entity IncidentHistory {
     participant : Participant
     reporter : Participant
     designation : Designation
-    reasonForAbsence : String
+    reason : String
     status: IncidentStatus
+    type : IncidentType
     --
     createdAt : Date
     updatedAt : Date
 }
 Participant " 1 " -right- " n " IncidentHistory
 IncidentHistory " n " -left- " 1 " Designation
-IncidentHistory -right- IncidentStatus
+IncidentHistory -- IncidentStatus
+IncidentHistory -- IncidentType
 
 @enduml
