@@ -19,10 +19,17 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - name: Environment Variables from Dotenv
-      uses: c-py/action-dotenv-to-setenv@v5
-      with:
-        env-file: .env
+    - name: Create env file
+      run: |
+        touch .env
+        echo MONGODB_URI=${{ secrets.MONGODB_URI }} >> .env
+        echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> .env
+        echo Z_API_URL=${{ secrets.Z_API_URL }} >> .env
+        echo INSTANCE_ID=${{ secrets.INSTANCE_ID }} >> .env
+        echo INSTANCE_TOKEN=${{ secrets.INSTANCE_TOKEN }} >> .env
+        echo USER_TOKEN_ID=${{ secrets.USER_TOKEN_ID }} >> .env
+        echo DATABASE_NAME=${{ secrets.DATABASE_NAME }} >> .env
+        cat .env
     - name: Install dependencies
       run: npm ci
     - name: Check types
