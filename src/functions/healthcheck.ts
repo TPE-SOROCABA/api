@@ -8,7 +8,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
   },{});
   console.log(envs);
   return {
-    body: JSON.stringify({ message: "Healthcheck OK" }),
+    body: JSON.stringify({ envs }),
     statusCode: 200,
   };
 };
