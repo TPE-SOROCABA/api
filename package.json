@@ -8,7 +8,7 @@
     "test:watch": "jest --watch --detectOpenHandles",
     "invoke:healthcheck": "sls invoke local -f healthcheck -s dev",
     "start": "serverless offline -s dev --reloadHandler --noPrependStageInUrl --noTimeout",
-    "deploy:dev": "sls deploy -s dev",
+    "deploy:dev": "sls deploy -c sls-dev.yml -s dev",
     "infra:db": "docker compose up db-mongo -d",
     "prepare": "husky install",
     "build": "tsc --noemit"
