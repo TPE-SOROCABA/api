@@ -19,6 +19,10 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+    - name: Environment Variables from Dotenv
+      uses: c-py/action-dotenv-to-setenv@v5
+      with:
+        env-file: .env
     - name: Install dependencies
       run: npm ci
     - name: Check types
@@ -31,11 +35,5 @@ jobs:
         aws-region: ${{ secrets.AWS_REGION }}
     - name: Serverless Framework deploy
       run: npm run deploy:dev
-      env:
-        MONGODB_URI: ${{ secrets.MONGODB_URI }}
-        JWT_SECRET: ${{ secrets.JWT_SECRET }}
-        Z_API_URL: ${{ secrets.Z_API_URL }}
-        INSTANCE_ID: ${{ secrets.INSTANCE_ID }}
-        INSTANCE_TOKEN: ${{ secrets.INSTANCE_TOKEN }}
-        USER_TOKEN_ID: ${{ secrets.USER_TOKEN_ID }}
-        DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+          
+    
