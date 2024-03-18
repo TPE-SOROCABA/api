@@ -8,7 +8,7 @@
     "test:watch": "jest --watch --detectOpenHandles",
     "invoke:healthcheck": "sls invoke local -f healthcheck -s dev",
     "start": "serverless offline -s dev --reloadHandler --noPrependStageInUrl --noTimeout",
-    "deploy:dev": "sls deploy -s dev",
+    "deploy:dev": "sls deploy -c sls-dev.yml -s dev",
     "infra:db": "docker compose up db-mongo -d",
     "prepare": "husky install",
     "build": "tsc --noemit"
@@ -36,6 +36,7 @@
     "jest": "^29.7.0",
     "prettier": "^3.2.5",
     "serverless": "^3.38.0",
+    "serverless-domain-manager": "^7.3.8",
     "serverless-dotenv-plugin": "^6.0.0",
     "serverless-esbuild": "^1.51.0",
     "serverless-offline": "^13.3.3",
