@@ -36,6 +36,7 @@
     "jest": "^29.7.0",
     "prettier": "^3.2.5",
     "serverless": "^3.38.0",
+    "serverless-domain-manager": "^7.3.8",
     "serverless-dotenv-plugin": "^6.0.0",
     "serverless-esbuild": "^1.51.0",
     "serverless-offline": "^13.3.3",
