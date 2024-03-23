@@ -28,25 +28,25 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2 & { reques
       .transform((docs: any[]) => {
         return docs.map((doc) => {
           return {
-            id: doc._id,
-            reason: doc.reason,
-            createdAt: doc.createdAt,
-            updatedAt: doc.updatedAt,
+            id: doc?._id,
+            reason: doc?.reason,
+            createdAt: doc?.createdAt,
+            updatedAt: doc?.updatedAt,
             participant: {
-              id: doc.participant._id,
-              name: doc.participant.name,
+              id: doc?.participant?._id,
+              name: doc?.participant?.name,
             },
             reporter: {
-              id: doc.reporter._id,
-              name: doc.reporter.name,
+              id: doc?.reporter?._id,
+              name: doc?.reporter?.name,
             },
             designation: {
-              id: doc.designation._id,
-              name: doc.designation.name,
-              createdAt: doc.designation.createdAt,
-              status: doc.designation.status,
+              id: doc?.designation?._id,
+              name: doc?.designation?.name,
+              createdAt: doc?.designation?.createdAt,
+              status: doc?.designation?.status,
             },
-            status: doc.status,
+            status: doc?.status,
           };
         });
       });
