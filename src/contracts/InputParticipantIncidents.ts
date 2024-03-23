@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString, Length } from "class-validator";
+import { IsEnum, IsNotEmpty, IsOptional, IsString, Length } from "class-validator";
 import { BaseValidate } from "../shared/BaseValidate";
 import { IncidentStatus } from "../enums/IncidentStatus";
 
@@ -31,7 +31,7 @@ export class InputParticipantIncidents extends BaseValidate {
 }
 
 export class InputParticipantIncidentsUpdate extends BaseValidate {
-  @IsString({ message: "A propriedade 'status' deve ser uma string" })
+  @IsEnum(IncidentStatus, { message: `O status deve ser um dos valores: ${Object.values(IncidentStatus).join(", ")}` })
   @IsNotEmpty({ message: "A propriedade 'status' não pode ser vazia" })
   status: IncidentStatus;
 
