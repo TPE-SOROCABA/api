@@ -1,12 +1,12 @@
 import { WhatsAppService } from '../../services/WhatsAppService';
 import type { Context, APIGatewayProxyStructuredResultV2, APIGatewayProxyEventV2, Handler } from "aws-lambda";
 import { ResponseHandler } from "../../shared/ResponseHandler";
-import { User } from "../../repositories/models/User";
 import { connectToDatabase } from "../../infra/connectToDatabase";
 import { JsonHandler } from "../../shared/JsonHandler";
 import { InputRecoverPassword } from "../../contracts/InputRecoverPassword";
 import { Exception } from "../../shared/Exception";
 import { Z_APIWhatsAppAdapter } from '../../infra/adapter/Z_APIWhatsAppAdapter';
+import { ParticipantModel } from '../../repositories/models/ParticipantModel';
 
 const whatsAppAdapter = new Z_APIWhatsAppAdapter();
 const whatsAppService = new WhatsAppService(whatsAppAdapter);
@@ -19,13 +19,20 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     console.log(`Usuário ${body.cpf} está tentando recuperar a senha`);
     const params = await InputRecoverPassword.create(body.cpf);
 
-    const user = await User.findOne({ cpf: params.cpf });
+    const user = await ParticipantModel.findOne({ cpf: params.cpf });
     if (!user) {
       throw new Exception(404, "Usuário não encontrado");
     }
 
+    if (!user?.auth) {
+      user.auth = {
+        password: "",
+        resetPasswordCode: "",
+      };
+    }
+    
     const code = generateCode();
-    user.codeRecoveryPassword = code.toString();
+    user.auth.resetPasswordCode = code.toString();
     await user.save();
 
     const message = `Olá, ${user.name}! Seu código de recuperação de senha é \n\n*${code}*\n\nEle expirará em 5 minutos.\nNão compartilhe com ninguém.\n\nAtenciosamente, TPE Digital`;

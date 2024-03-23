@@ -16,7 +16,7 @@ export const handler = async (event: CustomAuthorizerEvent, _: Context, callback
 async function generatePolicyByJWT(event: CustomAuthorizerEvent) {
   const accessToken = getAccessTokenFromRequest(event)
   const jwtPayload = checkAccessToken(accessToken)
-  return buildIAMPolicy('Allow', jwtPayload._id, jwtPayload)
+  return buildIAMPolicy('Allow', jwtPayload.id, jwtPayload)
 }
 
 function getAccessTokenFromRequest(event: any) {
