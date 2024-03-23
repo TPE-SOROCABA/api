@@ -4,109 +4,155 @@ check-authorizer:
 
 healthcheck:
     handler: src/functions/healthcheck.handler
-    description: Healthcheck to ensure the service is up
+    description: Verificação de saúde para garantir que o serviço esteja funcionando
     events:
       - http:
           path: healthcheck
-          method: get
-
-createUser:
-    handler: src/functions/users/createUser.handler
-    description: Create a new user
-    events:
-      - http:
-          path: users
-          method: post
-          cors: true
-
-listUsers:
-    handler: src/functions/users/listUsers.handler
-    description: List all users
-    events:
-      - http:
-          path: users
-          method: get
-          cors: true
-          authorizer: check-authorizer
+          method: GET
 
 login:
     handler: src/functions/auth/login.handler
-    description: Login a user
+    description: Login de um usuário
     events:
       - http:
-          path: login
-          method: post
+          path: auth/login
+          method: POST
           cors: true
 
 loginCode:
     handler: src/functions/auth/loginCode.handler
-    description: Login a user with a code
+    description: Login de um usuário com um código
     events:
       - http:
-          path: login-code
-          method: post
+          path: auth/login-code
+          method: POST
           cors: true
           
 recoverPassword:
     handler: src/functions/auth/recoverPassword.handler
-    description: Recover a user's password
+    description: Recuperação de senha de um usuário
     events:
       - http:
-          path: recover-password
-          method: post
+          path: auth/recover-password
+          method: POST
           cors: true
           
 resetPassword:
     handler: src/functions/auth/resetPassword.handler
-    description: Reset a user's password
+    description: Redefinição de senha de um usuário
     events:
       - http:
-          path: reset-password
-          method: post
+          path: auth/reset-password
+          method: POST
           cors: true
           authorizer: check-authorizer
 
 listParticipants:
     handler: src/functions/participants/listParticipants.handler
-    description: List all participants
+    description: Listar todos os participantes
     events:
       - http:
           path: participants
-          method: get
+          method: GET
+          cors: true
+          authorizer: check-authorizer
+
+createParticipant:
+    handler: src/functions/participants/createParticipants.handler
+    description: Criar um novo participante
+    events:
+      - http:
+          path: participants
+          method: POST
           cors: true
           authorizer: check-authorizer
 
 createIncidences:
     handler: src/functions/participants/incidences/createIncidences.handler
-    description: Create incidences for a participant
+    description: Criar incidências para um participante
     events:
       - http:
           path: participants/{participantId}/incidences
-          method: post
+          method: POST
           cors: true
           authorizer: check-authorizer
 
 listIncidences:
     handler: src/functions/participants/incidences/listIncidences.handler
-    description: List all incidences
+    description: Listar todas as incidências
     events:
         - http:
             path: participants/{participantId}/incidences
-            method: get
-            cors: true
-            authorizer: check-authorizer
-        - http:
-            path: participants/{participantId}/incidences/{incidentId}
-            method: get
+            method: GET
             cors: true
             authorizer: check-authorizer
 
 updateIncidences:
     handler: src/functions/participants/incidences/updateIncidences.handler
-    description: Update incidences for a participant
+    description: Atualizar incidências de um participante
     events:
       - http:
           path: participants/{participantId}/incidences/{incidentId}
-          method: put
+          method: PUT
+          cors: true
+          authorizer: check-authorizer
+
+createDesignation:
+    handler: src/functions/designations/createDesignations.handler
+    description: Criar uma nova designação
+    events:
+      - http:
+          path: designations
+          method: POST
+          cors: true
+          authorizer: check-authorizer
+
+listWeekDesignations:
+    handler: src/functions/designations/weekDesignations.handler
+    description: Listar todas as designações da semana
+    events:
+      - http:
+          path: designations/week
+          method: GET
+          cors: true
+          authorizer: check-authorizer
+
+listDesignations:
+    handler: src/functions/designations/listDesignations.handler
+    description: Listar todas as designações
+    events:
+      - http:
+          path: designations
+          method: GET
+          cors: true
+          authorizer: check-authorizer
+
+cancelDesignation:
+    handler: src/functions/designations/cancelDesignations.handler
+    description: Cancelar uma designação
+    events:
+      - http:
+          path: designations/cancel/{designationId}
+          method: PATCH
+          cors: true
+          authorizer: check-authorizer
+
+updateDesignation:
+    handler: src/functions/designations/updateDesignations.handler
+    description: Atualizar uma designação
+    events:
+      - http:
+          path: designations/{designationId}
+          method: PUT
+          cors: true
+          authorizer: check-authorizer
+
+sendDesignation:
+    handler: src/functions/designations/sendDesignations.handler
+    description: Enviar uma designação
+    events:
+      - http:
+          path: designations/send/{designationId}
+          method: POST
           cors: true
           authorizer: check-authorizer

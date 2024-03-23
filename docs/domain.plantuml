@@ -24,32 +24,20 @@ enum Weekday {
 
 entity Event {
     * id : String <<PK>>
-    * participantId : String <<FK>>
+    * coordinator : Participant <<FK>>
     __DOMAIN__
     name : String
     description : String
     type : EventType
     status : EventStatus
-    coordinator : Participant
     weekday: Weekday
 }
 Event -- EventType
 Event -- EventStatus
 
 class ParticipantAuth {
-    * id : String <<PK>>
-    * participantId : String <<FK>>
-    __DOMAIN__
-    participant : Participant
     password : String
     resetPasswordCode : String
-    resetPasswordExpires : Date
-    ..
-    + generateResetPasswordCode(): String
-    + createToken(): String
-    + changePassword(code: String, newPassword: String): void
-    + comparePassword(password: String): Boolean
-    - validateResetPasswordCode(code: String): Boolean
 }
 
 enum ParticipantProfile {
@@ -68,25 +56,19 @@ enum ParticipantSex {
 
 entity Participant {
     * id : String <<PK>>
+    * incident_history : IncidentHistory <<FK>>
     __DOMAIN__
     cpf : String <<UNIQUE>>
     name : String
     sex : ParticipantSex
     phone : String <<UNIQUE>>
-    profilePhoto : String
-    incidentHistories : List<IncidentHistory>
+    profile_photo : String
     profile : ParticipantProfile
+    auth : ParticipantAuth
 }
 Participant -- ParticipantProfile
-Participant " 1 " -- " 0 " ParticipantAuth
+Participant -- ParticipantAuth
 Participant " 1 " -- " n " Event
-
-class GroupParticipant {
-    * id : String <<PK>>
-    * participantID : Integer <<FK>>
-    * groupID : Integer <<FK>>
-
-}
 
 class GroupConfig {
     startHour: Strind
@@ -99,42 +81,31 @@ GroupConfig -- Weekday
 
 entity Group {
     * id : String <<PK>>
-    * designationSchemaId : String <<FK>>
-    * eventId : String <<FK>>
+    * designation_template: DesignationTemplate <<FK>>
+    * participants: List<Participant> <<FK>>
+    * event: Event <<FK>>
     __DOMAIN__
     name: String
     event: Event
-    captains: List<Participant>
-    participants : List<Participant>
-    designationSchema : DesignationSchema
     config: GroupConfig
 }
 Group -- GroupConfig
 
-entity DesignationSchema {
+entity DesignationTemplate {
     * id : String <<PK>>
+    * point_publication_carts : List<PointPublicationCart> <<FK>>
     __DOMAIN__
     name : String
-    points : List<DesignationPointPublicationCart>
 }
-Group " 1 " -- " n " GroupParticipant
-GroupParticipant " n " -- " 1 " Participant
+Group " 1 " -- " n " Participant
 Group " n " -- " 1 " Event
-Group " 1 " -left- " 1 " DesignationSchema
-
-class DesignationPointPublicationCart {
-    * id : String <<PK>>
-    * designationSchemaId : String <<FK>>
-    * pointPublicationCartId: String <<FK>>
-}
+Group " 1 " -left- " 1 " DesignationTemplate
 
 class PointPublicationCart {
     * id : String <<PK>>
-    * pointId : String <<FK>>
-    * publicationCartId : String <<FK>>
+    * point : Point <<FK>>
+    * publication_carts : List<PublicationCart> <<FK>>
     __DOMAIN__
-    point : Point
-    publicationCart : List<PublicationCart>
     minParticipants : Integer
     maxParticipants : Integer
     status : Boolean
@@ -154,17 +125,9 @@ entity PublicationCart {
     description: String
     themePhoto: String 
 }
-DesignationSchema " 1 " -- " n " DesignationPointPublicationCart
-DesignationPointPublicationCart " 1 " -- " 1 " PointPublicationCart
+DesignationTemplate " 1 " -- " n " PointPublicationCart
 PointPublicationCart " n " -- " 1 " Point
 PointPublicationCart " n " -- " 1 " PublicationCart
-
-
-interface OutputDesignation {
-    id : String
-    participants : List<Participant>
-    point : Point
-}
 
 enum DesignationStatus {
     OPEN
@@ -172,21 +135,27 @@ enum DesignationStatus {
     CLOSED
 }
 
+class Assignment {
+    point: Point
+    publication_carts: List<PublicationCart>
+    participants: List<Participant>
+}
+
 entity Designation {
     * id : String <<PK>>
-    * groupId : String <<FK>>
+    * group : Group <<FK>>
+    * participants : List<Participant> <<FK>>
     __DOMAIN__
     group : Group
     status: DesignationStatus
+    assignments : List<Assignment>
     --
     createdAt : Date
     updatedAt : Date
-    ..
-    + generateDesignations(): List<OutputDesignation>
 }
 Designation -- DesignationStatus
-Designation -right- OutputDesignation
 Designation " 1 " -left- " 1 " Group
+Designation -- Assignment
 
 enum IncidentStatus {
     OPEN
@@ -202,13 +171,10 @@ enum IncidentType {
 
 entity IncidentHistory {
     * id : String <<PK>>
-    * participantId : String <<FK>>
-    * reporterId : String <<FK>>
-    * designationId : String <<FK>>
+    * participant : Participant <<FK>>
+    * reporter : Participant <<FK>>
+    * designation : Designation <<FK>>
     __DOMAIN__
-    participant : Participant
-    reporter : Participant
-    designation : Designation
     reason : String
     status: IncidentStatus
     type : IncidentType

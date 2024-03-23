@@ -1,0 +1,22 @@
+service: api-tpe-digital
+
+plugins:
+  - serverless-dotenv-plugin
+  - serverless-esbuild
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: us-east-1
+  stage: ${opt:stage}
+  profile: tpe
+  timeout: 30
+  memorySize: 128
+
+custom:
+  dotenv:
+    path: .env
+
+functions: ${file(./resources/functions.yml)}
+
