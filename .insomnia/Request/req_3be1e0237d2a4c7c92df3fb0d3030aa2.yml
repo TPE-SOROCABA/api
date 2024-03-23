@@ -1,0 +1,27 @@
+_id: req_3be1e0237d2a4c7c92df3fb0d3030aa2
+type: Request
+parentId: wrk_85cdaf0619344cc6a42927732b29a12e
+modified: 1711153634773
+created: 1710624679598
+url: "{{ _.BASE_URL_LOCAL }}/healthcheck"
+name: "Health Check  "
+description: ""
+method: GET
+body:
+  mimeType: application/json
+  text: ""
+parameters: []
+headers:
+  - name: Content-Type
+    value: application/json
+  - name: User-Agent
+    value: insomnia/2023.5.8
+authentication: {}
+metaSortKey: -1710624679598
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global
