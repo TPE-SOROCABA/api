@@ -1,0 +1,33 @@
+_id: req_cfadf11af113461892e70b17a0f46268
+type: Request
+parentId: fld_af23c0eeccb745aeaf3e62a4e4e86d7f
+modified: 1711156057406
+created: 1710363247741
+url: "{{ _.BASE_URL_LOCAL }}/participants/{{ _.PARTICIPANT_ID }}/incidences"
+name: List Participant Incidences
+description: ""
+method: GET
+body:
+  mimeType: application/json
+  text: ""
+parameters:
+  - id: pair_375a9d457a12497a94bdd29de9dbc52a
+    name: filter
+    value: "24"
+    description: ""
+    disabled: true
+headers:
+  - name: Content-Type
+    value: application/json
+    id: pair_13b89ca8d5d44e6fa2ada5e3f030dea6
+authentication:
+  type: bearer
+  token: "{{ _.TOKEN }}"
+metaSortKey: -1710371623824
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

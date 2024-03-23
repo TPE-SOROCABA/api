@@ -1,0 +1,33 @@
+_id: req_c57908b0d06f43c0ae6ae8e9bc395485
+type: Request
+parentId: fld_112a299ef4794650809784e2c94302c5
+modified: 1711153296841
+created: 1711153272336
+url: "{{ _.BASE_URL_LOCAL }}/reset-password"
+name: Reset Password
+description: ""
+method: POST
+body:
+  mimeType: application/json
+  text: |-
+    {
+    	"cpf": "35172574867",
+    	"password": "tpe@1234"
+    }
+parameters: []
+headers:
+  - name: Content-Type
+    value: application/json
+  - name: User-Agent
+    value: insomnia/2023.5.8
+authentication:
+  type: bearer
+  token: "{{ _.TOKEN }}"
+metaSortKey: -1711110135311.25
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

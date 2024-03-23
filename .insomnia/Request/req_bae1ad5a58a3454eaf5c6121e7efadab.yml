@@ -1,0 +1,38 @@
+_id: req_bae1ad5a58a3454eaf5c6121e7efadab
+type: Request
+parentId: fld_cc3f5c294f2c4fc88b457d55f75afebb
+modified: 1711147104571
+created: 1710948696747
+url: "{{ _.BASE_URL_LOCAL }}/week-designation/{{ _.GROUP_ID }}"
+name: Buscar Designação Semana
+description: ""
+method: GET
+body:
+  mimeType: application/json
+  text: ""
+parameters:
+  - id: pair_32746742b0d34e39b444ee5c2bac5571
+    name: random
+    value: "true"
+    description: ""
+    disabled: true
+  - id: pair_bae630e7df784c6eb7cb52bafa785e71
+    name: ""
+    value: ""
+    description: ""
+headers:
+  - name: Content-Type
+    value: application/json
+  - name: User-Agent
+    value: insomnia/2023.5.8
+authentication:
+  type: bearer
+  token: "{{ _.TOKEN }}"
+metaSortKey: -1710753624867
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

@@ -1,0 +1,33 @@
+_id: req_a6a3f1aec5394d43aa41f744b925f9eb
+type: Request
+parentId: fld_cc3f5c294f2c4fc88b457d55f75afebb
+modified: 1711140540690
+created: 1710949456219
+url: "{{ _.BASE_URL_LOCAL }}/designations/{{ _.GROUP_ID }}"
+name: Buscar Designações
+description: ""
+method: GET
+body:
+  mimeType: application/json
+  text: ""
+parameters:
+  - id: pair_c1f46c2fb20a477ca640b32194d28473
+    name: date
+    value: 2024-03-21
+    description: ""
+headers:
+  - name: Content-Type
+    value: application/json
+  - name: User-Agent
+    value: insomnia/2023.5.8
+authentication:
+  type: bearer
+  token: "{{ _.TOKEN }}"
+metaSortKey: -1710689152232.5
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

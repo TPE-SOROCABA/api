@@ -1,0 +1,862 @@
+_id: req_b14a4fca2ec24dedaf499bbd2595f70a
+type: Request
+parentId: fld_cc3f5c294f2c4fc88b457d55f75afebb
+modified: 1711141217322
+created: 1710962683046
+url: "{{ _.BASE_URL_LOCAL }}/update-designation/{{ _.DESIGNATION_ID }}"
+name: Atualizar Designação Semana
+description: ""
+method: PUT
+body:
+  mimeType: application/json
+  text: >-
+    {
+    	"count": 0,
+    	"id": "65fde4382269174ead1d7f00",
+    	"group": {
+    		"id": "65f9c426559715b69403e28a",
+    		"name": "Quarta Manhã",
+    		"config": {
+    			"startHour": "08:30",
+    			"endHour": "13:00",
+    			"weekday": "WEDNESDAY",
+    			"minParticipants": 10,
+    			"maxParticipants": 60
+    		}
+    	},
+    	"status": "OPEN",
+    	"assignments": [
+    		{
+    			"point": {
+    				"id": "65f99ec3a74906aa343a5408",
+    				"name": "Danny",
+    				"status": true
+    			},
+    			"publication_carts": [
+    				{
+    					"id": "65f9a07fea8e615eae00acff",
+    					"name": "17"
+    				}
+    			],
+    			"participants": [
+    				{
+    					"id": "65f62c60ee3dfe087ba708bb",
+    					"name": "Darryl Hermann",
+    					"phone": "(16) 5428-6622",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/773.jpg",
+    					"sex": "MALE"
+    				},
+    				{
+    					"id": "65f62c62ee3dfe087ba708d1",
+    					"name": "Dr. Gene Rodriguez",
+    					"phone": "(59) 1797-3521",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/244.jpg",
+    					"sex": "MALE"
+    				},
+    				{
+    					"id": "65f62c61ee3dfe087ba708c1",
+    					"name": "Mr. Louis O'Hara",
+    					"phone": "(34) 7329-6736",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/1175.jpg",
+    					"sex": "MALE"
+    				}
+    			],
+    			"config": {
+    				"max": 3,
+    				"min": 2
+    			}
+    		},
+    		{
+    			"point": {
+    				"id": "65f99ec2a74906aa343a5402",
+    				"name": "Drogasil",
+    				"status": true
+    			},
+    			"publication_carts": [
+    				{
+    					"id": "65f9a07eea8e615eae00acf9",
+    					"name": "14"
+    				}
+    			],
+    			"participants": [
+    				{
+    					"id": "65f62c62ee3dfe087ba708d5",
+    					"name": "Darlene Bayer",
+    					"phone": "(67) 4802-7072",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/497.jpg",
+    					"sex": "FEMALE"
+    				},
+    				{
+    					"id": "65f62c63ee3dfe087ba708df",
+    					"name": "Jan Rutherford",
+    					"phone": "(85) 8572-3525",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://avatars.githubusercontent.com/u/58074579",
+    					"sex": "FEMALE"
+    				},
+    				{
+    					"id": "65f62c63ee3dfe087ba708e5",
+    					"name": "Tami Koelpin",
+    					"phone": "(50) 9693-4497",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/1160.jpg",
+    					"sex": "FEMALE"
+    				}
+    			],
+    			"config": {
+    				"max": 3,
+    				"min": 2
+    			}
+    		},
+    		{
+    			"point": {
+    				"id": "65f99ec3a74906aa343a540c",
+    				"name": "Esfiha do Principe",
+    				"status": true
+    			},
+    			"publication_carts": [
+    				{
+    					"id": "65f9a07fea8e615eae00ad03",
+    					"name": "19"
+    				},
+    				{
+    					"id": "65f9a07fea8e615eae00ad05",
+    					"name": "20"
+    				}
+    			],
+    			"participants": [
+    				{
+    					"id": "65f62c66ee3dfe087ba70909",
+    					"name": "Lewis Mitchell",
+    					"phone": "(27) 8928-8964",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://avatars.githubusercontent.com/u/95029287",
+    					"sex": "MALE"
+    				},
+    				{
+    					"id": "65f62c64ee3dfe087ba708f1",
+    					"name": "Lonnie Wiegand",
+    					"phone": "(77) 8520-9075",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/592.jpg",
+    					"sex": "MALE"
+    				}
+    			],
+    			"config": {
+    				"max": 3,
+    				"min": 2
+    			}
+    		},
+    		{
+    			"point": {
+    				"id": "65f99ec3a74906aa343a540e",
+    				"name": "Esfiha do Principe (Adicional)",
+    				"status": true
+    			},
+    			"publication_carts": [
+    				{
+    					"id": "65f9a07fea8e615eae00ad07",
+    					"name": "21"
+    				}
+    			],
+    			"participants": [
+    				{
+    					"id": "65f62c63ee3dfe087ba708db",
+    					"name": "Rolando Gerhold",
+    					"phone": "(34) 2161-7475",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://avatars.githubusercontent.com/u/30110660",
+    					"sex": "MALE"
+    				},
+    				{
+    					"id": "65f62c63ee3dfe087ba708dd",
+    					"name": "Wesley Boehm DVM",
+    					"phone": "(80) 8383-9031",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://avatars.githubusercontent.com/u/17055557",
+    					"sex": "MALE"
+    				}
+    			],
+    			"config": {
+    				"max": 3,
+    				"min": 2
+    			}
+    		},
+    		{
+    			"point": {
+    				"id": "65f99ec1a74906aa343a53f6",
+    				"name": "Galeria Sta Clara",
+    				"status": true
+    			},
+    			"publication_carts": [
+    				{
+    					"id": "65f9a07dea8e615eae00aceb",
+    					"name": "7"
+    				}
+    			],
+    			"participants": [
+    				{
+    					"id": "65f62c62ee3dfe087ba708cf",
+    					"name": "Dale Hegmann PhD",
+    					"phone": "(93) 3534-6158",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/650.jpg",
+    					"sex": "MALE"
+    				},
+    				{
+    					"id": "65f62c63ee3dfe087ba708e3",
+    					"name": "Mr. Clifton Grimes",
+    					"phone": "(70) 8413-7232",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/1223.jpg",
+    					"sex": "MALE"
+    				},
+    				{
+    					"id": "65f62c64ee3dfe087ba708eb",
+    					"name": "Tanya Yundt",
+    					"phone": "(56) 4754-0982",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://avatars.githubusercontent.com/u/58891926",
+    					"sex": "FEMALE"
+    				}
+    			],
+    			"config": {
+    				"max": 3,
+    				"min": 2
+    			}
+    		},
+    		{
+    			"point": {
+    				"id": "65f99ec3a74906aa343a5412",
+    				"name": "Loja Escala",
+    				"status": true
+    			},
+    			"publication_carts": [
+    				{
+    					"id": "65f9a080ea8e615eae00ad0b",
+    					"name": "23"
+    				}
+    			],
+    			"participants": [
+    				{
+    					"id": "65f62c61ee3dfe087ba708cb",
+    					"name": "Bonnie Steuber",
+    					"phone": "(00) 6002-8886",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/143.jpg",
+    					"sex": "FEMALE"
+    				},
+    				{
+    					"id": "65f62c65ee3dfe087ba708f9",
+    					"name": "Malcolm Wintheiser",
+    					"phone": "(08) 2265-1829",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/947.jpg",
+    					"sex": "MALE"
+    				},
+    				{
+    					"id": "65f62c61ee3dfe087ba708c3",
+    					"name": "Noel McGlynn",
+    					"phone": "(43) 8011-0210",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/435.jpg",
+    					"sex": "MALE"
+    				}
+    			],
+    			"config": {
+    				"max": 3,
+    				"min": 2
+    			}
+    		},
+    		{
+    			"point": {
+    				"id": "65f99ec3a74906aa343a540a",
+    				"name": "Pão de Queijo",
+    				"status": true
+    			},
+    			"publication_carts": [
+    				{
+    					"id": "65f9a07fea8e615eae00ad01",
+    					"name": "18"
+    				}
+    			],
+    			"participants": [
+    				{
+    					"id": "65f62c63ee3dfe087ba708e7",
+    					"name": "Becky Carter IV",
+    					"phone": "(69) 9943-9957",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/211.jpg",
+    					"sex": "FEMALE"
+    				},
+    				{
+    					"id": "65f62c5fee3dfe087ba708af",
+    					"name": "Giulia Felipe de Souza",
+    					"phone": "15981217448",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://media.licdn.com/dms/image/D4D03AQHyfxr-YjsL0w/profile-displayphoto-shrink_100_100/0/1704477437669?e=1716422400&v=beta&t=NiCu-AxGNfBlgwS4-ujkGzJFkMJZacuE4AeWgQuV2CE",
+    					"sex": "FEMALE"
+    				}
+    			],
+    			"config": {
+    				"max": 3,
+    				"min": 2
+    			}
+    		},
+    		{
+    			"point": {
+    				"id": "65f99ec3a74906aa343a5410",
+    				"name": "Pernambucanas",
+    				"status": true
+    			},
+    			"publication_carts": [
+    				{
+    					"id": "65f9a07fea8e615eae00ad09",
+    					"name": "22"
+    				}
+    			],
+    			"participants": [
+    				{
+    					"id": "65f62c60ee3dfe087ba708b5",
+    					"name": "Hattie McDermott",
+    					"phone": "(60) 6659-5722",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/1038.jpg",
+    					"sex": "FEMALE"
+    				},
+    				{
+    					"id": "65f62c65ee3dfe087ba708fb",
+    					"name": "Margarita Senger",
+    					"phone": "(81) 2989-4676",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://avatars.githubusercontent.com/u/21337465",
+    					"sex": "FEMALE"
+    				},
+    				{
+    					"id": "65f62c64ee3dfe087ba708e9",
+    					"name": "Martin Huels",
+    					"phone": "(64) 5249-9128",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/48.jpg",
+    					"sex": "MALE"
+    				}
+    			],
+    			"config": {
+    				"max": 3,
+    				"min": 2
+    			}
+    		},
+    		{
+    			"point": {
+    				"id": "65f99ec4a74906aa343a5414",
+    				"name": "Ponto Adicional (Benedito Pires)",
+    				"status": true
+    			},
+    			"publication_carts": [
+    				{
+    					"id": "65f9a080ea8e615eae00ad0d",
+    					"name": "24"
+    				}
+    			],
+    			"participants": [
+    				{
+    					"id": "65f62c66ee3dfe087ba70903",
+    					"name": "Bob Daugherty DDS",
+    					"phone": "(99) 2347-0631",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://avatars.githubusercontent.com/u/85731288",
+    					"sex": "MALE"
+    				},
+    				{
+    					"id": "65f62c65ee3dfe087ba70901",
+    					"name": "Clara Kutch DVM",
+    					"phone": "(49) 7998-6141",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/1038.jpg",
+    					"sex": "FEMALE"
+    				},
+    				{
+    					"id": "65f62c63ee3dfe087ba708e1",
+    					"name": "Luz Lebsack",
+    					"phone": "(90) 9157-7466",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/406.jpg",
+    					"sex": "FEMALE"
+    				}
+    			],
+    			"config": {
+    				"max": 3,
+    				"min": 2
+    			}
+    		},
+    		{
+    			"point": {
+    				"id": "65f99ec4a74906aa343a5416",
+    				"name": "Ponto Adicional (Dimanos Padre Luiz)",
+    				"status": true
+    			},
+    			"publication_carts": [
+    				{
+    					"id": "65f9a080ea8e615eae00ad0f",
+    					"name": "25"
+    				}
+    			],
+    			"participants": [
+    				{
+    					"id": "65f62c5fee3dfe087ba708ad",
+    					"name": "Gwendolyn Heller",
+    					"phone": "(73) 3848-9576",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://avatars.githubusercontent.com/u/92037035",
+    					"sex": "FEMALE"
+    				},
+    				{
+    					"id": "65f62c66ee3dfe087ba70905",
+    					"name": "Laverne Lakin",
+    					"phone": "(56) 5386-1227",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/448.jpg",
+    					"sex": "FEMALE"
+    				},
+    				{
+    					"id": "65f62c65ee3dfe087ba708f5",
+    					"name": "Monica Fritsch",
+    					"phone": "(97) 1210-7071",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/81.jpg",
+    					"sex": "FEMALE"
+    				}
+    			],
+    			"config": {
+    				"max": 3,
+    				"min": 2
+    			}
+    		},
+    		{
+    			"point": {
+    				"id": "65f99ec4a74906aa343a5418",
+    				"name": "Ponto Adicional (Forum Velho)",
+    				"status": true
+    			},
+    			"publication_carts": [
+    				{
+    					"id": "65f9a080ea8e615eae00ad11",
+    					"name": "26"
+    				}
+    			],
+    			"participants": [
+    				{
+    					"id": "65f62c62ee3dfe087ba708d7",
+    					"name": "Jan Toy",
+    					"phone": "(25) 0984-7747",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/1242.jpg",
+    					"sex": "FEMALE"
+    				},
+    				{
+    					"id": "65f62c65ee3dfe087ba708f7",
+    					"name": "Lee Stoltenberg",
+    					"phone": "(59) 0044-0143",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://avatars.githubusercontent.com/u/31788840",
+    					"sex": "MALE"
+    				},
+    				{
+    					"id": "65f62c66ee3dfe087ba70907",
+    					"name": "Steve Dach",
+    					"phone": "(65) 4313-9288",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/382.jpg",
+    					"sex": "MALE"
+    				}
+    			],
+    			"config": {
+    				"max": 3,
+    				"min": 2
+    			}
+    		},
+    		{
+    			"point": {
+    				"id": "65f99ec0a74906aa343a53f0",
+    				"name": "Terminal Santo Antônio - 1",
+    				"status": true
+    			},
+    			"publication_carts": [
+    				{
+    					"id": "65f9a07cea8e615eae00acdf",
+    					"name": "1"
+    				},
+    				{
+    					"id": "65f9a07cea8e615eae00ace1",
+    					"name": "2"
+    				}
+    			],
+    			"participants": [
+    				{
+    					"id": "65f62c62ee3dfe087ba708d9",
+    					"name": "Alison Wisozk",
+    					"phone": "(10) 0907-9692",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://avatars.githubusercontent.com/u/17699770",
+    					"sex": "FEMALE"
+    				},
+    				{
+    					"id": "65f62c64ee3dfe087ba708ef",
+    					"name": "Connie Auer",
+    					"phone": "(76) 1136-4371",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://avatars.githubusercontent.com/u/82733601",
+    					"sex": "FEMALE"
+    				},
+    				{
+    					"id": "65f62c61ee3dfe087ba708c9",
+    					"name": "Eva Oberbrunner",
+    					"phone": "(39) 2609-9181",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/719.jpg",
+    					"sex": "FEMALE"
+    				}
+    			],
+    			"config": {
+    				"max": 3,
+    				"min": 3
+    			}
+    		},
+    		{
+    			"point": {
+    				"id": "65f99ec1a74906aa343a53f2",
+    				"name": "Terminal Santo Antônio - 2",
+    				"status": true
+    			},
+    			"publication_carts": [
+    				{
+    					"id": "65f9a07dea8e615eae00ace3",
+    					"name": "3"
+    				},
+    				{
+    					"id": "65f9a07dea8e615eae00ace5",
+    					"name": "4"
+    				}
+    			],
+    			"participants": [
+    				{
+    					"id": "65f62c60ee3dfe087ba708bd",
+    					"name": "Amy Kshlerin",
+    					"phone": "(83) 8711-7482",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://avatars.githubusercontent.com/u/88124127",
+    					"sex": "FEMALE"
+    				},
+    				{
+    					"id": "65f62c66ee3dfe087ba7090b",
+    					"name": "Mindy Rolfson",
+    					"phone": "(02) 0762-9426",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/889.jpg",
+    					"sex": "FEMALE"
+    				},
+    				{
+    					"id": "65f62c60ee3dfe087ba708b7",
+    					"name": "Tara Padberg",
+    					"phone": "(77) 6319-0155",
+    					"profile": "PARTICIPANT",
+    					"profile_photo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/298.jpg",
+    					"sex": "FEMALE"
+    				}
+    			],
+    			"config": {
+    				"max": 3,
+    				"min": 3
+    			}
+    		},
+    		{
+    			"point": {
+    				"id": "65f99ec2a74906aa343a5400",
+    				"name": "Bolsas (Adicional)",
+    				"status": false
+    			},
+    			"publication_carts": [
+    				{
+    					"id": "65f9a07eea8e615eae00acf7",
+    					"name": "13"
+    				}
+    			],
+    			"participants": [],
+    			"config": {
+    				"max": 3,
+    				"min": 2
+    			}
+    		},
+    		{
+    			"point": {
+    				"id": "65f99ec1a74906aa343a53f8",
+    				"name": "Bradesco",
+    				"status": false
+    			},
+    			"publication_carts": [
+    				{
+    					"id": "65f9a07dea8e615eae00aced",
+    					"name": "8"
+    				}
+    			],
+    			"participants": [],
+    			"config": {
+    				"max": 3,
+    				"min": 2
+    			}
+    		},
+    		{
+    			"point": {
+    				"id": "65f99ec2a74906aa343a53fa",
+    				"name": "Bradesco (Adicional)",
+    				"status": false
+    			},
+    			"publication_carts": [
+    				{
+    					"id": "65f9a07eea8e615eae00acef",
+    					"name": "9"
+    				}
+    			],
+    			"participants": [],
+    			"config": {
+    				"max": 3,
+    				"min": 2
+    			}
+    		},
+    		{
+    			"point": {
+    				"id": "65f99ec1a74906aa343a53f4",
+    				"name": "Correios",
+    				"status": true
+    			},
+    			"publication_carts": [
+    				{
+    					"id": "65f9a07dea8e615eae00ace7",
+    					"name": "5"
+    				},
+    				{
+    					"id": "65f9a07dea8e615eae00ace9",
+    					"name": "6"
+    				}
+    			],
+    			"participants": [],
+    			"config": {
+    				"max": 3,
+    				"min": 3
+    			}
+    		},
+    		{
+    			"point": {
+    				"id": "65f99ec2a74906aa343a5406",
+    				"name": "Pop Center",
+    				"status": true
+    			},
+    			"publication_carts": [
+    				{
+    					"id": "65f9a07fea8e615eae00acfd",
+    					"name": "16"
+    				}
+    			],
+    			"participants": [],
+    			"config": {
+    				"max": 3,
+    				"min": 2
+    			}
+    		},
+    		{
+    			"point": {
+    				"id": "65f99ec2a74906aa343a53fe",
+    				"name": "Praça (Projeto Piloto)",
+    				"status": true
+    			},
+    			"publication_carts": [
+    				{
+    					"id": "65f9a07eea8e615eae00acf3",
+    					"name": "11"
+    				},
+    				{
+    					"id": "65f9a07eea8e615eae00acf5",
+    					"name": "12"
+    				}
+    			],
+    			"participants": [],
+    			"config": {
+    				"max": 3,
+    				"min": 2
+    			}
+    		},
+    		{
+    			"point": {
+    				"id": "65f99ec2a74906aa343a53fc",
+    				"name": "Recreativo",
+    				"status": true
+    			},
+    			"publication_carts": [
+    				{
+    					"id": "65f9a07eea8e615eae00acf1",
+    					"name": "10"
+    				}
+    			],
+    			"participants": [],
+    			"config": {
+    				"max": 3,
+    				"min": 2
+    			}
+    		},
+    		{
+    			"point": {
+    				"id": "65f99ec2a74906aa343a5404",
+    				"name": "Safra",
+    				"status": true
+    			},
+    			"publication_carts": [
+    				{
+    					"id": "65f9a07eea8e615eae00acfb",
+    					"name": "15"
+    				}
+    			],
+    			"participants": [],
+    			"config": {
+    				"max": 3,
+    				"min": 2
+    			}
+    		}
+    	],
+    	"participants": [
+    		{
+    			"id": "65f62c66ee3dfe087ba7090d",
+    			"name": "Bernard Gerhold",
+    			"phone": "(55) 2145-0166",
+    			"profile": "PARTICIPANT",
+    			"profile_photo": "https://avatars.githubusercontent.com/u/892410",
+    			"sex": "MALE"
+    		},
+    		{
+    			"id": "65f62c65ee3dfe087ba708ff",
+    			"name": "Constance Batz",
+    			"phone": "(03) 2451-6551",
+    			"profile": "PARTICIPANT",
+    			"profile_photo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/919.jpg",
+    			"sex": "FEMALE"
+    		},
+    		{
+    			"id": "65f62c64ee3dfe087ba708f3",
+    			"name": "Debbie Nader",
+    			"phone": "(30) 1956-5358",
+    			"profile": "PARTICIPANT",
+    			"profile_photo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/233.jpg",
+    			"sex": "FEMALE"
+    		},
+    		{
+    			"id": "65f62c62ee3dfe087ba708d3",
+    			"name": "Evan Satterfield PhD",
+    			"phone": "(81) 8859-1339",
+    			"profile": "PARTICIPANT",
+    			"profile_photo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/124.jpg",
+    			"sex": "MALE"
+    		},
+    		{
+    			"id": "65f62c60ee3dfe087ba708bf",
+    			"name": "Gerard Corwin",
+    			"phone": "(59) 7807-6673",
+    			"profile": "PARTICIPANT",
+    			"profile_photo": "https://avatars.githubusercontent.com/u/83000609",
+    			"sex": "MALE"
+    		},
+    		{
+    			"id": "65f62c5fee3dfe087ba708b3",
+    			"name": "João Wictor Felipe da Silva",
+    			"phone": "12981829844",
+    			"profile": "CAPTAIN",
+    			"profile_photo": "https://media.licdn.com/dms/image/D4D03AQHuVIWqhXDjmA/profile-displayphoto-shrink_100_100/0/1698442259564?e=1716422400&v=beta&t=7OxVTXqEkH17GA9uoX7qCKY7OTdd5CNwGivMHs5E2kE",
+    			"sex": "MALE"
+    		},
+    		{
+    			"id": "65f62c65ee3dfe087ba708fd",
+    			"name": "Kathryn Lebsack",
+    			"phone": "(71) 3858-9905",
+    			"profile": "PARTICIPANT",
+    			"profile_photo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/353.jpg",
+    			"sex": "FEMALE"
+    		},
+    		{
+    			"id": "65f62c61ee3dfe087ba708c5",
+    			"name": "Kelly Leannon",
+    			"phone": "(74) 2525-3732",
+    			"profile": "PARTICIPANT",
+    			"profile_photo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/1075.jpg",
+    			"sex": "FEMALE"
+    		},
+    		{
+    			"id": "65f62c5fee3dfe087ba708ab",
+    			"name": "Kerry Leffler",
+    			"phone": "(60) 9800-4083",
+    			"profile": "PARTICIPANT",
+    			"profile_photo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/392.jpg",
+    			"sex": "FEMALE"
+    		},
+    		{
+    			"id": "65f62c60ee3dfe087ba708b9",
+    			"name": "Laverne Brown",
+    			"phone": "(02) 3175-6324",
+    			"profile": "PARTICIPANT",
+    			"profile_photo": "https://avatars.githubusercontent.com/u/17935089",
+    			"sex": "FEMALE"
+    		},
+    		{
+    			"id": "65f62c61ee3dfe087ba708c7",
+    			"name": "Mattie Conroy",
+    			"phone": "(70) 6806-3890",
+    			"profile": "PARTICIPANT",
+    			"profile_photo": "https://avatars.githubusercontent.com/u/23309501",
+    			"sex": "FEMALE"
+    		},
+    		{
+    			"id": "65f62c62ee3dfe087ba708cd",
+    			"name": "Roman Hilpert",
+    			"phone": "(71) 2590-9932",
+    			"profile": "PARTICIPANT",
+    			"profile_photo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/1120.jpg",
+    			"sex": "MALE"
+    		},
+    		{
+    			"id": "65f62c64ee3dfe087ba708ed",
+    			"name": "Silvia Bednar MD",
+    			"phone": "(07) 9115-0798",
+    			"profile": "PARTICIPANT",
+    			"profile_photo": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/885.jpg",
+    			"sex": "FEMALE"
+    		},
+    		{
+    			"id": "65f62c5fee3dfe087ba708b1",
+    			"name": "Wilson Felipe da Silva",
+    			"phone": "15981785706",
+    			"profile": "COORDINATOR",
+    			"profile_photo": "https://media.licdn.com/dms/image/C4D03AQGk7d0vBhwimw/profile-displayphoto-shrink_400_400/0/1661344384942?e=1716422400&v=beta&t=gUHt60oYDwC0ZLdJeQt_Vvi0BgoGkFNFYIuycOLC3LQ",
+    			"sex": "MALE"
+    		}
+    	],
+    	"createdAt": "2024-03-22T20:04:08.930Z",
+    	"updatedAt": "2024-03-22T20:15:07.509Z"
+    }
+parameters: []
+headers:
+  - name: Content-Type
+    value: application/json
+  - name: User-Agent
+    value: insomnia/2023.5.8
+authentication:
+  type: bearer
+  token: "{{ _.TOKEN }}"
+metaSortKey: -1710721388549.75
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

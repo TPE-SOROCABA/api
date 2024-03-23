@@ -1,0 +1,29 @@
+_id: req_a4934920d5334ee89a6bd28a012ccfe5
+type: Request
+parentId: fld_cc3f5c294f2c4fc88b457d55f75afebb
+modified: 1710950031532
+created: 1710882570136
+url: "{{ _.BASE_URL_LOCAL }}/create-designation/{{ _.GROUP_ID }}"
+name: "Criar Designação "
+description: ""
+method: GET
+body:
+  mimeType: application/json
+  text: ""
+parameters: []
+headers:
+  - name: Content-Type
+    value: application/json
+  - name: User-Agent
+    value: insomnia/2023.5.8
+authentication:
+  type: bearer
+  token: "{{ _.TOKEN }}"
+metaSortKey: -1710882570136
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

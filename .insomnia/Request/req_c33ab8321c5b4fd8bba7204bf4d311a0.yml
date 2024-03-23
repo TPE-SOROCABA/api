@@ -1,0 +1,30 @@
+_id: req_c33ab8321c5b4fd8bba7204bf4d311a0
+type: Request
+parentId: fld_112a299ef4794650809784e2c94302c5
+modified: 1711153186135
+created: 1711153170471
+url: "{{ _.BASE_URL_LOCAL }}/recover-password"
+name: Recover Password
+description: ""
+method: POST
+body:
+  mimeType: application/json
+  text: |-
+    {
+    	"cpf": "35172574867"
+    }
+parameters: []
+headers:
+  - name: Content-Type
+    value: application/json
+  - name: User-Agent
+    value: insomnia/2023.5.8
+authentication: {}
+metaSortKey: -1711012607379
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

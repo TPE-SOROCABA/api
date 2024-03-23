@@ -1,0 +1,29 @@
+_id: req_dc7fd4695cfd407e941c481d92407e30
+type: Request
+parentId: fld_cc3f5c294f2c4fc88b457d55f75afebb
+modified: 1710949812730
+created: 1710949769399
+url: "{{ _.BASE_URL_LOCAL }}/cancel-designation/{{ _.DESIGNATION_ID }}"
+name: Cancelar Designações
+description: ""
+method: PATCH
+body:
+  mimeType: application/json
+  text: ""
+parameters: []
+headers:
+  - name: Content-Type
+    value: application/json
+  - name: User-Agent
+    value: insomnia/2023.5.8
+authentication:
+  type: bearer
+  token: "{{ _.TOKEN }}"
+metaSortKey: -1710656915915.25
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

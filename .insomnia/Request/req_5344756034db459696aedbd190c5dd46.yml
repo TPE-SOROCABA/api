@@ -1,0 +1,33 @@
+_id: req_5344756034db459696aedbd190c5dd46
+type: Request
+parentId: fld_92e0379deee2451b9399a022d7b5bbde
+modified: 1711153396249
+created: 1710359580733
+url: "{{ _.BASE_URL_LOCAL }}/participants/{{ _.GROUP_ID }}"
+name: List Participants
+description: ""
+method: GET
+body:
+  mimeType: application/json
+  text: ""
+parameters:
+  - id: pair_375a9d457a12497a94bdd29de9dbc52a
+    name: filter
+    value: Wilson
+    description: ""
+    disabled: true
+headers:
+  - name: Content-Type
+    value: application/json
+    id: pair_13b89ca8d5d44e6fa2ada5e3f030dea6
+authentication:
+  type: bearer
+  token: "{{ _.TOKEN }}"
+metaSortKey: -1710359583454
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

@@ -1,0 +1,31 @@
+_id: req_cb2bbe18a7d54c33b836b3c19065ab31
+type: Request
+parentId: fld_112a299ef4794650809784e2c94302c5
+modified: 1711153231828
+created: 1711153218120
+url: "{{ _.BASE_URL_LOCAL }}/login-code"
+name: Login Code
+description: ""
+method: POST
+body:
+  mimeType: application/json
+  text: |-
+    {
+    	"cpf": "35172574867",
+    	"code": "853526"
+    }
+parameters: []
+headers:
+  - name: Content-Type
+    value: application/json
+  - name: User-Agent
+    value: insomnia/2023.5.8
+authentication: {}
+metaSortKey: -1711077626000.5
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

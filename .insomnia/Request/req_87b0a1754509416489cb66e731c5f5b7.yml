@@ -1,0 +1,36 @@
+_id: req_87b0a1754509416489cb66e731c5f5b7
+type: Request
+parentId: fld_af23c0eeccb745aeaf3e62a4e4e86d7f
+modified: 1710794618969
+created: 1710371617607
+url: "{{ _.AWS_DEV }}/participants/{{ _.PARTICIPANT_ID }}/incidences"
+name: Create Participant Incidences
+description: ""
+method: POST
+body:
+  mimeType: application/json
+  text: |-
+    {
+    	"reason": "Está com dengue"
+    }
+parameters:
+  - id: pair_375a9d457a12497a94bdd29de9dbc52a
+    name: filter
+    value: "24"
+    description: ""
+    disabled: true
+headers:
+  - name: Content-Type
+    value: application/json
+    id: pair_13b89ca8d5d44e6fa2ada5e3f030dea6
+authentication:
+  type: bearer
+  token: "{{ _.TOKEN }}"
+metaSortKey: -1710371623924
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global
