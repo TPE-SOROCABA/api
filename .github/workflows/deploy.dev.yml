@@ -32,6 +32,8 @@ jobs:
         cat .env
     - name: Install dependencies
       run: npm ci
+    - name: Check types
+      run: npm run build
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v3
       with:
@@ -39,12 +41,4 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
     - name: Serverless Framework deploy
-      env:
-        MONGODB_URI: ${{ secrets.MONGODB_URI }}
-        JWT_SECRET: ${{ secrets.JWT_SECRET }}
-        Z_API_URL: ${{ secrets.Z_API_URL }}
-        INSTANCE_ID: ${{ secrets.INSTANCE_ID }}
-        INSTANCE_TOKEN: ${{ secrets.INSTANCE_TOKEN }}
-        USER_TOKEN_ID: ${{ secrets.USER_TOKEN_ID }}
-        DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
       run: npm run deploy:dev
