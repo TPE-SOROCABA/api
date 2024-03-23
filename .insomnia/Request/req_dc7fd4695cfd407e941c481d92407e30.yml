@@ -1,9 +1,9 @@
 _id: req_dc7fd4695cfd407e941c481d92407e30
 type: Request
 parentId: fld_cc3f5c294f2c4fc88b457d55f75afebb
-modified: 1710949812730
+modified: 1711158877586
 created: 1710949769399
-url: "{{ _.BASE_URL_LOCAL }}/cancel-designation/{{ _.DESIGNATION_ID }}"
+url: "{{ _.BASE_URL_LOCAL }}/designations/cancel/{{ _.DESIGNATION_ID }}"
 name: Cancelar Designações
 description: ""
 method: PATCH

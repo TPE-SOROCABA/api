@@ -1,12 +1,12 @@
-_id: req_bae1ad5a58a3454eaf5c6121e7efadab
+_id: req_7ec7033e697c4223a3920b2dab8abc90
 type: Request
 parentId: fld_cc3f5c294f2c4fc88b457d55f75afebb
-modified: 1711160558052
-created: 1710948696747
-url: "{{ _.BASE_URL_LOCAL }}/designations/week/{{ _.GROUP_ID }}"
-name: Buscar Designação Semana
+modified: 1711158847504
+created: 1711158823311
+url: "{{ _.BASE_URL_LOCAL }}/designations/send/{{ _.DESIGNATION_ID }}"
+name: Enviar Designação Semana
 description: ""
-method: GET
+method: POST
 body:
   mimeType: application/json
   text: ""
@@ -15,7 +15,7 @@ parameters:
     name: random
     value: "true"
     description: ""
-    disabled: false
+    disabled: true
   - id: pair_bae630e7df784c6eb7cb52bafa785e71
     name: ""
     value: ""
@@ -28,7 +28,7 @@ headers:
 authentication:
   type: bearer
   token: "{{ _.TOKEN }}"
-metaSortKey: -1710753624867
+metaSortKey: -1710737506708.375
 isPrivate: false
 settingStoreCookies: true
 settingSendCookies: true

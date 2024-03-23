@@ -1,9 +1,9 @@
 _id: req_85473e435fde4e088e79e81f5091b1af
 type: Request
 parentId: fld_112a299ef4794650809784e2c94302c5
-modified: 1711153311044
+modified: 1711158907302
 created: 1711142642172
-url: "{{ _.BASE_URL_LOCAL }}/login"
+url: "{{ _.BASE_URL_LOCAL }}/auth/login"
 name: Login
 description: ""
 method: POST

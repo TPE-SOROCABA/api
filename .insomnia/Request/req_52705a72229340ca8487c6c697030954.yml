@@ -1,7 +1,7 @@
 _id: req_52705a72229340ca8487c6c697030954
 type: Request
 parentId: fld_92e0379deee2451b9399a022d7b5bbde
-modified: 1711152684501
+modified: 1711158963288
 created: 1708600062149
 url: "{{ _.BASE_URL_LOCAL }}/participants/{{ _.GROUP_ID }}"
 name: Create Participant
@@ -11,12 +11,12 @@ body:
   mimeType: application/json
   text: |-
     {
-    	"name": "Wilson Felipe",
-    	"cpf": "35172574867",
+    	"name": "João Wictor",
+    	"cpf": "35172626840",
     	"password": "tpe@123",
-    	"phone": "15981785706",
+    	"phone": "12981829844",
     	"sex": "MALE",
-    	"profile": "CAPTAIN"
+    	"profile": "PARTICIPANT"
     }
 parameters: []
 headers:
@@ -27,7 +27,7 @@ headers:
 authentication:
   type: bearer
   token: "{{ _.TOKEN }}"
-  disabled: true
+  disabled: false
 metaSortKey: -1710359583504
 isPrivate: false
 settingStoreCookies: true

@@ -1,9 +1,9 @@
 _id: req_a4934920d5334ee89a6bd28a012ccfe5
 type: Request
 parentId: fld_cc3f5c294f2c4fc88b457d55f75afebb
-modified: 1710950031532
+modified: 1711158798702
 created: 1710882570136
-url: "{{ _.BASE_URL_LOCAL }}/create-designation/{{ _.GROUP_ID }}"
+url: "{{ _.BASE_URL_LOCAL }}/designations/{{ _.GROUP_ID }}"
 name: "Criar Designação "
 description: ""
 method: GET
