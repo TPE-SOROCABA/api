@@ -1,32 +1,82 @@
-import type { APIGatewayProxyStructuredResultV2, APIGatewayProxyEventV2, Handler } from "aws-lambda";
+import type { APIGatewayProxyStructuredResultV2, Handler, APIGatewayProxyEventV2WithRequestContext, APIGatewayEventRequestContextWithAuthorizer } from "aws-lambda";
 import { ResponseHandler } from "../../../shared/ResponseHandler";
 import { connectToDatabase } from "../../../infra/connectToDatabase";
 import { JsonHandler } from "../../../shared/JsonHandler";
 import { InputParticipantIncidents } from "../../../contracts/InputParticipantIncidents";
-import { IncidentHistory } from "../../../domain/IncidentHistory";
-import { IncidentHistoryModel } from "../../../repositories/models/IncidentHistoryModel";
+import { IIncidentHistory, IncidentHistoryModel } from "../../../repositories/models/IncidentHistoryModel";
+import { ParticipantModel } from "../../../repositories/models/ParticipantModel";
+import { IncidentStatus } from "../../../enums/IncidentStatus";
+import { DesignationStatus } from "../../../enums/DesignationStatus";
+import { DesignationModel } from "../../../repositories/models/DesignationModel";
+import { Designation } from "../../../domain/Designation";
+import { Types } from "mongoose";
+import { Exception } from "../../../shared/Exception";
+import { GroupModel } from "../../../repositories/models/GroupModel";
 
-export const handler: Handler = async (_event: APIGatewayProxyEventV2 & { requestContext: { authorizer: { principalId: string } } }): Promise<APIGatewayProxyStructuredResultV2> => {
+type APIGatewayEventCustom = APIGatewayProxyEventV2WithRequestContext<
+  APIGatewayEventRequestContextWithAuthorizer<{
+    groupId: string;
+    principalId: string;
+  }>
+>;
+
+export const handler: Handler = async (_event: APIGatewayEventCustom): Promise<APIGatewayProxyStructuredResultV2> => {
   try {
     await connectToDatabase();
     const id = _event.pathParameters?.participantId;
     const body = JsonHandler.parse<InputParticipantIncidents>(_event.body || "{}");
     const reporterId = _event.requestContext.authorizer.principalId;
-    
 
     const params = await InputParticipantIncidents.create({
       reason: body?.reason,
     });
 
     if (!id) {
-      return ResponseHandler.error({ message: "Id do participante não informado" });
+      throw new Exception(400, "Id do participante não informado");
     }
 
-    const incident = IncidentHistory.create({ participantId: id, reporterId, ...params });
+    if (!params.reason) {
+      throw new Exception(400, "Motivo do incidente não informado");
+    }
 
-    const result = await IncidentHistoryModel.create(incident);
+    if (!reporterId) {
+      throw new Exception(400, "Id do reporter não informado");
+    }
 
-    return ResponseHandler.success({ message: "Incidente criado com sucesso", data: result });
+    const [participant, reporter, group] = await Promise.all([
+      ParticipantModel.findById(id),
+      ParticipantModel.findById(reporterId),
+      GroupModel.findOne({ participants: id })
+    ]);
+
+    if (!participant || !reporter || !group) {
+      throw new Exception(404, "Parâmetros inválidos");
+    }
+    
+    const designationModel = await DesignationModel.findOne({ group: group._id, status: DesignationStatus.OPEN });
+    if (!designationModel) {
+      return ResponseHandler.error({ message: "Designação não encontrada" });
+    }
+
+    const incident: IIncidentHistory = {
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      designation: designationModel._id,
+      participant: new Types.ObjectId(participant._id),
+      reporter: new Types.ObjectId(reporter._id),
+      reason: params.reason,
+      status: IncidentStatus.OPEN,
+    };
+
+    console.log(`Criando incidente para o participante ${participant.name}, incidente: ${JSON.stringify(incident, null, 2)}`);
+    const incidentModel = await IncidentHistoryModel.create(incident);
+    console.log(`Incidente criado com sucesso`);
+
+    console.log(`Atualizando histórico do participante ${participant.name}`);
+    await ParticipantModel.updateOne({ _id: id }, { incident_history: incidentModel._id });
+    console.log(`Histórico do participante ${participant.name} atualizado com sucesso`);
+
+    return ResponseHandler.success({ message: "Incidente criado com sucesso", incident });
   } catch (error) {
     return ResponseHandler.error(error);
   }

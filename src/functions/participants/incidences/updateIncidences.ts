@@ -5,7 +5,6 @@ import { IncidentHistoryModel } from "../../../repositories/models/IncidentHisto
 import { Exception } from "../../../shared/Exception";
 import { InputParticipantIncidents, InputParticipantIncidentsUpdate } from "../../../contracts/InputParticipantIncidents";
 import { JsonHandler } from "../../../shared/JsonHandler";
-import { IncidentHistory } from "../../../domain/IncidentHistory";
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2 & { requestContext: { authorizer: { principalId: string } } }): Promise<APIGatewayProxyStructuredResultV2> => {
   try {
@@ -24,11 +23,16 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2 & { reques
       throw new Exception(404, "Incidente não encontrado");
     }
 
-    const incident = IncidentHistory.fromEntity(incidentEntity);
-    incident.changeStatus(params.status);
-
-    await IncidentHistoryModel.findByIdAndUpdate(id, incident);
-
+    await IncidentHistoryModel.updateOne(
+      {
+        _id: id,
+      },
+      {
+        status: params.status,
+        updatedAt: new Date(),
+      }
+    );
+    
     return ResponseHandler.success({ message: "Incidente atualizado com sucesso" });
   } catch (error) {
     return ResponseHandler.error(error);

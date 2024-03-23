@@ -3,8 +3,9 @@ import { ResponseHandler } from "../../shared/ResponseHandler";
 import { connectToDatabase } from "../../infra/connectToDatabase";
 import { ParticipantProfile } from "../../enums/ParticipantProfile";
 import { ParticipantModel } from "../../repositories/models/ParticipantModel";
+import { GroupModel } from "../../repositories/models/GroupModel";
 import { IncidentHistoryModel } from "../../repositories/models/IncidentHistoryModel";
-import { IncidentStatus } from "../../enums/IncidentStatus";
+import { IParticipantModel } from "./interfaces/IParticipantModel";
 
 interface IncidentOutput {
   id: string;
@@ -18,13 +19,18 @@ interface ParticipantOutput {
   phone: string;
   profile_photo: string;
   profile: ParticipantProfile;
-  incidentHistory: IncidentOutput | null;
+  incident_history: IncidentOutput | null;
 }
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
   try {
     await connectToDatabase();
     const query = _event.queryStringParameters as { filter: string };
+    const groupId = _event.pathParameters?.groupId;
+
+    if (!groupId) {
+      return ResponseHandler.error("Group id is required");
+    }
 
     const filter = query?.filter
       ? {
@@ -32,28 +38,35 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
         }
       : {};
 
-    const participants = await ParticipantModel.find(filter);
+    const participants = await ParticipantModel.find(filter)
+      .populate({
+        path: "incident_history",
+        model: IncidentHistoryModel,
+      })
+      .transform((docs) => {
+        return docs.map((doc) => {
+          const participant = doc.toObject() as IParticipantModel;
+          const incidentHistory = participant.incident_history;
+          const incidentHistoryOutput: IncidentOutput | null = incidentHistory
+            ? {
+                id: incidentHistory._id,
+                reason: incidentHistory.reason,
+                status: incidentHistory.status,
+              }
+            : null;
+          const participantOutput: ParticipantOutput = {
+            id: participant._id,
+            name: participant.name,
+            phone: participant.phone,
+            profile_photo: participant.profile_photo,
+            profile: participant.profile as ParticipantProfile,
+            incident_history: incidentHistoryOutput,
+          };
+          return participantOutput;
+        });
+      });
 
-    const participantsWithOutput: ParticipantOutput[] = [];
-    for (const participant of participants) {
-      const [entity] = await IncidentHistoryModel.find({ participantId: participant._id, status: IncidentStatus.OPEN }).sort({ createdAt: -1 }).limit(1);
-      const incidentHistory: IncidentOutput = {
-        id: entity?._id.toString() || "",
-        reason: entity?.reason || "",
-        status: entity?.status || "",
-      };
-      const data = {
-        id: participant._id.toString(),
-        name: participant.name,
-        phone: participant.phone,
-        profile_photo: participant.profile_photo || "",
-        profile: participant.profile,
-        incidentHistory: entity ? incidentHistory : null,
-      };
-      participantsWithOutput.push(data);
-    }
-
-    return ResponseHandler.success<ParticipantOutput[]>(participantsWithOutput);
+    return ResponseHandler.success(participants);
   } catch (error) {
     return ResponseHandler.error(error);
   }
