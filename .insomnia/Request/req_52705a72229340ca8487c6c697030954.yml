@@ -1,9 +1,9 @@
 _id: req_52705a72229340ca8487c6c697030954
 type: Request
 parentId: fld_92e0379deee2451b9399a022d7b5bbde
-modified: 1711158963288
+modified: 1711161762114
 created: 1708600062149
-url: "{{ _.BASE_URL_LOCAL }}/participants/{{ _.GROUP_ID }}"
+url: "{{ _.BASE_URL_LOCAL }}/participants"
 name: Create Participant
 description: ""
 method: POST
@@ -18,7 +18,11 @@ body:
     	"sex": "MALE",
     	"profile": "PARTICIPANT"
     }
-parameters: []
+parameters:
+  - id: pair_cf0b2cdac6e2403697239c34fa7cd839
+    name: groupId
+    value: "{{ _.GROUP_ID }}"
+    description: ""
 headers:
   - name: Content-Type
     value: application/json

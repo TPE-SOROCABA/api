@@ -1,9 +1,9 @@
 _id: req_a6a3f1aec5394d43aa41f744b925f9eb
 type: Request
 parentId: fld_cc3f5c294f2c4fc88b457d55f75afebb
-modified: 1711140540690
+modified: 1711161605280
 created: 1710949456219
-url: "{{ _.BASE_URL_LOCAL }}/designations/{{ _.GROUP_ID }}"
+url: "{{ _.BASE_URL_LOCAL }}/designations"
 name: Buscar Designações
 description: ""
 method: GET
@@ -14,6 +14,10 @@ parameters:
   - id: pair_c1f46c2fb20a477ca640b32194d28473
     name: date
     value: 2024-03-21
+    description: ""
+  - id: pair_92ca73507e6642848a011627c81e8e30
+    name: groupId
+    value: "{{ _.GROUP_ID }}"
     description: ""
 headers:
   - name: Content-Type

@@ -1,9 +1,9 @@
 _id: req_bae1ad5a58a3454eaf5c6121e7efadab
 type: Request
 parentId: fld_cc3f5c294f2c4fc88b457d55f75afebb
-modified: 1711160558052
+modified: 1711161823748
 created: 1710948696747
-url: "{{ _.BASE_URL_LOCAL }}/designations/week/{{ _.GROUP_ID }}"
+url: "{{ _.BASE_URL_LOCAL }}/designations/week"
 name: Buscar Designação Semana
 description: ""
 method: GET
@@ -15,10 +15,10 @@ parameters:
     name: random
     value: "true"
     description: ""
-    disabled: false
+    disabled: true
   - id: pair_bae630e7df784c6eb7cb52bafa785e71
-    name: ""
-    value: ""
+    name: groupId
+    value: "{{ _.GROUP_ID }}"
     description: ""
 headers:
   - name: Content-Type

@@ -1,9 +1,9 @@
 _id: req_5344756034db459696aedbd190c5dd46
 type: Request
 parentId: fld_92e0379deee2451b9399a022d7b5bbde
-modified: 1711153396249
+modified: 1711161758817
 created: 1710359580733
-url: "{{ _.BASE_URL_LOCAL }}/participants/{{ _.GROUP_ID }}"
+url: "{{ _.BASE_URL_LOCAL }}/participants"
 name: List Participants
 description: ""
 method: GET
@@ -16,6 +16,10 @@ parameters:
     value: Wilson
     description: ""
     disabled: true
+  - id: pair_68deea5b8b5440b5a0017087e244ea3f
+    name: groupId
+    value: "{{ _.GROUP_ID }}"
+    description: ""
 headers:
   - name: Content-Type
     value: application/json
