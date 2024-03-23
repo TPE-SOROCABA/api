@@ -9,12 +9,12 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
   try {
     await connectToDatabase();
     const groupId = _event.queryStringParameters?.groupId;
-    const date = _event.queryStringParameters?.date as string
+    const date = _event.queryStringParameters?.date as string;
     if (!groupId) {
       return ResponseHandler.error({ message: "Parâmetros inválidos" });
     }
-    const designations = await designationRepository.findAll(groupId, { createdAt: new Date(date)});
-    
+    const designations = await designationRepository.findAll(groupId, date ? { createdAt: new Date(date) } : undefined);
+
     return ResponseHandler.success(designations);
   } catch (error) {
     return ResponseHandler.error(error);
