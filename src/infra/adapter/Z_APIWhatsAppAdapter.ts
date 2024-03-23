@@ -29,8 +29,6 @@ export class Z_APIWhatsAppAdapter implements WhatsAppAdapter {
       data: data,
     };
 
-    console.log(options)
-
     try {
       const response = await axios.request(options);
       console.log(`Sending ${message} to ${to} using Z_API, response: ${JSON.stringify(response?.data, null, 2)}`);
