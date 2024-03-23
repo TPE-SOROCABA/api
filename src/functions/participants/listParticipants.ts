@@ -26,7 +26,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
   try {
     await connectToDatabase();
     const query = _event.queryStringParameters as { filter: string };
-    const groupId = _event.pathParameters?.groupId;
+    const groupId = _event.queryStringParameters?.groupId;
 
     if (!groupId) {
       return ResponseHandler.error("Group id is required");
