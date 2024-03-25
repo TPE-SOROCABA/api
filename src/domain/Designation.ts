@@ -51,6 +51,29 @@ export type Group = {
 const randomIndex = (array: Array<number>) => Math.floor(Math.random() * array.length);
 let count: number = 0;
 export class Designation {
+  get captainsAndCoordinators(): number {
+    return this.participants.filter((participant) => participant.profile === ParticipantProfile.CAPTAIN || participant.profile === ParticipantProfile.COORDINATOR).length;
+  }
+
+  get oneParticipantAssignments(): boolean {
+    return this.assignments.some((assignment) => assignment.participants.length === 1);
+  }
+
+  get participantsCount(): number {
+    return this.participants.length + this.assignments.reduce((acc, assignment) => acc + assignment.participants.length, 0);
+  }
+
+  get totalVacancies(): number {
+    return this.assignments
+      .filter((assignment) => assignment.point.status)
+      .map((assignment) => assignment.config.max)
+      .reduce((acc, max) => acc + max, 0);
+  }
+
+  get retryGenerateAssignment() {
+    return this.participants.length > this.captainsAndCoordinators || this.oneParticipantAssignments;
+  }
+
   constructor(
     readonly id: string,
     public group: Group,
@@ -61,7 +84,7 @@ export class Designation {
     public updatedAt: Date
   ) {
     count = 0;
-    const filterParticipantOff = (participant: Participant) => participant.incidentHistory ? participant.incidentHistory.status !== IncidentStatus.OPEN: true;
+    const filterParticipantOff = (participant: Participant) => (participant.incidentHistory ? participant.incidentHistory.status !== IncidentStatus.OPEN : true);
     this.participants = this.participants.filter(filterParticipantOff);
     for (const assignment of this.assignments) {
       assignment.participants = assignment.participants.filter(filterParticipantOff);
@@ -85,6 +108,7 @@ export class Designation {
       const minMax = [assignment.config.min, assignment.config.max];
       const min = minMax[randomIndex(minMax)];
       let loopCount = 0;
+
       for (const [index, participant] of this.participants.entries()) {
         if (participant.profile === ParticipantProfile.CAPTAIN || participant.profile === ParticipantProfile.COORDINATOR) continue;
         // Atingiu o limite de participantes por ponto, então para o loop
@@ -114,20 +138,19 @@ export class Designation {
         }
       }
     }
+
     this.assignments = this.assignments.sort((a, b) => a.point.name.localeCompare(b.point.name));
     this.assignments.forEach((assignment) => assignment.participants.sort((a, b) => a.name.localeCompare(b.name)));
     this.assignments.forEach((assignment) => assignment.publication_carts.sort((a, b) => a.name.localeCompare(b.name)));
     this.assignments.sort((a, b) => (a.point.status === b.point.status ? 0 : a.point.status ? -1 : 1));
     this.updatedAt = new Date();
 
-    if (this.participants.length > this.participants.filter((participant) => participant.profile === ParticipantProfile.CAPTAIN || participant.profile === ParticipantProfile.COORDINATOR).length) {
-      if (count < 100) {
-        count++
+    if (this.retryGenerateAssignment) {
+      if (count < 200) {
+        count++;
         this.generateAssignment();
       } else {
-        const participants = this.participants.length + this.assignments.reduce((acc, assignment) => acc + assignment.participants.length, 0);
-        const total = this.assignments.filter((assignment) => assignment.point.status).map((assignment) => assignment.config.max).reduce((acc, max) => acc + max, 0);
-        throw new Exception(400, `Não foi possível designar todos os participantes. Total participantes: ${participants} Total de vagas: ${total}.`);
+        throw new Exception(400, `Não foi possível designar todos os participantes. Total participantes: ${this.participants.length}, Total vagas: ${this.totalVacancies}`);
       }
     }
   }
