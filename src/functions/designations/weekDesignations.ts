@@ -8,6 +8,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
   try {
     const groupId = _event.queryStringParameters?.groupId;
     const random = _event.queryStringParameters?.random;
+    const filter = _event.queryStringParameters?.filter;
     if (!groupId) {
       return ResponseHandler.error({ message: "Parâmetros inválidos" });
     }
@@ -17,6 +18,11 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     if (random) {
       designation.generateAssignment();
     }
+
+    if (filter) {
+      designation.filterAssignment(filter);
+    }
+
 
     return ResponseHandler.success(designation);
   } catch (error) {
