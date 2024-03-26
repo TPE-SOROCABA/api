@@ -137,13 +137,13 @@ cancelDesignation:
           cors: true
           authorizer: check-authorizer
 
-updateDesignation:
-    handler: src/functions/designations/updateDesignations.handler
+updatePointDesignation:
+    handler: src/functions/designations/updatePointDesignations.handler
     description: Atualizar uma designação
     events:
       - http:
-          path: designations/{designationId}
-          method: PUT
+          path: designations/{designationId}/points/{pointId}
+          method: PATCH
           cors: true
           authorizer: check-authorizer
 
