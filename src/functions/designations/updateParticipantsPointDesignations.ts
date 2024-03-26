@@ -17,7 +17,6 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     const body = JsonHandler.parse<{ participants: string[] }>(_event.body);
     if (!designationId) throw new Exception(400, "Parâmetros inválidos");
 
-    if (!body.participants.length) throw new Exception(400, "Participantes inválidos");
     if (!pointId) throw new Exception(400, "Ponto inválido");
 
     const designation = await designationRepository.findByDesignationId(designationId);
