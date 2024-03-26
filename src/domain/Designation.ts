@@ -197,6 +197,28 @@ export class Designation {
     this.updatedAt = new Date();
   }
 
+  // atualizar participantes em um ponto
+  public updateParticipants(pointId: string, participantsIds: string[]): void {
+    // encontra o ponto
+    const assignment = this.assignments.find((assignment) => assignment.point.id === pointId);
+    if (!assignment) throw new Exception(404, "Ponto não encontrado");
+
+    // encontra os participantes que serão movidos de um ponto para outro
+    for (const a of this.assignments){
+      // filtra os participantes que serão movidos
+      const participants = a.participants.filter((participant) => participantsIds.includes(participant.id));
+      this.participants.push(...participants);
+      a.participants = a.participants.filter((participant) => !participantsIds.includes(participant.id));
+    }
+    // filtra os participantes que serão movidos
+    const participants = this.participants.filter((participant) => participantsIds.includes(participant.id));
+    // adiciona os participantes no ponto
+    assignment.participants = participants;
+    // remove os participantes da lista de participantes
+    this.participants = this.participants.filter((participant) => !participantsIds.includes(participant.id));
+    this.updatedAt = new Date();
+  }
+
   private shuffle(array: Array<any>) {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));

@@ -147,6 +147,16 @@ updatePointDesignation:
           cors: true
           authorizer: check-authorizer
 
+updateParticipantsPointDesignation:
+    handler: src/functions/designations/updateParticipantsPointDesignations.handler
+    description: Atualizar participantes de uma designação
+    events:
+      - http:
+          path: designations/{designationId}/points/{pointId}/participants
+          method: PUT
+          cors: true
+          authorizer: check-authorizer
+
 sendDesignation:
     handler: src/functions/designations/sendDesignations.handler
     description: Enviar uma designação
