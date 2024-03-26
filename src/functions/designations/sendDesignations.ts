@@ -19,9 +19,9 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
 
     const designation = await designationRepository.findByDesignationId(designationId);
 
-    if (designation.isParticipantsWithoutAssignments()) {
-      throw new Exception(400, "Existem participantes sem designações");
-    }
+    // if (designation.isParticipantsWithoutAssignments()) {
+    //   throw new Exception(400, "Existem participantes sem designações");
+    // }
 
     const captain = designation.participants.find((p) => p.profile === "CAPTAIN");
 
