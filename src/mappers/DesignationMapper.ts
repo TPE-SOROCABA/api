@@ -6,7 +6,7 @@ import { IDesignation } from "../repositories/models/DesignationModel";
 export abstract class DesignationMapper {
   static toDomain(props: IDesignationModel): Designation {
     const group: Group = {
-      id: props.group._id,
+      id: props.group._id?.toString(),
       name: props.group.name,
       config: {
         startHour: props.group.config.startHour,
@@ -19,7 +19,7 @@ export abstract class DesignationMapper {
 
     const participantsProps: Participant[] = props.participants
       .map((participant) => ({
-        id: participant._id,
+        id: participant._id?.toString(),
         name: participant.name,
         phone: participant.phone,
         profile: participant.profile,
@@ -27,7 +27,7 @@ export abstract class DesignationMapper {
         sex: participant.sex,
         incidentHistory: participant.incident_history
           ? {
-              id: participant.incident_history?._id,
+              id: participant.incident_history?._id?.toString(),
               reason: participant.incident_history?.reason,
               status: participant.incident_history?.status,
             }
@@ -38,20 +38,20 @@ export abstract class DesignationMapper {
     const assignments: Assignments[] = props.assignments
       .map((assignment) => {
         const point = {
-          id: assignment.point._id,
+          id: assignment.point._id?.toString(),
           name: assignment.point.name,
           status: assignment.config.status,
         };
 
         const publication_carts = assignment.publication_carts.map((publicationCart) => ({
-          id: publicationCart._id,
+          id: publicationCart._id?.toString(),
           name: publicationCart.name,
         }));
 
         let participants: any[] = [];
         if (assignment.config.status) {
           participants = assignment.participants.map((participant) => ({
-            id: participant._id,
+            id: participant._id?.toString(),
             name: participant.name,
             phone: participant.phone,
             profile: participant.profile,
@@ -59,7 +59,7 @@ export abstract class DesignationMapper {
             sex: participant.sex,
             incidentHistory: participant.incident_history
               ? {
-                  id: participant.incident_history._id,
+                  id: participant.incident_history._id?.toString(),
                   reason: participant.incident_history.reason,
                   status: participant.incident_history.status,
                 }
@@ -68,7 +68,7 @@ export abstract class DesignationMapper {
         } else {
           participantsProps.push(
             ...assignment.participants.map((participant) => ({
-              id: participant._id,
+              id: participant._id?.toString(),
               name: participant.name,
               phone: participant.phone,
               profile: participant.profile,
@@ -76,7 +76,7 @@ export abstract class DesignationMapper {
               sex: participant.sex,
               incidentHistory: participant.incident_history
                 ? {
-                    id: participant.incident_history._id,
+                    id: participant.incident_history._id?.toString(),
                     reason: participant.incident_history.reason,
                     status: participant.incident_history.status,
                   }
@@ -98,7 +98,7 @@ export abstract class DesignationMapper {
       .sort((a, b) => a.point.name.localeCompare(b.point.name))
       .sort((a, b) => (a.point.status === b.point.status ? 0 : a.point.status ? -1 : 1));
 
-    return new Designation(props._id, group, props.status, assignments, participantsProps, props.createdAt, props.updatedAt);
+    return new Designation(props._id?.toString(), group, props.status, assignments, participantsProps, props.createdAt, props.updatedAt);
   }
 
   static toPersistence(designation: Designation): IDesignation {

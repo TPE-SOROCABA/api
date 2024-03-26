@@ -51,6 +51,24 @@ export type Group = {
 const randomIndex = (array: Array<number>) => Math.floor(Math.random() * array.length);
 let count: number = 0;
 export class Designation {
+  public incidents: Participant[] = [];
+  constructor(
+    readonly id: string,
+    public group: Group,
+    public status: DesignationStatus,
+    public assignments: Assignments[],
+    public participants: Participant[],
+    readonly createdAt: Date,
+    public updatedAt: Date
+  ) {
+    count = 0;
+    const filterParticipantOff = (participant: Participant) => (participant.incidentHistory ? participant.incidentHistory.status !== IncidentStatus.OPEN : true);
+    this.participants = this.participants.filter(filterParticipantOff);
+    for (const assignment of this.assignments) {
+      assignment.participants = assignment.participants.filter(filterParticipantOff);
+    }
+  }
+
   get captainsAndCoordinators(): number {
     return this.participants.filter((participant) => participant.profile === ParticipantProfile.CAPTAIN || participant.profile === ParticipantProfile.COORDINATOR).length;
   }
@@ -72,23 +90,6 @@ export class Designation {
 
   get retryGenerateAssignment() {
     return this.participants.length > this.captainsAndCoordinators || this.oneParticipantAssignments;
-  }
-
-  constructor(
-    readonly id: string,
-    public group: Group,
-    public status: DesignationStatus,
-    public assignments: Assignments[],
-    public participants: Participant[],
-    readonly createdAt: Date,
-    public updatedAt: Date
-  ) {
-    count = 0;
-    const filterParticipantOff = (participant: Participant) => (participant.incidentHistory ? participant.incidentHistory.status !== IncidentStatus.OPEN : true);
-    this.participants = this.participants.filter(filterParticipantOff);
-    for (const assignment of this.assignments) {
-      assignment.participants = assignment.participants.filter(filterParticipantOff);
-    }
   }
 
   public generateAssignment(): void {
@@ -179,9 +180,21 @@ export class Designation {
       return -1;
     });
   }
-  
+
   public isParticipantsWithoutAssignments(): boolean {
     return this.participants.some((participant) => participant.profile == ParticipantProfile.PARTICIPANT && !participant.incidentHistory);
+  }
+
+  public updatePointStatus(pointId: string, status: boolean): void {
+    const assignment = this.assignments.find((assignment) =>  assignment.point.id === pointId);
+    if (!assignment) throw new Exception(404, "Ponto não encontrado");
+
+    assignment.point.status = status;
+    if (!status) {
+      this.participants.push(...assignment.participants);
+      assignment.participants = [];
+    }
+    this.updatedAt = new Date();
   }
 
   private shuffle(array: Array<any>) {
