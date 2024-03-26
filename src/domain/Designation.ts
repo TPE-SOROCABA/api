@@ -146,11 +146,11 @@ export class Designation {
     this.updatedAt = new Date();
 
     if (this.retryGenerateAssignment) {
-      if (count < 200) {
+      if (count < 100) {
         count++;
         this.generateAssignment();
       } else {
-        throw new Exception(400, `Não foi possível designar todos os participantes. Total participantes: ${this.participants.length}, Total vagas: ${this.totalVacancies}`);
+        throw new Exception(400, `Não foi possível designar todos os participantes. Total participantes: ${this.participantsCount}, Total vagas: ${this.totalVacancies}`);
       }
     }
   }
@@ -164,6 +164,24 @@ export class Designation {
       }
     });
     this.updatedAt = new Date();
+  }
+
+  public filterAssignment(filter: string): void {
+    this.assignments.sort((_, a) => {
+      const isContains = (object: { name: string }) => object.name.toLowerCase().includes(filter.toLowerCase());
+      if (isContains(a.point)) return 1;
+
+      const [participant] = a.participants.filter(isContains);
+      if (participant) {
+        if (isContains(participant)) return 1;
+      }
+
+      return -1;
+    });
+  }
+  
+  public isParticipantsWithoutAssignments(): boolean {
+    return this.participants.some((participant) => participant.profile == ParticipantProfile.PARTICIPANT && !participant.incidentHistory);
   }
 
   private shuffle(array: Array<any>) {

@@ -20,3 +20,5 @@ custom:
 
 functions: ${file(./resources/functions.yml)}
 
+package:
+  individually: true

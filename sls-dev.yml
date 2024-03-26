@@ -28,3 +28,6 @@ provider:
   memorySize: 128
 
 functions: ${file(./resources/functions.yml)}
+
+package:
+  individually: true
