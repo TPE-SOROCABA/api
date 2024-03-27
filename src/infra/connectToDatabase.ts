@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 let cachedDb: any = null;
 
 export const connectToDatabase = async () => {
-  if (cachedDb && cachedDb.serverConfig.isConnected()) {
+  if (cachedDb) {
     console.info("Using existing database connection");
     return cachedDb;
   } else {
