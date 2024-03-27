@@ -78,6 +78,7 @@ export class Designation {
 
     this.incidents = this.incidents.filter((participant) => {
       if (participant.incident_history?.status === IncidentStatus.IGNORED) {
+        participant.incident_history = null;
         this.participants.push(participant);
         return false;
       }

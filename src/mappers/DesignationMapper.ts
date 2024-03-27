@@ -102,6 +102,8 @@ export abstract class DesignationMapper {
   }
 
   static toPersistence(designation: Designation): IDesignation {
+    const participants = designation.participants.map((participant) => new Types.ObjectId(participant.id));
+    participants.push(...designation.incidents.map((incident) => new Types.ObjectId(incident.id)));
     return {
       group: new Types.ObjectId(designation.group.id),
       status: designation.status,
@@ -115,7 +117,7 @@ export abstract class DesignationMapper {
           status: assignment.point.status,
         },
       })),
-      participants: designation.participants.map((participant) => new Types.ObjectId(participant.id)),
+      participants: participants,
       createdAt: designation.createdAt,
       updatedAt: designation.updatedAt,
     };
