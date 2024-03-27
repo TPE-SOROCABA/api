@@ -17,6 +17,11 @@ provider:
 custom:
   dotenv:
     path: .env
+  serverless-offline:
+    allowCache: true
+    noPrependStageInUrl: true
+    noTimeout: true
+    reloadHandler: true
 
 functions: ${file(./resources/functions.yml)}
 

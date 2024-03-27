@@ -62,7 +62,6 @@ export class Designation {
     public updatedAt: Date
   ) {
     count = 0;
-    console.log(JSON.stringify(participants, null, 2));
     const filterParticipantOff = (participant: Participant) => {
       if (participant?.incident_history?.status === IncidentStatus.OPEN) {
         this.incidents.push(participant);

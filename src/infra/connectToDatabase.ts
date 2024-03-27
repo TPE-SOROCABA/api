@@ -1,15 +1,21 @@
 import mongoose from "mongoose";
+let cachedDb: any = null;
 
 export const connectToDatabase = async () => {
-  try {
-    console.info("Connecting to database", process.env.MONGODB_URI);
-    await mongoose.connect(process.env.MONGODB_URI as string, {
-      dbName: process.env.DATABASE_NAME,
-    });
+  if (cachedDb && cachedDb.serverConfig.isConnected()) {
+    console.info("Using existing database connection");
+    return cachedDb;
+  } else {
 
-    console.info("Connected to database");
-  } catch (error) {
-    console.error("Error connecting to database", error);
-    throw error;
+    try {
+      console.info("Connecting to database", process.env.DATABASE_NAME);
+      cachedDb = await mongoose.connect(process.env.MONGODB_URI as string, {
+        dbName: process.env.DATABASE_NAME,
+      })
+      console.info("Connected to database");
+    } catch (error) {
+      console.error("Error connecting to database", error);
+      throw error;
+    }
   }
 };
