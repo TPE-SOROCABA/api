@@ -12,7 +12,7 @@ export type Participant = {
   profile_photo: string | undefined;
   sex: ParticipantSex;
   phone: string;
-  incidentHistory: {
+  incident_history: {
     id: string;
     reason: string;
     status: string;
@@ -62,11 +62,27 @@ export class Designation {
     public updatedAt: Date
   ) {
     count = 0;
-    const filterParticipantOff = (participant: Participant) => (participant.incidentHistory ? participant.incidentHistory.status !== IncidentStatus.OPEN : true);
+    
+    const filterParticipantOff = (participant: Participant) => {
+      if (participant.incident_history) {
+        this.incidents.push(participant);
+        return false;
+      }
+      return true;
+    };
+
     this.participants = this.participants.filter(filterParticipantOff);
     for (const assignment of this.assignments) {
       assignment.participants = assignment.participants.filter(filterParticipantOff);
     }
+
+    this.incidents = this.incidents.filter((participant) => {
+      if (participant.incident_history?.status === IncidentStatus.IGNORED) {
+        this.participants.push(participant);
+        return false;
+      }
+      return true;
+    });
   }
 
   get captainsAndCoordinators(): number {
@@ -182,7 +198,7 @@ export class Designation {
   }
 
   public isParticipantsWithoutAssignments(): boolean {
-    return this.participants.some((participant) => participant.profile == ParticipantProfile.PARTICIPANT && !participant.incidentHistory);
+    return this.participants.some((participant) => participant.profile == ParticipantProfile.PARTICIPANT && !participant.incident_history);
   }
 
   public updatePointStatus(pointId: string, status: boolean): void {

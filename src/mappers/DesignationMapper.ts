@@ -25,7 +25,7 @@ export abstract class DesignationMapper {
         profile: participant.profile,
         profile_photo: participant.profile_photo,
         sex: participant.sex,
-        incidentHistory: participant.incident_history
+        incident_history: participant.incident_history
           ? {
               id: participant.incident_history?._id?.toString(),
               reason: participant.incident_history?.reason,
@@ -57,7 +57,7 @@ export abstract class DesignationMapper {
             profile: participant.profile,
             profile_photo: participant.profile_photo,
             sex: participant.sex,
-            incidentHistory: participant.incident_history
+            incident_history: participant.incident_history
               ? {
                   id: participant.incident_history._id?.toString(),
                   reason: participant.incident_history.reason,
@@ -74,7 +74,7 @@ export abstract class DesignationMapper {
               profile: participant.profile,
               profile_photo: participant.profile_photo,
               sex: participant.sex,
-              incidentHistory: participant.incident_history
+              incident_history: participant.incident_history
                 ? {
                     id: participant.incident_history._id?.toString(),
                     reason: participant.incident_history.reason,

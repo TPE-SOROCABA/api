@@ -36,6 +36,10 @@ export class DesignationRepository {
       .populate({
         path: "assignments.participants",
         model: ParticipantModel,
+        populate: {
+          path: "incident_history",
+          model: IncidentHistoryModel,
+        },
       })
       .populate({
         path: "group",
@@ -135,6 +139,10 @@ export class DesignationRepository {
       .populate({
         path: "assignments.participants",
         model: ParticipantModel,
+        populate: {
+          path: "incident_history",
+          model: IncidentHistoryModel,
+        },
       })
       .populate({
         path: "group",
@@ -158,7 +166,6 @@ export class DesignationRepository {
     if (!designationModel) {
       throw new Exception(404, "Designação não encontrada");
     }
-
     return DesignationMapper.toDomain(designationModel);
   }
 }
