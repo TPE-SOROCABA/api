@@ -62,11 +62,13 @@ export class Designation {
     public updatedAt: Date
   ) {
     count = 0;
-    
+    console.log(JSON.stringify(participants, null, 2));
     const filterParticipantOff = (participant: Participant) => {
-      if (participant.incident_history) {
+      if (participant?.incident_history?.status === IncidentStatus.OPEN) {
         this.incidents.push(participant);
         return false;
+      } else {
+        participant.incident_history = null;
       }
       return true;
     };
@@ -106,7 +108,7 @@ export class Designation {
   }
 
   get retryGenerateAssignment() {
-    return this.participants.length > this.captainsAndCoordinators || this.oneParticipantAssignments;
+    return this.participants.filter((participant) => !Boolean(participant.incident_history)).length > this.captainsAndCoordinators || this.oneParticipantAssignments;
   }
 
   public generateAssignment(): void {
@@ -203,7 +205,7 @@ export class Designation {
   }
 
   public updatePointStatus(pointId: string, status: boolean): void {
-    const assignment = this.assignments.find((assignment) =>  assignment.point.id === pointId);
+    const assignment = this.assignments.find((assignment) => assignment.point.id === pointId);
     if (!assignment) throw new Exception(404, "Ponto não encontrado");
 
     assignment.point.status = status;
@@ -220,8 +222,12 @@ export class Designation {
     const assignment = this.assignments.find((assignment) => assignment.point.id === pointId);
     if (!assignment) throw new Exception(404, "Ponto não encontrado");
 
+    // pegar o diferente e lançar em this.participants
+    const participantsRemoved = assignment.participants.filter((participant) => !participantsIds.includes(participant.id));
+    this.participants.push(...participantsRemoved);
+
     // encontra os participantes que serão movidos de um ponto para outro
-    for (const a of this.assignments){
+    for (const a of this.assignments) {
       // filtra os participantes que serão movidos
       const participants = a.participants.filter((participant) => participantsIds.includes(participant.id));
       this.participants.push(...participants);
