@@ -7,6 +7,10 @@ import { connectToDatabase } from "../../infra/connectToDatabase";
 import { Exception } from "../../shared/Exception";
 import { ParticipantModel } from '../../repositories/models/ParticipantModel';
 import { GroupModel } from '../../repositories/models/GroupModel';
+import { DesignationRepository } from '../../repositories/DesignationRepository';
+import { Designation } from '../../domain/Designation';
+
+const designationRepository = new DesignationRepository();
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
   try {
@@ -37,9 +41,23 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     console.log(`Usuário ${participant.name} logado com sucesso`);
 
     const group = await GroupModel.findOne({ participants: participant.id })
+    
+    let designation: Designation | null = null;
+
+    if (group) {
+      designation = await designationRepository.findOne(group._id.toString());
+    }
 
     return ResponseHandler.success({
-      token: LoginUtils.createJWT({ ...participant, groupId: group?._id }),
+      token: LoginUtils.createJWT({ 
+        ...participant, 
+        groupId: group?._id?.toString() ?? null,
+        designation: designation ? {
+          id: designation.id,
+          expiration: designation.getNextDate() ,
+          name: designation.group.name ,
+        } : null,
+      }),
     });
   } catch (error) {
     return ResponseHandler.error(error);
