@@ -16,7 +16,9 @@ import { IncidentHistoryModel } from "./models/IncidentHistoryModel";
 export class DesignationRepository {
   async findOne(groupId: string): Promise<Designation> {
     await connectToDatabase();
-    const designationModel = await DesignationModel.findOne<IDesignationModel>({ group: groupId, status: DesignationStatus.OPEN })
+    const designationModel = await DesignationModel.findOne<IDesignationModel>({ group: groupId, status: {
+      $in: [DesignationStatus.OPEN, DesignationStatus.IN_PROGRESS],
+    } })
       .populate({
         path: "participants",
         model: ParticipantModel,

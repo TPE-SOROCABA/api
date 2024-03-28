@@ -24,3 +24,5 @@ build/
 
 .vscode/
 
+src/scripts
+

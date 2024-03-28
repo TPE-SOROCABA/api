@@ -9,6 +9,7 @@
     "invoke:healthcheck": "sls invoke local -f healthcheck -s dev",
     "start": "serverless offline -c serverless.local.yml -s dev",
     "deploy:dev": "sls deploy -c sls-dev.yml -s dev",
+    "logs:dev": "sls logs -c sls-dev.yml -s dev -f listWeekDesignations",
     "infra:db": "docker compose up db-mongo -d",
     "prepare": "husky install",
     "build": "tsc --noemit"
