@@ -11,6 +11,7 @@ import { DesignationModel } from "../../../repositories/models/DesignationModel"
 import { Types } from "mongoose";
 import { Exception } from "../../../shared/Exception";
 import { GroupModel } from "../../../repositories/models/GroupModel";
+import { decode } from "jsonwebtoken";
 
 type APIGatewayEventCustom = APIGatewayProxyEventV2WithRequestContext<
   APIGatewayEventRequestContextWithAuthorizer<{
@@ -24,7 +25,7 @@ export const handler: Handler = async (_event: APIGatewayEventCustom): Promise<A
     await connectToDatabase();
     const id = _event.pathParameters?.participantId;
     const body = JsonHandler.parse<InputParticipantIncidents>(_event.body || "{}");
-    const reporterId = _event.requestContext.authorizer.principalId;
+    const reporterId = getToken(_event) ?? id
 
     const params = await InputParticipantIncidents.create({
       reason: body?.reason,
@@ -81,3 +82,14 @@ export const handler: Handler = async (_event: APIGatewayEventCustom): Promise<A
     return ResponseHandler.error(error);
   }
 };
+
+function getToken(event: any): string | null {
+  try {
+    const token = event.headers?.Authorization || event.headers?.authorization || "";
+    const parts = token.split(" ");
+    const payload = decode(parts[1]) as any;
+    return payload['id'] || null;
+  } catch (error) {
+    return null;
+  }
+}

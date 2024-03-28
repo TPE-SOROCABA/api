@@ -75,7 +75,6 @@ createIncidences:
           path: participants/{participantId}/incidences
           method: POST
           cors: true
-          authorizer: check-authorizer
 
 listIncidences:
     handler: src/functions/participants/incidences/listIncidences.handler
