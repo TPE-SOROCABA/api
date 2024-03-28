@@ -43,15 +43,22 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
         publication_carts: a.publication_carts.map((p) => p.name),
         participants: a.participants.map((p) => `${p.name}(${sexEmoticon(p.sex as unknown as ParticipantSex)})`)
       }))
+      const details = d.participant.incident_history ? {
+        point: "Sem designação",
+        participants: [`${d.participant.name}(${sexEmoticon(d.participant.sex as unknown as ParticipantSex)})`],
+        publication_carts: [],
+      } : {
+        point: assignments.point,
+        participants: assignments.participants,
+        publication_carts: assignments.publication_carts,
+      }
       
       return {
         event: `${d.designation.group.event_day.name} | ${d.designation.group.name}` ,
-        point: assignments.point,
-        publication_carts: assignments.publication_carts,
-        participants: assignments.participants,
         createdAt: d.designation.createdAt,
         updatedAt: d.designation.updatedAt,
         expirationDate: d.expirationDate,
+        ...details,
         incident_history: d.participant.incident_history ? {
           reason: d.participant.incident_history.reason,
           status: d.participant.incident_history.status
