@@ -8,7 +8,6 @@ import { ParticipantModel } from "../../../repositories/models/ParticipantModel"
 import { IncidentStatus } from "../../../enums/IncidentStatus";
 import { DesignationStatus } from "../../../enums/DesignationStatus";
 import { DesignationModel } from "../../../repositories/models/DesignationModel";
-import { Designation } from "../../../domain/Designation";
 import { Types } from "mongoose";
 import { Exception } from "../../../shared/Exception";
 import { GroupModel } from "../../../repositories/models/GroupModel";
@@ -43,19 +42,20 @@ export const handler: Handler = async (_event: APIGatewayEventCustom): Promise<A
       throw new Exception(400, "Id do reporter não informado");
     }
 
-    const [participant, reporter, group] = await Promise.all([
-      ParticipantModel.findById(id),
-      ParticipantModel.findById(reporterId),
-      GroupModel.findOne({ participants: id })
-    ]);
+    const [participant, reporter, group] = await Promise.all([ParticipantModel.findById(id), ParticipantModel.findById(reporterId), GroupModel.findOne({ participants: id })]);
 
     if (!participant || !reporter || !group) {
       throw new Exception(404, "Parâmetros inválidos");
     }
-    
-    const designationModel = await DesignationModel.findOne({ group: group._id, status: DesignationStatus.OPEN });
+
+    const designationModel = await DesignationModel.findOne({
+      group: group._id,
+      status: {
+        $in: [DesignationStatus.OPEN, DesignationStatus.IN_PROGRESS],
+      },
+    });
     if (!designationModel) {
-      return ResponseHandler.error({ message: "Designação não encontrada" });
+      throw new Exception(404, "Designação não encontrada");
     }
 
     const incident: IIncidentHistory = {
