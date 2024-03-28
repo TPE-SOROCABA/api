@@ -1,3 +1,5 @@
+import { ParticipantSex } from "../../../enums/ParticipantSex";
+
 export interface IWeekDesignationModel {
   _id: string;
   designation: Designation;
@@ -41,6 +43,7 @@ export interface Point {
 export interface Participant {
   _id: string;
   name: string;
+  sex: ParticipantSex;
   incident_history: {
     _id: string;
     reason: string;

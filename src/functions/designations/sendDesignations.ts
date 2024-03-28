@@ -54,8 +54,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       })
 
       for (const participant of assignment.participants) {
-        const sexEmoticon = (sex: ParticipantSex) => (sex === ParticipantSex.MALE ? "🧑🏻‍💼" : "👩🏻‍💼");
-        const message = getMessage(designation, participant, assignment, sexEmoticon, captain);
+        const message = getMessage(designation, participant, captain);
         if (participant.phone.includes("FAKE")) {
           continue;
         }
@@ -71,7 +70,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
   }
 };
 
-function getMessage(designation: Designation, participant: Participant, assignment: Assignments, sexEmoticon: (sex: ParticipantSex) => "🧑🏻‍💼" | "👩🏻‍💼", captain: import("/home/wfelipe2011/study/workspace/workspace-tpe/api/src/domain/Designation").Participant | undefined) {
+function getMessage(designation: Designation, participant: Participant, captain: Participant | undefined) {
   return `*Grupo de Designação: ${designation.group.name}*
 
 Olá, ${participant.name}, 

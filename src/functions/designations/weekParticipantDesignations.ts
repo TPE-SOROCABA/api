@@ -12,6 +12,7 @@ import { EventDayModel } from "../../repositories/models/EventDayModel";
 import { IWeekDesignationModel } from "./interfaces/IWeekDesignationModel";
 import { Exception } from "../../shared/Exception";
 import { IncidentHistoryModel } from "../../repositories/models/IncidentHistoryModel";
+import { ParticipantSex } from "../../enums/ParticipantSex";
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
   try {
@@ -30,11 +31,12 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
 
     return ResponseHandler.success(designation.map((d) => {
       const [participant] = d.participants.filter((p) => p._id.toString() === participantId)
+      const sexEmoticon = (sex: ParticipantSex) => (sex === ParticipantSex.MALE ? "🧑🏻‍💼" : "👩🏻‍💼");
       return {
         event: `${d.designation.group.event_day.name} | ${d.designation.group.name}` ,
         point: d.point.name,
         publicationCarts: d.publication_carts.map((c) => c.name),
-        participants: d.participants.map((p) => p.name),
+        participants: d.participants.map((p) => `${p.name}(${sexEmoticon(p.sex)})`),
         createdAt: d.designation.createdAt,
         updatedAt: d.designation.updatedAt,
         expirationDate: d.expirationDate,
@@ -67,7 +69,7 @@ async function getWeekDesignationParticipant(participantId: string): Promise<IWe
     })
     .populate({
       path: "participants",
-      select: ["name", "incident_history"],
+      select: ["name", "incident_history", "sex"],
       model: ParticipantModel,
       populate: {
         path: "incident_history",
