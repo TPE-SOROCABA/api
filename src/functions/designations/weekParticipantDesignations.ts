@@ -13,6 +13,8 @@ import { IWeekDesignationModel } from "./interfaces/IWeekDesignationModel";
 import { Exception } from "../../shared/Exception";
 import { IncidentHistoryModel } from "../../repositories/models/IncidentHistoryModel";
 import { ParticipantSex } from "../../enums/ParticipantSex";
+import { DesignationStatus } from "../../enums/DesignationStatus";
+import { IncidentStatus } from "../../enums/IncidentStatus";
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
   try {
@@ -43,7 +45,8 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
         publication_carts: a.publication_carts.map((p) => p.name),
         participants: a.participants.map((p) => `${p.name}(${sexEmoticon(p.sex as unknown as ParticipantSex)})`)
       }))
-      const details = d.participant.incident_history ? {
+      const status = d.participant?.incident_history ? d.participant.incident_history.status : IncidentStatus.CLOSED;
+      const details = status == IncidentStatus.OPEN ? {
         point: "Sem designação",
         participants: [`${d.participant.name}(${sexEmoticon(d.participant.sex as unknown as ParticipantSex)})`],
         publication_carts: [],

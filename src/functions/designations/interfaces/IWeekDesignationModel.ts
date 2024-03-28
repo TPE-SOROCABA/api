@@ -1,3 +1,4 @@
+import { IncidentStatus } from "../../../enums/IncidentStatus";
 import { ParticipantSex } from "../../../enums/ParticipantSex";
 
 export interface IWeekDesignationModel {
@@ -36,7 +37,7 @@ export interface Participant {
   sex:               Sex;
   incident_history: {
     reason: string;
-    status: boolean;
+    status: IncidentStatus;
   } | null;
 }
 
