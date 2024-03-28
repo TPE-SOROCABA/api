@@ -45,8 +45,10 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
         publication_carts: a.publication_carts.map((p) => p.name),
         participants: a.participants.map((p) => `${p.name}(${sexEmoticon(p.sex as unknown as ParticipantSex)})`)
       }))
+
+      const isParticipantAssigned = d.designation.assignments.some((a) => a.participants.some((p) => p._id.toString() === participantId));
       const status = d.participant?.incident_history ? d.participant.incident_history.status : IncidentStatus.CLOSED;
-      const details = status == IncidentStatus.OPEN ? {
+      const details = (Boolean(status == IncidentStatus.OPEN) || !isParticipantAssigned) ? {
         point: "Sem designação",
         participants: [`${d.participant.name}(${sexEmoticon(d.participant.sex as unknown as ParticipantSex)})`],
         publication_carts: [],
