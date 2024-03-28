@@ -9,6 +9,16 @@ export enum Weekday {
     OTHER = "OTHER"
 }
 
+export enum WeekdayNumber {
+    SUNDAY,
+    MONDAY,
+    TUESDAY,
+    WEDNESDAY,
+    THURSDAY,
+    FRIDAY,
+    SATURDAY,
+}
+
 export enum Weekday_PT_BR {
     SUNDAY = "Domingo",
     MONDAY = "Segunda-feira",

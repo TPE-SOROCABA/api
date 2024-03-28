@@ -13,10 +13,11 @@ type Z_ApiInput = {
 };
 
 export class Z_APIWhatsAppAdapter implements WhatsAppAdapter {
-  async sendMessage({ to, message }: WhatsAppAdapterSendMessage) {
+  async sendMessage({ to, message, link }: WhatsAppAdapterSendMessage) {
     const data: Z_ApiInput = {
       message: message,
       phone: "55" + to,
+      linkUrl: link,
     };
 
     const options = {

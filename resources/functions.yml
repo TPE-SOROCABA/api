@@ -166,3 +166,19 @@ sendDesignation:
           method: POST
           cors: true
           authorizer: check-authorizer
+
+weekParticipantDesignations:
+    handler: src/functions/designations/weekParticipantDesignations.handler
+    description: Listar todas as designações da semana de um participante
+    events:
+      - http:
+          path: designations/week/participant/{participantId}
+          method: GET
+          cors: true
+
+deleteDesignationsExpired: 
+    handler: src/functions/designations/deleteDesignationsExpired.handler
+    description: Deletar designações expiradas
+    events:
+      - schedule: 
+            rate: cron(0/5 * * * ? *)
