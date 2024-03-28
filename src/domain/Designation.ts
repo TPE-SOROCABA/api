@@ -110,7 +110,7 @@ export class Designation {
     return this.participants.filter((participant) => !Boolean(participant.incident_history)).length > this.captainsAndCoordinators || this.oneParticipantAssignments;
   }
 
-  public generateAssignment(): void {
+  public generateAssignment(retry = 100): void {
     console.log("Generating assignments", count);
     this.assignments = this.assignments.map((assignment) => {
       this.participants.push(...assignment.participants);
@@ -165,24 +165,13 @@ export class Designation {
     this.updatedAt = new Date();
 
     if (this.retryGenerateAssignment) {
-      if (count < 100) {
+      if (count < retry) {
         count++;
-        this.generateAssignment();
+        this.generateAssignment(retry);
       } else {
         throw new Exception(400, `Não foi possível designar todos os participantes. Total participantes: ${this.participantsCount}, Total vagas: ${this.totalVacancies}`);
       }
     }
-  }
-
-  public updateAssignments(assignments: Assignments[]): void {
-    this.assignments = assignments;
-    this.assignments.forEach((assignment) => {
-      if (!assignment.point.status) {
-        this.participants.push(...assignment.participants);
-        assignment.participants = [];
-      }
-    });
-    this.updatedAt = new Date();
   }
 
   public filterAssignment(filter: string): void {
@@ -241,8 +230,7 @@ export class Designation {
     this.updatedAt = new Date();
   }
 
-  getNextDate(): Date {
-    const today = new Date();
+  getNextDate(today = new Date()): Date {
     const weekday = WeekdayNumber[this.group.config.weekday as any];
     const nextDate = new Date(today);
     nextDate.setDate(today.getDate() + ((+weekday + 7 - today.getDay()) % 7));
