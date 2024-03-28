@@ -6,18 +6,21 @@ const { Z_API_URL, INSTANCE_ID, INSTANCE_TOKEN, USER_TOKEN_ID } = process.env;
 type Z_ApiInput = {
   phone: string;
   message: string;
-  title?: string;
+  title: string;
   image?: string;
   linkUrl?: string;
   linkDescription?: string;
 };
 
 export class Z_APIWhatsAppAdapter implements WhatsAppAdapter {
-  async sendMessage({ to, message, link }: WhatsAppAdapterSendMessage) {
+  async sendMessage({ phone, message, linkUrl,  title, linkDescription }: WhatsAppAdapterSendMessage) {
     const data: Z_ApiInput = {
       message: message,
-      phone: "55" + to,
-      linkUrl: link,
+      phone: "55" + phone,
+      linkUrl,
+      image: `${process.env.FRONTEND_URL}/assets/logo-Uk93spzV.png`,
+      title,
+      linkDescription
     };
 
     const options = {
@@ -32,9 +35,9 @@ export class Z_APIWhatsAppAdapter implements WhatsAppAdapter {
 
     try {
       const response = await axios.request(options);
-      console.log(`Sending ${message} to ${to} using Z_API, response: ${JSON.stringify(response?.data, null, 2)}`);
+      console.log(`Sending to ${phone} using Z_API, response: ${JSON.stringify(response?.data, null, 2)}`);
     } catch (error) {
-      console.error(`Error sending message to ${to} using Z_API: ${JSON.stringify(error)}`);
+      console.error(`Error sending message to ${phone} using Z_API: ${JSON.stringify(error)}`);
       throw new Error("Internal server error")
     }
   }

@@ -37,8 +37,9 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
 
     const message = `Olá, ${user.name}! Seu código de recuperação de senha é \n\n*${code}*\n\nEle expirará em 5 minutos.\nNão compartilhe com ninguém.\n\nAtenciosamente, TPE Digital`;
     await whatsAppService.sendMessage({
-      to: user.phone,
-      message
+      phone: user.phone,
+      message,
+      title: "*TPE Digital - Recuperação de senha*",
     });
     return ResponseHandler.success({ message: "Código de recuperação enviado com sucesso" });
   } catch (error) {

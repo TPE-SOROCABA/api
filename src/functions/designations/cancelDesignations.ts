@@ -45,7 +45,11 @@ TPE - Digital.
         if(participant.phone.includes("FAKE")) {
           continue;
         }
-        await whatsaapService.sendMessage({ to: participant.phone, message });
+        await whatsaapService.sendMessage({ 
+          title: "*TPE Digital - Designação Cancelada*",
+          phone: participant.phone, 
+          message 
+        });
       }
     }
     return ResponseHandler.success({ message: "Designação cancelada com sucesso!" });

@@ -1,7 +1,9 @@
 export type WhatsAppAdapterSendMessage = {
-    to: string;
+    phone: string;
     message: string;
-    link?: string;
+    title: string;
+    linkUrl?: string;
+    linkDescription?: string
 }
 
 export interface WhatsAppAdapter {

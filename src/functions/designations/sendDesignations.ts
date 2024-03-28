@@ -55,7 +55,13 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
         if (participant.phone.includes("FAKE")) {
           continue;
         }
-        await whatsaapService.sendMessage({ to: participant.phone, message, link: `${process.env.FRONTEND_URL}/designar/${participant.id}` });
+        await whatsaapService.sendMessage({ 
+          phone: participant.phone, 
+          message, 
+          title: "*TPE Digital - Designação*",
+          linkUrl: `${process.env.FRONTEND_URL}/week-designation/${participant.id}`,
+          linkDescription: "Clique aqui para acessar a designação"
+        });
       }
     }
 
