@@ -1,52 +1,67 @@
 import { ParticipantSex } from "../../../enums/ParticipantSex";
 
 export interface IWeekDesignationModel {
-  _id: string;
-  designation: Designation;
-  participants: Participant[];
-  point: Point;
-  publication_carts: Point[];
-  createdAt: Date;
-  updatedAt: Date;
+  _id:            string;
+  designation:    Designation;
+  participant:    Participant;
   expirationDate: Date;
-  __v: number;
+  __v:            number;
 }
 
 export interface Designation {
-  _id: string;
-  group: Group;
-  createdAt: Date;
-  updatedAt: Date;
+  _id:         string;
+  group:       Group;
+  assignments: Assignment[];
+  createdAt:   Date;
+  updatedAt:   Date;
 }
 
-export interface Group {
-  _id: string;
-  event_day: Point;
-  name: string;
-  config: Config;
+export interface Assignment {
+  config:            AssignmentConfig;
+  point:             EventDay;
+  publication_carts: EventDay[];
+  participants:      Participant[];
+  _id:               string;
 }
 
-export interface Config {
-  startHour: string;
-  endHour: string;
-  min: number;
-  max: number;
-  weekday: string;
-  _id: string;
-}
-
-export interface Point {
-  _id: string;
-  name: string;
+export interface AssignmentConfig {
+  min:    number;
+  max:    number;
+  status: boolean;
 }
 
 export interface Participant {
-  _id: string;
-  name: string;
-  sex: ParticipantSex;
+  _id:               string;
+  name:              string;
+  sex:               Sex;
   incident_history: {
-    _id: string;
     reason: string;
-    status: string;
+    status: boolean;
   } | null;
+}
+
+export enum Sex {
+  Female = "FEMALE",
+  Male = "MALE",
+}
+
+export interface EventDay {
+  _id:  string;
+  name: string;
+}
+
+export interface Group {
+  _id:       string;
+  event_day: EventDay;
+  name:      string;
+  config:    GroupConfig;
+}
+
+export interface GroupConfig {
+  startHour: string;
+  endHour:   string;
+  min:       number;
+  max:       number;
+  weekday:   string;
+  _id:       string;
 }

@@ -29,20 +29,32 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       throw new Exception(404, "Designação não encontrada");
     }
 
+    const designationParticipant = designation.filter((d) => d.designation.assignments.some((a) => a.participants.some((p) => p._id.toString() === participantId)));
+
+    designationParticipant.forEach((d) => {
+      d.designation.assignments = d.designation.assignments.filter((a) => a.participants.some((p) => p._id.toString() === participantId));
+    });
+
     return ResponseHandler.success(designation.map((d) => {
-      const [participant] = d.participants.filter((p) => p._id.toString() === participantId)
       const sexEmoticon = (sex: ParticipantSex) => (sex === ParticipantSex.MALE ? "🧑🏻‍💼" : "👩🏻‍💼");
+
+      const [assignments] = d.designation.assignments.map(a => ({
+        point: a.point.name,
+        publication_carts: a.publication_carts.map((p) => p.name),
+        participants: a.participants.map((p) => `${p.name}(${sexEmoticon(p.sex as unknown as ParticipantSex)})`)
+      }))
+      
       return {
         event: `${d.designation.group.event_day.name} | ${d.designation.group.name}` ,
-        point: d.point.name,
-        publicationCarts: d.publication_carts.map((c) => c.name),
-        participants: d.participants.map((p) => `${p.name}(${sexEmoticon(p.sex)})`),
+        point: assignments.point,
+        publication_carts: assignments.publication_carts,
+        participants: assignments.participants,
         createdAt: d.designation.createdAt,
         updatedAt: d.designation.updatedAt,
         expirationDate: d.expirationDate,
-        incidentHistory: participant ? {  
-          reason: participant.incident_history?.reason,
-          status: participant.incident_history?.status 
+        incident_history: d.participant.incident_history ? {
+          reason: d.participant.incident_history.reason,
+          status: d.participant.incident_history.status
         } : null,
       }
     }));
@@ -53,43 +65,54 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
 
 async function getWeekDesignationParticipant(participantId: string): Promise<IWeekDesignationModel[]> {
   return WeekDesignationModel.find({
-    participants: {
-      $in: [new Types.ObjectId(participantId)],
-    },
+    participant: new Types.ObjectId(participantId),
   })
     .populate({
-      path: "point",
-      select: "name",
-      model: PointModel,
+      path: "designation",
+      model: DesignationModel,
+      select: ["group", "createdAt", "updatedAt", "assignments"],
+      populate: [
+        {
+          path: "group",
+          model: GroupModel,
+          select: ["name", "config", "event_day"],
+          populate: {
+            path: "event_day",
+            model: EventDayModel,
+            select: "name",
+          },
+        },
+        {
+          path: "assignments",
+          model: "Assignment",
+          select: ["point", "participants", "publication_carts"],
+          populate: [
+            {
+              path: "point",
+              model: PointModel,
+              select: "name",
+            },
+            {
+              path: "publication_carts",
+              model: PublicationCartModel,
+              select: "name",
+            },
+            {
+              path: "participants",
+              model: ParticipantModel,
+              select: ["name", "sex"],
+            },
+          ],
+        },
+      ],
     })
     .populate({
-      path: "publication_carts",
-      select: "name",
-      model: PublicationCartModel,
-    })
-    .populate({
-      path: "participants",
+      path: "participant",
       select: ["name", "incident_history", "sex"],
       model: ParticipantModel,
       populate: {
         path: "incident_history",
         model: IncidentHistoryModel,
       },
-    })
-    .populate({
-      path: "designation",
-      model: DesignationModel,
-      select: ["group", "createdAt", "updatedAt"],
-      populate: {
-        path: "group",
-        model: GroupModel,
-        select: ["name", "config", "event_day"],
-        populate: {
-          path: "event_day",
-          model: EventDayModel,
-          select: "name",
-        },
-      },
     });
 }
-
