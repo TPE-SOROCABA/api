@@ -45,15 +45,12 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       if (assignment.participants.length === 0) continue;
       if (!assignment.point.status) continue;
 
-      await WeekDesignationModel.create({
-        designation: designation.id,
-        participants: assignment.participants.map((p) => p.id),
-        point: assignment.point.id,
-        publication_carts: assignment.publication_carts.map((c) => c.id),
-        expirationDate: designation.getNextDate(),
-      })
-
       for (const participant of assignment.participants) {
+        await WeekDesignationModel.create({
+          designation: designation.id,
+          participant: participant.id,
+          expirationDate: designation.getNextDate(),
+        })
         const message = getMessage(designation, participant, captain);
         if (participant.phone.includes("FAKE")) {
           continue;

@@ -2,17 +2,13 @@ import mongoose, { Schema, Types, model } from "mongoose";
 
 export interface IWeekDesignation {
   designation: Types.ObjectId;
-  participants: Array<Types.ObjectId>;
-  publication_carts: Array<Types.ObjectId>;
-  point: Types.ObjectId;
+  participant: Types.ObjectId;
   expirationDate: Date;
 }
 
 const weekDesignationSchema = new Schema<IWeekDesignation>({
   designation: { type: mongoose.Schema.Types.ObjectId, ref: "designations" },
-  participants: [{ type: mongoose.Schema.Types.ObjectId, ref: "participants" }],
-  point: { type: mongoose.Schema.Types.ObjectId, ref: "points" },
-  publication_carts: [{ type: mongoose.Schema.Types.ObjectId, ref: "publicationcarts" }],
+  participant: { type: mongoose.Schema.Types.ObjectId, ref: "participants" },
   expirationDate: { type: Date, required: true },
 });
 
