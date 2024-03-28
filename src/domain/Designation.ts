@@ -243,7 +243,7 @@ export class Designation {
 
   getNextDate(): Date {
     const today = new Date();
-    const weekday = WeekdayNumber[this.group.config.weekday as keyof typeof WeekdayNumber];
+    const weekday = WeekdayNumber[this.group.config.weekday as any];
     const nextDate = new Date(today);
     nextDate.setDate(today.getDate() + ((+weekday + 7 - today.getDay()) % 7));
     nextDate.setHours(+this.group.config.endHour.split(":")[0]);
