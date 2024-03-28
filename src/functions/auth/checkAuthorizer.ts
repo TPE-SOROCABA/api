@@ -2,20 +2,28 @@ import { Callback, Context, CustomAuthorizerEvent } from 'aws-lambda'
 import * as jwt from 'jsonwebtoken'
 
 export const handler = async (event: CustomAuthorizerEvent, _: Context, callback: Callback) => {
+  console.log("Inicio da execução da função checkAuthorizer")
   if (!event.authorizationToken) {
+    console.log("Token não fornecido")
     throw new Error('No token provided')
   }
   try {
+    console.log("Gerando policy document")
     const policyDocument = await generatePolicyByJWT(event)
+    console.log("Policy document gerado com sucesso")
     callback(null, policyDocument)
   } catch (err) {
+    console.log("Erro ao gerar policy document")
     callback(new Error('Unauthorized'))
   }
 }
 
 async function generatePolicyByJWT(event: CustomAuthorizerEvent) {
+  console.log("Recuperando token do evento")
   const accessToken = getAccessTokenFromRequest(event)
   const jwtPayload = checkAccessToken(accessToken)
+  console.log("Token recuperado com sucesso")
+  console.log(`Usuário autenticado: ${JSON.stringify(jwtPayload)}`)
   return buildIAMPolicy('Allow', jwtPayload.id, jwtPayload)
 }
 
