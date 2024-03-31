@@ -48,7 +48,9 @@ TPE - Digital.
         await whatsaapService.sendMessage({ 
           title: "*TPE Digital - Designação Cancelada*",
           phone: participant.phone, 
-          message 
+          message,
+          linkUrl: `${process.env.FRONTEND_URL}/week-designation/${participant.id}`,
+          linkDescription: "Clique aqui para acessar a designação"
         });
       }
     }

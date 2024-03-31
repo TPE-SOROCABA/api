@@ -22,7 +22,9 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     await DesignationModel.updateMany(
       {
         group: groupId,
-        status: DesignationStatus.OPEN,
+        status: {
+          $in: [DesignationStatus.OPEN, DesignationStatus.IN_PROGRESS],
+        }
       },
       { status: DesignationStatus.CLOSED, updatedAt: new Date() }
     );
