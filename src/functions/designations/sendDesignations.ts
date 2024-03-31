@@ -65,6 +65,14 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       }
     }
 
+    for (const participant of [designation.participants, designation.incidents].flat()) {
+      await WeekDesignationModel.create({
+        designation: designation.id,
+        participant: participant.id,
+        expirationDate: designation.getNextDate(),
+      })
+    } 
+
     await DesignationModel.updateOne({ _id: designation.id }, { status: DesignationStatus.IN_PROGRESS });
 
     return ResponseHandler.success({ message: "Designação enviada com sucesso" });
