@@ -13,7 +13,6 @@ import { IWeekDesignationModel } from "./interfaces/IWeekDesignationModel";
 import { Exception } from "../../shared/Exception";
 import { IncidentHistoryModel } from "../../repositories/models/IncidentHistoryModel";
 import { ParticipantSex } from "../../enums/ParticipantSex";
-import { DesignationStatus } from "../../enums/DesignationStatus";
 import { IncidentStatus } from "../../enums/IncidentStatus";
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
@@ -68,6 +67,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
           reason: d.participant.incident_history.reason,
           status: d.participant.incident_history.status
         } : null,
+        status: d.designation.status,
       }
     }));
   } catch (error) {
@@ -82,7 +82,7 @@ async function getWeekDesignationParticipant(participantId: string): Promise<IWe
     .populate({
       path: "designation",
       model: DesignationModel,
-      select: ["group", "createdAt", "updatedAt", "assignments"],
+      select: ["group", "createdAt", "updatedAt", "assignments", "status"],
       populate: [
         {
           path: "group",

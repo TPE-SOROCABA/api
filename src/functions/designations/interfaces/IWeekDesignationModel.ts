@@ -1,3 +1,4 @@
+import { DesignationStatus } from "../../../enums/DesignationStatus";
 import { IncidentStatus } from "../../../enums/IncidentStatus";
 import { ParticipantSex } from "../../../enums/ParticipantSex";
 
@@ -15,6 +16,7 @@ export interface Designation {
   assignments: Assignment[];
   createdAt:   Date;
   updatedAt:   Date;
+  status:         DesignationStatus;
 }
 
 export interface Assignment {
@@ -34,18 +36,12 @@ export interface AssignmentConfig {
 export interface Participant {
   _id:               string;
   name:              string;
-  sex:               Sex;
+  sex:               ParticipantSex;
   incident_history: {
     reason: string;
     status: IncidentStatus;
   } | null;
 }
-
-export enum Sex {
-  Female = "FEMALE",
-  Male = "MALE",
-}
-
 export interface EventDay {
   _id:  string;
   name: string;
