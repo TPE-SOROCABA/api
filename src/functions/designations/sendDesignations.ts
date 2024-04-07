@@ -61,6 +61,8 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
           title: "*TPE Digital - Designação*",
           linkUrl: `${process.env.FRONTEND_URL}/week-designation/${participant.id}`,
           linkDescription: "Clique aqui para acessar a designação"
+        }).catch((error) => {
+          console.error(error);
         });
       }
     }
