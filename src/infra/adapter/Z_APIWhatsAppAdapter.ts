@@ -14,14 +14,20 @@ type Z_ApiInput = {
 
 export class Z_APIWhatsAppAdapter implements WhatsAppAdapter {
   async sendMessage({ phone, message, linkUrl,  title, linkDescription }: WhatsAppAdapterSendMessage) {
-    const data: Z_ApiInput = {
+    const data: any = {
       message: message,
       phone: "55" + phone,
       linkUrl,
-      image: `${process.env.FRONTEND_URL}/assets/logo-Uk93spzV.png`,
+      // image: `${process.env.FRONTEND_URL}/assets/logo-Uk93spzV.png`,
       title,
       linkDescription
     };
+
+    for (const key in data) {
+      if (!data[key]) {
+        delete data[key];
+      }
+    }
 
     const options = {
       method: "POST",
@@ -32,6 +38,8 @@ export class Z_APIWhatsAppAdapter implements WhatsAppAdapter {
       },
       data: data,
     };
+
+    console.log({options})
 
     try {
       const response = await axios.request(options);

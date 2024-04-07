@@ -30,7 +30,7 @@ export const participantSchema = new Schema<IParticipant>({
   phone: { type: String, required: true, unique: true },
   profile_photo: String,
   profile: { type: String, required: true, enum: Object.values(ParticipantProfile) },
-  computed: { type: String, required: true },
+  computed: { type: String, required: false },
   auth: {
     type: authSchema,
     required: false,
