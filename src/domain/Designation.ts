@@ -52,6 +52,7 @@ const randomIndex = (array: Array<number>) => Math.floor(Math.random() * array.l
 let count: number = 0;
 export class Designation {
   public incidents: Participant[] = [];
+  public assignmentsFiltered: Assignments[] = [];
   constructor(
     readonly id: string,
     public group: Group,
@@ -175,17 +176,20 @@ export class Designation {
   }
 
   public filterAssignment(filter: string): void {
-    this.assignments.sort((_, a) => {
+    for (const assignment of this.assignments) {
       const isContains = (object: { name: string }) => object.name.toLowerCase().includes(filter.toLowerCase());
-      if (isContains(a.point)) return 1;
-
-      const [participant] = a.participants.filter(isContains);
-      if (participant) {
-        if (isContains(participant)) return 1;
+      if (isContains(assignment.point)) {
+        this.assignmentsFiltered.push(assignment);
+        this.assignments.splice(this.assignments.indexOf(assignment), 1);
+        continue;
       }
 
-      return -1;
-    });
+      const participants = assignment.participants.filter(isContains);
+      if (participants.length) {
+        this.assignmentsFiltered.push({ ...assignment, participants });
+        this.assignments.splice(this.assignments.indexOf(assignment), 1);
+      }
+    }
   }
 
   public isParticipantsWithoutAssignments(): boolean {

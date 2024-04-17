@@ -36,7 +36,7 @@ describe("Designação Semana", () => {
   test("Deve filtrar as designações", async () => {
     designation.generateAssignment(500)
     designation.filterAssignment("Giulia")
-    const participant = designation.assignments[0].participants.find((participant) => participant.name.includes("Giulia"))
+    const participant = designation.assignmentsFiltered[0].participants.find((participant) => participant.name.includes("Giulia"))
     expect(participant?.name).toContain("Giulia")
   });
 
