@@ -8,9 +8,11 @@ import { Exception } from "../../shared/Exception";
 import { Designation, Participant } from "../../domain/Designation";
 import { DesignationStatus } from "../../enums/DesignationStatus";
 import { IncidentStatus, ParticipantProfile } from "@prisma/client";
+import { SendUpdateDesignation } from "../../services/SendUpdateDesignation";
 
 const designationRepository = new DesignationRepository();
 const whatsaapService = new WhatsAppService(new Z_APIWhatsAppAdapter());
+const sendUpdateDesignation = new SendUpdateDesignation();
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
   try {
@@ -82,7 +84,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
 
     designation.updateStatus(DesignationStatus.IN_PROGRESS);
 
-    await designationRepository.update(designation);
+    await sendUpdateDesignation.execute(designation);
 
     return ResponseHandler.success({ message: "Designação enviada com sucesso" });
   } catch (error) {

@@ -144,3 +144,16 @@ weekParticipantDesignations:
           path: designations/week/participant/{participantId}
           method: GET
           cors: true
+
+updateDesignation:
+    handler: src/functions/designations/updateDesignations.handler
+    description: Atualizar uma designação
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - DesignationQueue
+              - Arn
+          batchSize: 1 # quantidade de mensagens que serão processadas por vez
+
+        

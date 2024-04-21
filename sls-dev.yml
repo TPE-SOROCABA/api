@@ -29,6 +29,8 @@ provider:
 
 functions: ${file(./resources/functions.yml)}
 
+resources: ${file(./resources/resources.yml)}
+
 package:
   individually: true
   patterns:

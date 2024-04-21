@@ -3,8 +3,10 @@ import { ResponseHandler } from "../../shared/ResponseHandler";
 import { DesignationRepository } from "../../repositories/DesignationRepository";
 import { JsonHandler } from "../../shared/JsonHandler";
 import { Exception } from "../../shared/Exception";
+import { SendUpdateDesignation } from "../../services/SendUpdateDesignation";
 
 const designationRepository = new DesignationRepository();
+const sendUpdateDesignation = new SendUpdateDesignation();
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
   try {
@@ -23,7 +25,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
 
     designation.updatePointStatus(pointId, body.status);
 
-    await designationRepository.update(designation)
+    await sendUpdateDesignation.execute(designation);
 
     return ResponseHandler.success({ message: "Ponto atualizado com sucesso" });
   } catch (error) {

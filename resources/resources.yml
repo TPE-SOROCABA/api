@@ -1,0 +1,11 @@
+
+resources:
+  Resources:
+    DesignationQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:service}-${self:provider.stage}-designation-queue.fifo
+        FifoQueue: true
+        ContentBasedDeduplication: true
+        VisibilityTimeout: 60 # serve para garantir que a mensagem não será processada por outro lambda antes de ser excluída
+        
