@@ -26,6 +26,16 @@ provider:
   stage: ${opt:stage}
   timeout: 30
   memorySize: 128
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - "sqs:SendMessage"
+        - "sqs:ReceiveMessage"
+        - "sqs:SendMessage"
+        - "sqs:GetQueueAttributes"
+      Resource: 
+        - "arn:aws:sqs:us-east-1:533267195262:api-tpe-digital-dev-designation-queue.fifo"
+
 
 functions: ${file(./resources/functions.yml)}
 
