@@ -21,7 +21,13 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     designation.updateStatus(DesignationStatus.CANCELLED);
     await designationRepository.update(designation);
 
-    const captain = designation.participants.find((p) => p.profile === "CAPTAIN");
+    console.log(`Procurando capitão`);
+    let captain = designation.participants.find((p) => p.profile === "CAPTAIN");
+    if (!captain) {
+      console.log(`Capitão não encontrado`);
+      captain = designation.assignments.find((a) => a.participants.find((p) => p.profile === "CAPTAIN"))?.participants.find((p) => p.profile === "CAPTAIN");
+    }
+    console.log(`Capitão encontrado: ${captain?.name}`);
 
     for (const assignment of designation.assignments) {
       for (const participant of assignment.participants) {
