@@ -38,7 +38,7 @@ export const handler: Handler = async (_event: APIGatewayEventCustom): Promise<A
 
     const participant = await prisma.participants.findFirst({ where: { id } });
     const reporter = await prisma.participants.findFirst({ where: { id: reporterId } });
-    const group = await prisma.groups.findFirst({ where: { id: _event.requestContext.authorizer.groupId } });
+    const group = await prisma.participantsGroups.findFirst({ where: { participantId: id } });
 
     if (!participant || !reporter || !group) {
       throw new Exception(404, "Parâmetros inválidos");
@@ -46,7 +46,7 @@ export const handler: Handler = async (_event: APIGatewayEventCustom): Promise<A
 
     const designation = await prisma.designations.findFirst({
       where: {
-        groupId: group.id,
+        groupId: group.groupId,
       },
     });
 
