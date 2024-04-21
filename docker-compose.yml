@@ -9,4 +9,11 @@ services:
       - POSTGRES_USER=johndoe
       - POSTGRES_PASSWORD=123456
       - POSTGRES_DB=tpe
+  queue:
+    image: softwaremill/elasticmq:latest
+    container_name: sqs-offline
+    ports:
+      - 9324:9324
+    volumes:
+      - ./elasticMQ/elasticmq.conf:/opt/elasticmq.conf
 

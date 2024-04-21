@@ -37,6 +37,8 @@ provider:
         - "sqs:GetQueueAttributes"
       Resource: 
         - "arn:aws:sqs:us-east-1:533267195262:api-tpe-digital-dev-designation-queue.fifo"
+  environment:
+    NODE_ENV: ${self:provider.stage}
 
 
 functions: ${file(./resources/functions.yml)}
