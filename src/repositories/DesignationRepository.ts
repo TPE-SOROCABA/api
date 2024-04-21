@@ -1,173 +1,190 @@
-import { FilterQuery } from "mongoose";
 import { Designation } from "../domain/Designation";
-import { DesignationStatus } from "../enums/DesignationStatus";
 import { IDesignationModel } from "../functions/designations/interfaces/IDesignationModel";
-import { connectToDatabase } from "../infra/connectToDatabase";
 import { DesignationMapper } from "../mappers/DesignationMapper";
 import { Exception } from "../shared/Exception";
-import { DesignationModel, IDesignation } from "./models/DesignationModel";
-import { EventDayModel } from "./models/EventDayModel";
-import { GroupModel } from "./models/GroupModel";
-import { ParticipantModel } from "./models/ParticipantModel";
-import { PointModel } from "./models/PointModel";
-import { PublicationCartModel } from "./models/PublicationCartModel";
-import { IncidentHistoryModel } from "./models/IncidentHistoryModel";
+
+import { prisma } from "../infra/prismaClient";
 
 export class DesignationRepository {
-  async findOne(groupId: string): Promise<Designation> {
-    await connectToDatabase();
-    const designationModel = await DesignationModel.findOne<IDesignationModel>({ group: groupId, status: {
-      $in: [DesignationStatus.OPEN, DesignationStatus.IN_PROGRESS],
-    } })
-      .populate({
-        path: "participants",
-        model: ParticipantModel,
-        populate: {
-          path: "incident_history",
-          model: IncidentHistoryModel,
-        },
-      })
-      .populate({
-        path: "assignments.point",
-        model: PointModel,
-      })
-      .populate({
-        path: "assignments.publication_carts",
-        model: PublicationCartModel,
-      })
-      .populate({
-        path: "assignments.participants",
-        model: ParticipantModel,
-        populate: {
-          path: "incident_history",
-          model: IncidentHistoryModel,
-        },
-      })
-      .populate({
-        path: "group",
-        model: GroupModel,
-        populate: [
-          {
-            path: "participants",
-            model: ParticipantModel,
-            populate: {
-              path: "incident_history",
-              model: IncidentHistoryModel,
+  async findOne(groupId: string) {
+    const designationModel = await prisma.designations.findFirst({
+      where: {
+        groupId: groupId,
+      },
+      include: {
+        group: {
+          include: {
+            EventDayGroup: {
+              include: {
+                eventDay: true,
+              },
+            },
+            ParticipantsGroup: {
+              include: {
+                participant: {
+                  include: {
+                    IncidentParticipant: {
+                      orderBy: {
+                        createdAt: "desc",
+                      },
+                    },
+                  },
+                },
+              },
             },
           },
-          {
-            path: "event_day",
-            model: EventDayModel,
+        },
+        assignments: {
+          include: {
+            point: true,
+            AssignmentsParticipants: {
+              include: {
+                participant: {
+                  include: {
+                    IncidentParticipant: {
+                      orderBy: {
+                        createdAt: "desc",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            AssignmentsPublicationCart: {
+              include: {
+                publicationCart: true,
+              },
+            },
           },
-        ],
-      });
+        },
+      },
+    });
 
     if (!designationModel) {
       throw new Exception(404, "Designação não encontrada");
     }
 
-    return DesignationMapper.toDomain(designationModel);
+    return DesignationMapper.toDomain(designationModel as unknown as IDesignationModel);
   }
 
-  async findAll(groupId: string, filter?: { createdAt: Date }): Promise<Designation[]> {
-    await connectToDatabase();
-    const filterQuery: FilterQuery<IDesignation> = filter?.createdAt ? { createdAt: { $gte: filter.createdAt } } : {};
-    const designationsModel = await DesignationModel.find<IDesignationModel>({
-      group: groupId,
-      ...filterQuery,
-    })
-      .populate({
-        path: "participants",
-        model: ParticipantModel,
-        populate: {
-          path: "incident_history",
-          model: IncidentHistoryModel,
-        },
-      })
-      .populate({
-        path: "assignments.point",
-        model: PointModel,
-      })
-      .populate({
-        path: "assignments.publication_carts",
-        model: PublicationCartModel,
-      })
-      .populate({
-        path: "assignments.participants",
-        model: ParticipantModel,
-      })
-      .populate({
-        path: "group",
-        model: GroupModel,
-        populate: [
-          {
-            path: "participants",
-            model: ParticipantModel,
-            populate: {
-              path: "incident_history",
-              model: IncidentHistoryModel,
+  async update(designation: Designation) {
+    Promise.allSettled([
+      prisma.$transaction(
+        designation.assignments.map((assignment) => {
+          return prisma.assignments.update({
+            where: {
+              id: assignment.id,
+            },
+            data: {
+              pointId: assignment.point.id,
+              config_max: assignment.config.max,
+              config_min: assignment.config.min,
+              config_status: assignment.point.status,
+            },
+          });
+        })
+      ),
+      prisma.$transaction([
+        prisma.assignmentsParticipants.deleteMany({
+          where: {
+            assignmentId: {
+              in: designation.assignments.map((assignment) => assignment.id),
             },
           },
-          {
-            path: "event_day",
-            model: EventDayModel,
+        }),
+        prisma.assignmentsParticipants.createMany({
+          data: designation.assignments
+            .map((assignment) => {
+              return assignment.participants
+                .map((participant) => {
+                  return {
+                    assignmentId: assignment.id,
+                    participantId: participant.id,
+                  };
+                })
+                .flat();
+            })
+            .flat(),
+        }),
+        prisma.designations.update({
+          where: {
+            id: designation.id,
           },
-        ],
-      })
-      .sort({ createdAt: -1 });
-
-    return designationsModel.map((designationModel) => DesignationMapper.toDomain(designationModel));
+          data: {
+            status: designation.status,
+          },
+        }),
+      ]),
+    ]);
   }
 
   async findByDesignationId(designationId: string): Promise<Designation> {
-    await connectToDatabase();
-    const designationModel = await DesignationModel.findById<IDesignationModel>(designationId)
-      .populate({
-        path: "participants",
-        model: ParticipantModel,
-        populate: {
-          path: "incident_history",
-          model: IncidentHistoryModel,
-        },
-      })
-      .populate({
-        path: "assignments.point",
-        model: PointModel,
-      })
-      .populate({
-        path: "assignments.publication_carts",
-        model: PublicationCartModel,
-      })
-      .populate({
-        path: "assignments.participants",
-        model: ParticipantModel,
-        populate: {
-          path: "incident_history",
-          model: IncidentHistoryModel,
-        },
-      })
-      .populate({
-        path: "group",
-        model: GroupModel,
-        populate: [
-          {
-            path: "participants",
-            model: ParticipantModel,
-            populate: {
-              path: "incident_history",
-              model: IncidentHistoryModel,
+    const designationModel = await prisma.designations.findFirst({
+      where: {
+        id: designationId,
+      },
+      include: {
+        group: {
+          include: {
+            EventDayGroup: {
+              include: {
+                eventDay: true,
+              },
+            },
+            ParticipantsGroup: {
+              include: {
+                participant: {
+                  include: {
+                    IncidentParticipant: true,
+                  },
+                },
+              },
             },
           },
-          {
-            path: "event_day",
-            model: EventDayModel,
+        },
+        assignments: {
+          include: {
+            point: true,
+            AssignmentsParticipants: {
+              include: {
+                participant: {
+                  include: {
+                    IncidentParticipant: true,
+                  },
+                },
+              },
+            },
+            AssignmentsPublicationCart: {
+              include: {
+                publicationCart: true,
+              },
+            },
           },
-        ],
-      });
+        },
+      },
+    });
 
     if (!designationModel) {
       throw new Exception(404, "Designação não encontrada");
     }
-    return DesignationMapper.toDomain(designationModel);
+
+    return DesignationMapper.toDomain(designationModel as unknown as IDesignationModel);
+  }
+
+  async findByParticipantId(participantId: string): Promise<Designation[]> {
+    const participantsGroups = await prisma.participantsGroups.findMany({
+      where: {
+        participantId: participantId,
+      },
+      include: {
+        group: true,
+      },
+    });
+
+    if (!participantsGroups) {
+      throw new Exception(404, "Participante não encontrado");
+    }
+
+    return Promise.all(participantsGroups.map(async (pg) => this.findOne(pg.groupId)));
   }
 }

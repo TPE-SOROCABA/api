@@ -1,8 +1,6 @@
+import { DesignationRepository } from "./../../repositories/DesignationRepository";
 import type { Context, APIGatewayProxyStructuredResultV2, APIGatewayProxyEventV2, Handler } from "aws-lambda";
 import { ResponseHandler } from "../../shared/ResponseHandler";
-import { DesignationRepository } from "../../repositories/DesignationRepository";
-import { DesignationModel } from "../../repositories/models/DesignationModel";
-import { DesignationMapper } from "../../mappers/DesignationMapper";
 
 const designationRepository = new DesignationRepository();
 
@@ -19,13 +17,12 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
 
     if (random) {
       designation.generateAssignment();
-      await DesignationModel.updateOne({ _id: designation.id }, DesignationMapper.toPersistence(designation));
+      await designationRepository.update(designation);
     }
 
     if (filter) {
       designation.filterAssignment(filter);
     }
-
 
     return ResponseHandler.success(designation);
   } catch (error) {

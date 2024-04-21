@@ -1,17 +1,11 @@
 import type { APIGatewayProxyStructuredResultV2, Handler, APIGatewayProxyEventV2WithRequestContext, APIGatewayEventRequestContextWithAuthorizer } from "aws-lambda";
 import { ResponseHandler } from "../../../shared/ResponseHandler";
-import { connectToDatabase } from "../../../infra/connectToDatabase";
 import { JsonHandler } from "../../../shared/JsonHandler";
 import { InputParticipantIncidents } from "../../../contracts/InputParticipantIncidents";
-import { IIncidentHistory, IncidentHistoryModel } from "../../../repositories/models/IncidentHistoryModel";
-import { ParticipantModel } from "../../../repositories/models/ParticipantModel";
 import { IncidentStatus } from "../../../enums/IncidentStatus";
-import { DesignationStatus } from "../../../enums/DesignationStatus";
-import { DesignationModel } from "../../../repositories/models/DesignationModel";
-import { Types } from "mongoose";
 import { Exception } from "../../../shared/Exception";
-import { GroupModel } from "../../../repositories/models/GroupModel";
 import { decode } from "jsonwebtoken";
+import { prisma } from "../../../infra/prismaClient";
 
 type APIGatewayEventCustom = APIGatewayProxyEventV2WithRequestContext<
   APIGatewayEventRequestContextWithAuthorizer<{
@@ -22,10 +16,9 @@ type APIGatewayEventCustom = APIGatewayProxyEventV2WithRequestContext<
 
 export const handler: Handler = async (_event: APIGatewayEventCustom): Promise<APIGatewayProxyStructuredResultV2> => {
   try {
-    await connectToDatabase();
     const id = _event.pathParameters?.participantId;
     const body = JsonHandler.parse<InputParticipantIncidents>(_event.body || "{}");
-    const reporterId = getToken(_event) ?? id
+    const reporterId = getToken(_event) ?? id;
 
     const params = await InputParticipantIncidents.create({
       reason: body?.reason,
@@ -43,41 +36,36 @@ export const handler: Handler = async (_event: APIGatewayEventCustom): Promise<A
       throw new Exception(400, "Id do reporter não informado");
     }
 
-    const [participant, reporter, group] = await Promise.all([ParticipantModel.findById(id), ParticipantModel.findById(reporterId), GroupModel.findOne({ participants: id })]);
+    const participant = await prisma.participants.findFirst({ where: { id } });
+    const reporter = await prisma.participants.findFirst({ where: { id: reporterId } });
+    const group = await prisma.groups.findFirst({ where: { id: _event.requestContext.authorizer.groupId } });
 
     if (!participant || !reporter || !group) {
       throw new Exception(404, "Parâmetros inválidos");
     }
 
-    const designationModel = await DesignationModel.findOne({
-      group: group._id,
-      status: {
-        $in: [DesignationStatus.OPEN, DesignationStatus.IN_PROGRESS],
+    const designation = await prisma.designations.findFirst({
+      where: {
+        groupId: group.id,
       },
     });
-    if (!designationModel) {
+
+    if (!designation) {
       throw new Exception(404, "Designação não encontrada");
     }
 
-    const incident: IIncidentHistory = {
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      designation: designationModel._id,
-      participant: new Types.ObjectId(participant._id),
-      reporter: new Types.ObjectId(reporter._id),
-      reason: params.reason,
-      status: IncidentStatus.OPEN,
-    };
+    console.log(`Criando incidente para o participante ${participant.name}`);
+    await prisma.incidentHistories.create({
+      data: {
+        participantId: participant.id,
+        reporterId: reporter.id,
+        reason: params.reason,
+        status: IncidentStatus.OPEN,
+        designationId: designation.id,
+      },
+    });
 
-    console.log(`Criando incidente para o participante ${participant.name}, incidente: ${JSON.stringify(incident, null, 2)}`);
-    const incidentModel = await IncidentHistoryModel.create(incident);
-    console.log(`Incidente criado com sucesso`);
-
-    console.log(`Atualizando histórico do participante ${participant.name}`);
-    await ParticipantModel.updateOne({ _id: id }, { incident_history: incidentModel._id });
-    console.log(`Histórico do participante ${participant.name} atualizado com sucesso`);
-
-    return ResponseHandler.success({ message: "Incidente criado com sucesso", incident });
+    return ResponseHandler.success({ message: "Incidente criado com sucesso" });
   } catch (error) {
     return ResponseHandler.error(error);
   }
@@ -88,7 +76,7 @@ function getToken(event: any): string | null {
     const token = event.headers?.Authorization || event.headers?.authorization || "";
     const parts = token.split(" ");
     const payload = decode(parts[1]) as any;
-    return payload['id'] || null;
+    return payload["id"] || null;
   } catch (error) {
     return null;
   }
