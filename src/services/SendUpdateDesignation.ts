@@ -1,9 +1,9 @@
-import aws from "aws-sdk";
+import { SQS } from "aws-sdk";
 import { Designation } from "../domain/Designation";
 
 export class SendUpdateDesignation {
   async execute(designation: Designation) {
-    const sqs = new aws.SQS();
+    const sqs = new SQS();
 
     await sqs
       .sendMessage({

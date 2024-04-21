@@ -19,10 +19,7 @@ custom:
     apiType: rest
     autoDomain: false
   esbuild:
-    bundle: true
-    minify: true
-    sourcemap: true
-    external: ['aws-sdk']
+      exclude: []
 
 provider:
   name: aws
