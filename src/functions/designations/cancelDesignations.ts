@@ -1,8 +1,6 @@
 import type { Context, APIGatewayProxyStructuredResultV2, APIGatewayProxyEventV2, Handler } from "aws-lambda";
 import { ResponseHandler } from "../../shared/ResponseHandler";
-import { DesignationModel } from "../../repositories/models/DesignationModel";77
 import { DesignationStatus } from "../../enums/DesignationStatus";
-import { connectToDatabase } from "../../infra/connectToDatabase";
 import { DesignationRepository } from "../../repositories/DesignationRepository";
 import { WhatsAppService } from "../../services/WhatsAppService";
 import { Z_APIWhatsAppAdapter } from "../../infra/adapter/Z_APIWhatsAppAdapter";
@@ -13,20 +11,16 @@ const whatsaapService = new WhatsAppService(new Z_APIWhatsAppAdapter());
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
   try {
-    await connectToDatabase();
+    
     const designationId = _event.pathParameters?.designationId;
     if (!designationId) {
       return ResponseHandler.error({ message: "Parâmetros inválidos" });
     }
 
-    await DesignationModel.updateOne(
-      {
-        _id: designationId,
-      },
-      { status: DesignationStatus.CANCELLED, updatedAt: new Date() }
-    );
-
     const designation = await designationRepository.findByDesignationId(designationId);
+    designation.updateStatus(DesignationStatus.CANCELLED);
+    await designationRepository.update(designation);
+
     const captain = designation.participants.find((p) => p.profile === "CAPTAIN");
 
     for (const assignment of designation.assignments) {

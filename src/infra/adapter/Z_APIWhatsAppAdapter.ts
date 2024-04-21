@@ -18,7 +18,7 @@ export class Z_APIWhatsAppAdapter implements WhatsAppAdapter {
       message: message,
       phone: "55" + phone,
       linkUrl,
-      // image: `${process.env.FRONTEND_URL}/assets/logo-Uk93spzV.png`,
+      image: `${process.env.FRONTEND_URL}/assets/logo-Uk93spzV.png`,
       title,
       linkDescription
     };
@@ -38,8 +38,6 @@ export class Z_APIWhatsAppAdapter implements WhatsAppAdapter {
       },
       data: data,
     };
-
-    console.log({options})
 
     try {
       const response = await axios.request(options);

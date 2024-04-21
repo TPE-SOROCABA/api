@@ -4,12 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest", 
     "test:watch": "jest --watch --detectOpenHandles",
     "invoke:healthcheck": "sls invoke local -f healthcheck -s dev",
     "start": "serverless offline -c serverless.local.yml -s dev",
     "deploy:dev": "sls deploy -c sls-dev.yml -s dev",
-    "logs:dev": "sls logs -c sls-dev.yml -s dev -f listWeekDesignations",
+    "logs:dev": "sls logs -c sls-dev.yml -s dev -f cancelDesignation",
     "infra:db": "docker compose up db-mongo -d",
     "prepare": "husky install",
     "build": "tsc --noemit"
@@ -38,6 +38,7 @@
     "husky": "^9.0.11",
     "jest": "^29.7.0",
     "prettier": "^3.2.5",
+    "prisma": "^5.12.1",
     "serverless": "^3.38.0",
     "serverless-domain-manager": "^7.3.8",
     "serverless-dotenv-plugin": "^6.0.0",
@@ -48,6 +49,7 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
+    "@prisma/client": "^5.12.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "jsonwebtoken": "^9.0.2",

@@ -1,28 +1,46 @@
 import type { Context, APIGatewayProxyStructuredResultV2, APIGatewayProxyEventV2, Handler } from "aws-lambda";
 import { ResponseHandler } from "../../shared/ResponseHandler";
-import { connectToDatabase } from "../../infra/connectToDatabase";
 import { JsonHandler } from "../../shared/JsonHandler";
 import { InputLoginCode } from "../../contracts/InputLoginCode";
 import { Exception } from "../../shared/Exception";
-import { ParticipantModel } from "../../repositories/models/ParticipantModel";
 import { LoginUtils } from "../../domain/Login";
+import { prisma } from "../../infra/prismaClient";
+import { DesignationRepository } from "../../repositories/DesignationRepository";
+import { LoginService } from "../../services/LoginService";
+
+const designationRepository = new DesignationRepository();
+const loginService = new LoginService(designationRepository);
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
   try {
-    await connectToDatabase();
-
     const body = JsonHandler.parse<InputLoginCode>(_event.body || "{}");
     console.log(`Usuário ${body.cpf} está tentando recuperar a senha`);
     const params = await InputLoginCode.create(body.cpf, body.code);
 
-    const participant = await ParticipantModel.findOne({ cpf: params.cpf, "auth.resetPasswordCode": params.code });
+    const participant = await prisma.participants.findUnique({ where: { cpf: params.cpf }, include: { Auth: true } });
 
-    if (!participant) {
+    if (!participant || !participant.Auth?.expiredAt) {
       throw new Exception(404, "Usuário não encontrado ou código de recuperação inválido");
     }
 
+    if (participant.Auth.resetPasswordCode !== params.code) {
+      throw new Exception(400, "Código de recuperação inválido");
+    }
+
+    if (new Date() > participant.Auth.expiredAt) {
+      throw new Exception(400, "Código de recuperação expirado");
+    }
+
+    const payload = await loginService.execute({
+      name: participant.name,
+      cpf: participant.cpf,
+      profile: participant.profile,
+      participantId: participant.id,
+      profile_photo: participant.profile_photo || "",
+    });
+
     return ResponseHandler.success({
-      token: LoginUtils.createJWT({ id: params.cpf }, { expiresIn: "5m" }),
+      token: LoginUtils.createJWT(payload),
     });
   } catch (error) {
     return ResponseHandler.error(error);

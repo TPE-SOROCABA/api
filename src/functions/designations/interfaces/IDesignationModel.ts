@@ -1,103 +1,91 @@
-import { DesignationStatus } from "../../../enums/DesignationStatus";
-import { IncidentStatus } from "../../../enums/IncidentStatus";
-import { ParticipantProfile } from "../../../enums/ParticipantProfile";
-import { ParticipantSex } from "../../../enums/ParticipantSex";
-import { Weekday } from "../../../enums/Weekday";
+import { ParticipantProfile, ParticipantSex, Weekday } from "@prisma/client";
 
 export interface IDesignationModel {
-  _id: string;
-  group: Group;
-  status: DesignationStatus;
+  id:          string;
+  name:        string;
+  groupId:     string;
+  status:      string;
+  createdAt:   Date;
+  updatedAt:   Date;
+  group:       Group;
   assignments: Assignment[];
-  participants: Participant[];
-  createdAt: Date;
-  updatedAt: Date;
-  __v: number;
 }
 
 export interface Assignment {
-  config: AssignmentConfig;
-  point: Point;
-  publication_carts: PublicationCart[];
-  participants: Participant[];
-  _id: string;
+  id:                         string;
+  pointId:                    string;
+  config_min:                 number;
+  config_max:                 number;
+  config_status:              boolean;
+  designationsId:             string;
+  point:                      Point;
+  AssignmentsParticipants:    any[];
+  AssignmentsPublicationCart: AssignmentsPublicationCart[];
 }
 
-export interface AssignmentConfig {
-  min: number;
-  max: number;
-  status: boolean;
-}
-
-export interface Point {
-  _id: string;
-  name: string;
-  locationPhoto: string;
-  __v: number;
+export interface AssignmentsPublicationCart {
+  id:                string;
+  assignmentId:      string;
+  publicationCartId: string;
+  publicationCart:   PublicationCart;
 }
 
 export interface PublicationCart {
-  _id: string;
-  name: string;
-  description: Description;
-  themePhoto: string;
-  __v: number;
+  id:          string;
+  name:        string;
+  description: null;
+  themePhoto:  null;
 }
 
-export enum Description {
-  DescriçãoGenérica = "Descrição genérica",
+export interface Point {
+  id:            string;
+  name:          string;
+  locationPhoto: null;
 }
 
 export interface Group {
-  _id: string;
-  name: string;
-  config: GroupConfig;
-  __v: number;
-  participants: Participant[];
-  designation_template: string;
-  event_day: EventDay;
+  id:                string;
+  name:              string;
+  config_max:        number;
+  config_min:        number;
+  config_start_hour: string;
+  config_end_hour:   string;
+  config_weekday:    string;
+  EventDayGroup:     EventDayGroup[];
+  ParticipantsGroup: ParticipantsGroup[];
 }
 
-export interface GroupConfig {
-  startHour: string;
-  endHour: string;
-  weekday: Weekday;
-  _id: string;
-  max: number;
-  min: number;
+export interface EventDayGroup {
+  id:         string;
+  eventDayId: string;
+  groupId:    string;
+  eventDay:   EventDay;
 }
 
 export interface EventDay {
-  _id: string;
-  coordinator_id: string;
-  name: string;
+  id:          string;
+  name:        string;
   description: string;
-  type: string;
-  status: string;
-  weekday: string;
-  __v: number;
+  type:        string;
+  status:      string;
+  weekday:     string;
+}
+
+export interface ParticipantsGroup {
+  id:            string;
+  participantId: string;
+  groupId:       string;
+  participant:   Participant;
 }
 
 export interface Participant {
-  _id: string;
-  cpf: string;
-  name: string;
-  sex: ParticipantSex;
-  phone: string;
-  profile_photo: string;
-  profile: ParticipantProfile;
-  computed: string;
-  __v: number;
-  incident_history?: IncidentHistory;
-}
-
-export interface IncidentHistory {
-  participant: string;
-  reporter: string;
-  designation: string;
-  reason: string;
-  status: IncidentStatus;
-  createdAt: Date;
-  updatedAt: Date;
-  _id: string;
+  id:                  string;
+  name:                string;
+  cpf:                 string;
+  phone:               string;
+  profile_photo:       null;
+  profile:             ParticipantProfile;
+  computed:            string;
+  sex:                 ParticipantSex;
+  IncidentParticipant: any[];
 }

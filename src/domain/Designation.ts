@@ -1,15 +1,16 @@
+import { Weekday } from "@prisma/client";
 import { DesignationStatus } from "../enums/DesignationStatus";
 import { IncidentStatus } from "../enums/IncidentStatus";
 import { ParticipantProfile } from "../enums/ParticipantProfile";
 import { ParticipantSex } from "../enums/ParticipantSex";
-import { Weekday, WeekdayNumber } from "../enums/Weekday";
+import { WeekdayNumber } from "../enums/Weekday";
 import { Exception } from "../shared/Exception";
 
 export type Participant = {
   id: string;
   name: string;
   profile: ParticipantProfile;
-  profile_photo: string | undefined;
+  profile_photo: string | null;
   sex: ParticipantSex;
   phone: string;
   incident_history: {
@@ -20,6 +21,7 @@ export type Participant = {
 };
 
 export type Assignments = {
+  id: string;
   point: {
     id: string;
     name: string;
@@ -86,6 +88,7 @@ export class Designation {
       }
       return true;
     });
+    this.orderAssignment();
   }
 
   get captainsAndCoordinators(): number {
@@ -159,10 +162,7 @@ export class Designation {
       }
     }
 
-    this.assignments = this.assignments.sort((a, b) => a.point.name.localeCompare(b.point.name));
-    this.assignments.forEach((assignment) => assignment.participants.sort((a, b) => a.name.localeCompare(b.name)));
-    this.assignments.forEach((assignment) => assignment.publication_carts.sort((a, b) => a.name.localeCompare(b.name)));
-    this.assignments.sort((a, b) => (a.point.status === b.point.status ? 0 : a.point.status ? -1 : 1));
+    this.orderAssignment();
     this.updatedAt = new Date();
 
     if (this.retryGenerateAssignment) {
@@ -175,25 +175,41 @@ export class Designation {
     }
   }
 
-  public filterAssignment(filter: string): void {
-    for (const assignment of this.assignments) {
-      const isContains = (object: { name: string }) => object.name.toLowerCase().includes(filter.toLowerCase());
-      if (isContains(assignment.point)) {
-        this.assignmentsFiltered.push(assignment);
-        this.assignments.splice(this.assignments.indexOf(assignment), 1);
-        continue;
-      }
-
-      const participants = assignment.participants.filter(isContains);
-      if (participants.length) {
-        this.assignmentsFiltered.push({ ...assignment, participants });
-        this.assignments.splice(this.assignments.indexOf(assignment), 1);
-      }
-    }
+  private orderAssignment() {
+    this.assignments = this.assignments.sort((a, b) => a.point.name.localeCompare(b.point.name));
+    this.assignments.forEach((assignment) => assignment.participants.sort((a, b) => a.name.localeCompare(b.name)));
+    this.assignments.forEach((assignment) => assignment.publication_carts.sort((a, b) => a.name.localeCompare(b.name)));
+    this.assignments
+      .sort((a, b) => (a.point.status === b.point.status ? 0 : a.point.status ? -1 : 1))
+      .sort((a, b) => {
+        if (a.participants.length === 0 && b.participants.length === 0) return 0; // ambos têm zero participantes, permanecem na mesma ordem
+        if (a.participants.length === 0) return 1; // 'a' tem zero participantes, então vem depois de 'b'
+        if (b.participants.length === 0) return -1; // 'b' tem zero participantes, então vem antes de 'a'
+        return 0;
+      });
   }
 
-  public isParticipantsWithoutAssignments(): boolean {
-    return this.participants.some((participant) => participant.profile == ParticipantProfile.PARTICIPANT && !participant.incident_history);
+  public filterAssignment(filter: string): void {
+    this.assignments = this.assignments.filter((assignment) => {
+      const reg = new RegExp(filter, "i");
+      if (reg.test(assignment.point.name.toLowerCase())) {
+        this.assignmentsFiltered.push(assignment);
+        return false;
+      }
+
+      const participants = assignment.participants.filter((participant) => reg.test(participant.name.toLowerCase()));
+      if (participants.length) {
+        this.assignmentsFiltered.push({ ...assignment, participants });
+        return false;
+      }
+      return true;
+    });
+  }
+
+  public isParticipantsWithoutAssignments(): { status: boolean; message: string } {
+    const status =  this.participants.some((participant) => participant.profile == ParticipantProfile.PARTICIPANT && participant?.incident_history?.status === IncidentStatus.OPEN);
+    const nomes = this.participants.filter((participant) => participant.profile == ParticipantProfile.PARTICIPANT && participant?.incident_history?.status === IncidentStatus.OPEN).map((participant) => participant.name);
+    return { status, message: nomes.join(", ") };
   }
 
   public updatePointStatus(pointId: string, status: boolean): void {
@@ -231,6 +247,11 @@ export class Designation {
     assignment.participants = participants;
     // remove os participantes da lista de participantes
     this.participants = this.participants.filter((participant) => !participantsIds.includes(participant.id));
+    this.updatedAt = new Date();
+  }
+
+  public updateStatus(status: DesignationStatus): void {
+    this.status = status;
     this.updatedAt = new Date();
   }
 

@@ -57,16 +57,6 @@ listParticipants:
           cors: true
           authorizer: check-authorizer
 
-createParticipant:
-    handler: src/functions/participants/createParticipants.handler
-    description: Criar um novo participante
-    events:
-      - http:
-          path: participants
-          method: POST
-          cors: true
-          authorizer: check-authorizer
-
 createIncidences:
     handler: src/functions/participants/incidences/createIncidences.handler
     description: Criar incidências para um participante
@@ -75,16 +65,6 @@ createIncidences:
           path: participants/{participantId}/incidences
           method: POST
           cors: true
-
-listIncidences:
-    handler: src/functions/participants/incidences/listIncidences.handler
-    description: Listar todas as incidências
-    events:
-        - http:
-            path: participants/{participantId}/incidences
-            method: GET
-            cors: true
-            authorizer: check-authorizer
 
 updateIncidences:
     handler: src/functions/participants/incidences/updateIncidences.handler
@@ -112,16 +92,6 @@ listWeekDesignations:
     events:
       - http:
           path: designations/week
-          method: GET
-          cors: true
-          authorizer: check-authorizer
-
-listDesignations:
-    handler: src/functions/designations/listDesignations.handler
-    description: Listar todas as designações
-    events:
-      - http:
-          path: designations
           method: GET
           cors: true
           authorizer: check-authorizer
@@ -174,10 +144,3 @@ weekParticipantDesignations:
           path: designations/week/participant/{participantId}
           method: GET
           cors: true
-
-deleteDesignationsExpired: 
-    handler: src/functions/designations/deleteDesignationsExpired.handler
-    description: Deletar designações expiradas
-    events:
-      - schedule: 
-            rate: cron(0/5 * * * ? *)

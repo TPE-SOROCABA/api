@@ -29,6 +29,8 @@ jobs:
         echo INSTANCE_TOKEN=${{ secrets.INSTANCE_TOKEN }} >> .env
         echo USER_TOKEN_ID=${{ secrets.USER_TOKEN_ID }} >> .env
         echo DATABASE_NAME=${{ secrets.DATABASE_NAME }} >> .env
+        echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env
+        echo FRONTEND_URL=${{ secrets.FRONTEND_URL }} >> .env
         cat .env
     - name: Install dependencies
       run: npm ci
