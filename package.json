@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest", 
+    "test": "jest",
     "test:watch": "jest --watch --detectOpenHandles",
     "invoke:healthcheck": "sls invoke local -f healthcheck -s dev",
     "start": "serverless offline -c serverless.local.yml -s dev",
