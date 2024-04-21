@@ -1,6 +1,6 @@
 generator client {
   provider      = "prisma-client-js"
-  binaryTargets = ["native", "rhel-openssl-1.0.x"]
+  binaryTargets = ["native", "rhel-openssl-1.0.x", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
@@ -87,10 +87,10 @@ model ParticipantsGroups {
 }
 
 model Auth {
-  id                String  @id @default(uuid())
+  id                String    @id @default(uuid())
   password          String
-  resetPasswordCode String? @map("reset_password_code")
-  updatedAt         DateTime @updatedAt @map("updated_at") @default(now())
+  resetPasswordCode String?   @map("reset_password_code")
+  updatedAt         DateTime  @default(now()) @updatedAt @map("updated_at")
   expiredAt         DateTime? @map("expired_at")
 
   participant   Participants @relation(fields: [participantId], references: [id])
