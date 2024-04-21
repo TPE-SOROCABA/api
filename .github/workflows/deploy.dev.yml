@@ -31,9 +31,10 @@ jobs:
         echo DATABASE_NAME=${{ secrets.DATABASE_NAME }} >> .env
         echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env
         echo FRONTEND_URL=${{ secrets.FRONTEND_URL }} >> .env
+        echo PRISMA_CLI_BINARY_TARGETS='debian-openssl-3.0.x' >> .env
         cat .env
     - name: Install dependencies
-      run: npm ci
+      run: npm install
     - name: Check types
       run: npm run build
     - name: Configure AWS credentials

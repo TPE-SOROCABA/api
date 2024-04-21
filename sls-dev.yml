@@ -31,7 +31,4 @@ functions: ${file(./resources/functions.yml)}
 
 package:
   individually: true
-  exclude:
-    - node_modules/.prisma/client/query-engine-debian-openssl-1.1.x
-    - node_modules/@prisma/engines
     
