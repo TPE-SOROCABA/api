@@ -68,54 +68,52 @@ export class DesignationRepository {
   }
 
   async update(designation: Designation) {
-    Promise.allSettled([
-      prisma.$transaction(
-        designation.assignments.map((assignment) => {
-          return prisma.assignments.update({
-            where: {
-              id: assignment.id,
-            },
-            data: {
-              pointId: assignment.point.id,
-              config_max: assignment.config.max,
-              config_min: assignment.config.min,
-              config_status: assignment.point.status,
-            },
-          });
-        })
-      ),
-      prisma.$transaction([
-        prisma.assignmentsParticipants.deleteMany({
-          where: {
-            assignmentId: {
-              in: designation.assignments.map((assignment) => assignment.id),
-            },
+    await prisma.$transaction([
+      prisma.assignmentsParticipants.deleteMany({
+        where: {
+          assignmentId: {
+            in: designation.assignments.map((assignment) => assignment.id),
           },
-        }),
-        prisma.assignmentsParticipants.createMany({
-          data: designation.assignments
-            .map((assignment) => {
-              return assignment.participants
-                .map((participant) => {
-                  return {
-                    assignmentId: assignment.id,
-                    participantId: participant.id,
-                  };
-                })
-                .flat();
-            })
-            .flat(),
-        }),
-        prisma.designations.update({
+        },
+      }),
+      prisma.assignmentsParticipants.createMany({
+        data: designation.assignments
+          .map((assignment) => {
+            return assignment.participants
+              .map((participant) => {
+                return {
+                  assignmentId: assignment.id,
+                  participantId: participant.id,
+                };
+              })
+              .flat();
+          })
+          .flat(),
+      }),
+      prisma.designations.update({
+        where: {
+          id: designation.id,
+        },
+        data: {
+          status: designation.status,
+        },
+      }),
+    ]);
+    await prisma.$transaction(
+      designation.assignments.map((assignment) => {
+        return prisma.assignments.update({
           where: {
-            id: designation.id,
+            id: assignment.id,
           },
           data: {
-            status: designation.status,
+            pointId: assignment.point.id,
+            config_max: assignment.config.max,
+            config_min: assignment.config.min,
+            config_status: assignment.point.status,
           },
-        }),
-      ]),
-    ]);
+        });
+      })
+    );
   }
 
   async findByDesignationId(designationId: string): Promise<Designation> {
