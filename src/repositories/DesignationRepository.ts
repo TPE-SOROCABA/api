@@ -68,52 +68,66 @@ export class DesignationRepository {
   }
 
   async update(designation: Designation) {
-    await prisma.$transaction([
-      prisma.assignmentsParticipants.deleteMany({
-        where: {
-          assignmentId: {
-            in: designation.assignments.map((assignment) => assignment.id),
-          },
-        },
-      }),
-      prisma.assignmentsParticipants.createMany({
-        data: designation.assignments
-          .map((assignment) => {
-            return assignment.participants
-              .map((participant) => {
-                return {
-                  assignmentId: assignment.id,
-                  participantId: participant.id,
-                };
-              })
-              .flat();
-          })
-          .flat(),
-      }),
-      prisma.designations.update({
-        where: {
-          id: designation.id,
-        },
-        data: {
-          status: designation.status,
-        },
-      }),
-    ]);
-    await prisma.$transaction(
-      designation.assignments.map((assignment) => {
-        return prisma.assignments.update({
+    try {
+      console.log(`Salvando designação ${designation.id}`);
+
+      console.log("Deletando participantes");
+      console.log("Criando associacoes de participantes com as designações");
+      await prisma.$transaction([
+        prisma.assignmentsParticipants.deleteMany({
           where: {
-            id: assignment.id,
+            assignmentId: {
+              in: designation.assignments.map((assignment) => assignment.id),
+            },
+          },
+        }),
+        prisma.assignmentsParticipants.createMany({
+          data: designation.assignments
+            .map((assignment) => {
+              return assignment.participants
+                .map((participant) => {
+                  return {
+                    assignmentId: assignment.id,
+                    participantId: participant.id,
+                  };
+                })
+                .flat();
+            })
+            .flat(),
+        }),
+        prisma.designations.update({
+          where: {
+            id: designation.id,
           },
           data: {
-            pointId: assignment.point.id,
-            config_max: assignment.config.max,
-            config_min: assignment.config.min,
-            config_status: assignment.point.status,
+            status: designation.status,
           },
-        });
-      })
-    );
+        }),
+      ]);
+
+      console.log("Designação salva com sucesso");
+
+      console.log("Atualizando designação");
+      await prisma.$transaction(
+        designation.assignments.map((assignment) => {
+          return prisma.assignments.update({
+            where: {
+              id: assignment.id,
+            },
+            data: {
+              pointId: assignment.point.id,
+              config_max: assignment.config.max,
+              config_min: assignment.config.min,
+              config_status: assignment.point.status,
+            },
+          });
+        })
+      );
+      console.log("Designação atualizada com sucesso");
+    } catch (error) {
+      console.log("Erro ao atualizar designação", error);
+      throw new Exception(500, "Erro ao atualizar designação");
+    }
   }
 
   async findByDesignationId(designationId: string): Promise<Designation> {
