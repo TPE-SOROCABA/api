@@ -18,6 +18,11 @@ custom:
     securityPolicy: tls_1_2
     apiType: rest
     autoDomain: false
+  esbuild:
+    bundle: true
+    minify: true
+    sourcemap: true
+    external: ['aws-sdk']
 
 provider:
   name: aws
