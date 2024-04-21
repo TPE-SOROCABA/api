@@ -12,7 +12,8 @@
     "logs:dev": "sls logs -c sls-dev.yml -s dev -f cancelDesignation",
     "infra:db": "docker compose up db-mongo -d",
     "prepare": "husky install",
-    "build": "tsc --noemit"
+    "build": "tsc --noemit",
+    "postinstall": "npx prisma generate"
   },
   "keywords": [],
   "author": "",
