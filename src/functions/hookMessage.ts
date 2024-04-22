@@ -3,7 +3,7 @@ import { WhatsAppService } from "../services/WhatsAppService";
 
 const whatsaapService = new WhatsAppService(new Z_APIWhatsAppAdapter());
 export const handler = async (event: any, _context: any) => {
-  const body = JSON.parse(event.body);
+  const body = event.body
 
   console.log(body);
 
