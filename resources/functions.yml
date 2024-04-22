@@ -156,4 +156,13 @@ updateDesignation:
               - Arn
           batchSize: 1 # quantidade de mensagens que serão processadas por vez
 
+hookMessage:
+    handler: src/functions/hookMessage.handler
+    description: Enviar mensagem para um webhook
+    events:
+      - http:
+          path: hooks/message
+          method: POST
+          cors: true
+
         
