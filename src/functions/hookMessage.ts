@@ -10,7 +10,7 @@ export const handler = async (event: any, _context: any) => {
   await whatsaapService
     .sendMessage({
       phone: "15981785706",
-      message: JSON.stringify(body),
+      message: body,
       title: "*TPE Digital - Message*",
       linkUrl: `${process.env.FRONTEND_URL}`,
       linkDescription: "teste hook",
