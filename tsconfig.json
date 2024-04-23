@@ -3,11 +3,13 @@
     "lib": ["ES2022"],
     "module": "ES2022",
     "moduleResolution": "Bundler",
+    "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "target": "ES2022",
     "rootDir": "./",
     "strict": true
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/scripts/**/*.ts"]
 }

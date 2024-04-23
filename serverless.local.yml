@@ -1,0 +1,45 @@
+service: api-tpe-digital
+
+plugins:
+  - serverless-dotenv-plugin
+  - serverless-esbuild
+  - serverless-offline-sqs
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: us-east-1
+  stage: ${opt:stage}
+  profile: tpe
+  timeout: 30
+  memorySize: 128
+
+custom:
+  dotenv:
+    path: .env
+  serverless-offline:
+    allowCache: true
+    noPrependStageInUrl: true
+    noTimeout: true
+    reloadHandler: true
+    endpoint: http://0.0.0.0:9324
+  serverless-offline-sqs:
+      autoCreate: true
+      apiVersion: '2012-11-05'
+      endpoint: http://0.0.0.0:9324
+
+functions: ${file(./resources/functions.yml)}
+
+resources:
+  Resources:
+    DesignationQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: DesignationQueue.fifo
+        FifoQueue: true
+        ContentBasedDeduplication: true
+        VisibilityTimeout: 60 # serve para garantir que a mensagem não será processada por outro lambda antes de ser excluída
+
+package:
+  individually: true

@@ -1,0 +1,37 @@
+_id: req_3fcb3f6dfdfa42eea63d3af00105ce4e
+type: Request
+parentId: fld_af23c0eeccb745aeaf3e62a4e4e86d7f
+modified: 1711156049769
+created: 1710376973082
+url: "{{ _.BASE_URL_LOCAL }}/participants/{{ _.PARTICIPANT_ID }}/incidences/{{
+  _.INCIDENT_ID }}"
+name: Update Participant Incidences
+description: ""
+method: PUT
+body:
+  mimeType: application/json
+  text: |-
+    {
+    	"status": "CANCELLED"
+    }
+parameters:
+  - id: pair_375a9d457a12497a94bdd29de9dbc52a
+    name: filter
+    value: "24"
+    description: ""
+    disabled: true
+headers:
+  - name: Content-Type
+    value: application/json
+    id: pair_13b89ca8d5d44e6fa2ada5e3f030dea6
+authentication:
+  type: bearer
+  token: "{{ _.TOKEN }}"
+metaSortKey: -1710371623874
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

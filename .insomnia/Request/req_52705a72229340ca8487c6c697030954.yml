@@ -1,0 +1,42 @@
+_id: req_52705a72229340ca8487c6c697030954
+type: Request
+parentId: fld_92e0379deee2451b9399a022d7b5bbde
+modified: 1711161762114
+created: 1708600062149
+url: "{{ _.BASE_URL_LOCAL }}/participants"
+name: Create Participant
+description: ""
+method: POST
+body:
+  mimeType: application/json
+  text: |-
+    {
+    	"name": "João Wictor",
+    	"cpf": "35172626840",
+    	"password": "tpe@123",
+    	"phone": "12981829844",
+    	"sex": "MALE",
+    	"profile": "PARTICIPANT"
+    }
+parameters:
+  - id: pair_cf0b2cdac6e2403697239c34fa7cd839
+    name: groupId
+    value: "{{ _.GROUP_ID }}"
+    description: ""
+headers:
+  - name: Content-Type
+    value: application/json
+  - name: User-Agent
+    value: insomnia/2023.5.8
+authentication:
+  type: bearer
+  token: "{{ _.TOKEN }}"
+  disabled: false
+metaSortKey: -1710359583504
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

@@ -1,0 +1,190 @@
+@startuml Domain
+
+enum EventType {
+    RECURRING
+    SPECIAL
+    ADDITIONAL
+}
+
+enum EventStatus {
+    OPEN
+    CLOSED
+}
+
+enum Weekday {
+    SUNDAY
+    MONDAY
+    TUESDAY
+    WEDNESDAY
+    THURSDAY
+    FRIDAY
+    SATURDAY
+    OTHER
+}
+
+entity Event {
+    * id : String <<PK>>
+    * coordinator : Participant <<FK>>
+    __DOMAIN__
+    name : String
+    description : String
+    type : EventType
+    status : EventStatus
+    weekday: Weekday
+}
+Event -- EventType
+Event -- EventStatus
+
+class ParticipantAuth {
+    password : String
+    resetPasswordCode : String
+}
+
+enum ParticipantProfile {
+    COORDINATOR
+    ASSISTANT_COORDINATOR
+    CAPTAIN
+    ASSISTANT_CAPTAIN
+    PARTICIPANT
+    ADMIN_ANALYST
+}
+
+enum ParticipantSex {
+    MALE
+    FEMALE
+}
+
+entity Participant {
+    * id : String <<PK>>
+    * incident_history : IncidentHistory <<FK>>
+    __DOMAIN__
+    cpf : String <<UNIQUE>>
+    name : String
+    sex : ParticipantSex
+    phone : String <<UNIQUE>>
+    profile_photo : String
+    profile : ParticipantProfile
+    auth : ParticipantAuth
+}
+Participant -- ParticipantProfile
+Participant -- ParticipantAuth
+Participant " 1 " -- " n " Event
+
+class GroupConfig {
+    startHour: Strind
+    endHour: String
+    minParticipants: Integer
+    maxParticipants: Integer
+    weekday: Weekday
+}
+GroupConfig -- Weekday
+
+entity Group {
+    * id : String <<PK>>
+    * designation_template: DesignationTemplate <<FK>>
+    * participants: List<Participant> <<FK>>
+    * event: Event <<FK>>
+    __DOMAIN__
+    name: String
+    event: Event
+    config: GroupConfig
+}
+Group -- GroupConfig
+
+entity DesignationTemplate {
+    * id : String <<PK>>
+    * point_publication_carts : List<PointPublicationCart> <<FK>>
+    __DOMAIN__
+    name : String
+}
+Group " 1 " -- " n " Participant
+Group " n " -- " 1 " Event
+Group " 1 " -left- " 1 " DesignationTemplate
+
+class PointPublicationCart {
+    * id : String <<PK>>
+    * point : Point <<FK>>
+    * publication_carts : List<PublicationCart> <<FK>>
+    __DOMAIN__
+    minParticipants : Integer
+    maxParticipants : Integer
+    status : Boolean
+}
+
+entity Point {
+    * id : String <<PK>>
+    __DOMAIN__
+    name : String
+    locationPhoto : String 
+}
+
+entity PublicationCart {
+    * id : String <<PK>>
+    __DOMAIN__
+    name: String
+    description: String
+    themePhoto: String 
+}
+DesignationTemplate " 1 " -- " n " PointPublicationCart
+PointPublicationCart " n " -- " 1 " Point
+PointPublicationCart " n " -- " 1 " PublicationCart
+
+enum DesignationStatus {
+    OPEN
+    CANCELLED
+    CLOSED
+}
+
+class Assignment {
+    point: Point
+    publication_carts: List<PublicationCart>
+    participants: List<Participant>
+}
+
+entity Designation {
+    * id : String <<PK>>
+    * group : Group <<FK>>
+    * participants : List<Participant> <<FK>>
+    __DOMAIN__
+    group : Group
+    status: DesignationStatus
+    assignments : List<Assignment>
+    --
+    createdAt : Date
+    updatedAt : Date
+}
+Designation -- DesignationStatus
+Designation " 1 " -left- " 1 " Group
+Designation -- Assignment
+
+enum IncidentStatus {
+    OPEN
+    CLOSED
+    CANCELLED
+    IGNORED
+}
+
+enum IncidentType {
+    ABSENCE
+    OTHER
+}
+
+entity IncidentHistory {
+    * id : String <<PK>>
+    * participant : Participant <<FK>>
+    * reporter : Participant <<FK>>
+    * designation : Designation <<FK>>
+    __DOMAIN__
+    reason : String
+    status: IncidentStatus
+    type : IncidentType
+    --
+    createdAt : Date
+    updatedAt : Date
+}
+Participant " 1 " -right- " n " IncidentHistory
+IncidentHistory " n " -left- " 1 " Designation
+IncidentHistory -- IncidentStatus
+IncidentHistory -- IncidentType
+
+@enduml

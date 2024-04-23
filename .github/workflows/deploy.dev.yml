@@ -1,0 +1,49 @@
+name: Serverless Framework Deployment - Dev
+
+on:
+  push:
+    branches: [ "dev" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - name: Create env file
+      run: |
+        touch .env
+        echo MONGODB_URI=${{ secrets.MONGODB_URI }} >> .env
+        echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> .env
+        echo Z_API_URL=${{ secrets.Z_API_URL }} >> .env
+        echo INSTANCE_ID=${{ secrets.INSTANCE_ID }} >> .env
+        echo INSTANCE_TOKEN=${{ secrets.INSTANCE_TOKEN }} >> .env
+        echo USER_TOKEN_ID=${{ secrets.USER_TOKEN_ID }} >> .env
+        echo DATABASE_NAME=${{ secrets.DATABASE_NAME }} >> .env
+        echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env
+        echo FRONTEND_URL=${{ secrets.FRONTEND_URL }} >> .env
+        echo PRISMA_CLI_BINARY_TARGETS='debian-openssl-3.0.x' >> .env
+        echo DESIGNATION_UPDATE_QUEUE=${{ secrets.DESIGNATION_UPDATE_QUEUE }} >> .env
+        echo GEMINI_KEY=${{ secrets.GEMINI_KEY }} >> .env
+        cat .env
+    - name: Install dependencies
+      run: npm install
+    - name: Check types
+      run: npm run build
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v3
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+    - name: Serverless Framework deploy
+      run: npm run deploy:dev

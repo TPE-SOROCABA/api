@@ -1,0 +1,62 @@
+service: api-tpe-digital
+
+plugins:
+  - serverless-domain-manager
+  - serverless-dotenv-plugin
+  - serverless-esbuild
+
+	
+custom:
+  customDomain:
+    domainName: api.tpedigital.com.br
+    basePath: 'dev'
+    stage: ${opt:stage}
+    certificateName: 'tpedigital.com.br'
+    createRoute53Record: true
+    createRoute53IPv6Record: true
+    endpointType: 'regional'
+    securityPolicy: tls_1_2
+    apiType: rest
+    autoDomain: false
+  esbuild:
+      exclude: []
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: us-east-1
+  stage: ${opt:stage}
+  timeout: 30
+  memorySize: 128
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - "sqs:SendMessage"
+        - "sqs:ReceiveMessage"
+        - "sqs:SendMessage"
+        - "sqs:GetQueueAttributes"
+      Resource: 
+        - "arn:aws:sqs:us-east-1:533267195262:api-tpe-digital-dev-designation-queue.fifo"
+  environment:
+    NODE_ENV: ${self:provider.stage}
+
+
+functions: ${file(./resources/functions.yml)}
+
+resources:
+  Resources:
+    DesignationQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:service}-${self:provider.stage}-designation-queue.fifo
+        FifoQueue: true
+        ContentBasedDeduplication: true
+        VisibilityTimeout: 60 # serve para garantir que a mensagem não será processada por outro lambda antes de ser excluída
+
+package:
+  individually: true
+  patterns:
+    - '!node_modules/.prisma/client/libquery_engine-*'
+    - 'node_modules/.prisma/client/libquery_engine-rhel-*'
+    - '!node_modules/prisma/libquery_engine-*'
+    - '!node_modules/@prisma/engines/**'
