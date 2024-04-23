@@ -38,10 +38,14 @@ export const handler = async (event: any, _context: any) => {
 
   console.log(`Resposta do serviço de IA: ${JSON.stringify(response.data)}`);
 
+  const payload = response.data.candidates.map((candidate) => candidate.content.parts.map((part) => JSON.parse(part.text))).flat();
+
+  console.log(`Payload gerado: ${JSON.stringify(payload)}`);
+
   await whatsaapService
     .sendMessage({
       phone: "15981785706",
-      message: JSON.stringify(response.data.candidates.map((candidate) => candidate.content.parts.map((part) => JSON.parse(part.text)).join("\n")).join("\n"),null,2),
+      message: body,
       title: "*TPE Digital - Message*",
       linkUrl: `${process.env.FRONTEND_URL}`,
       linkDescription: "teste hook",
