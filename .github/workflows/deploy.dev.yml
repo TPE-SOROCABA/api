@@ -33,6 +33,7 @@ jobs:
         echo FRONTEND_URL=${{ secrets.FRONTEND_URL }} >> .env
         echo PRISMA_CLI_BINARY_TARGETS='debian-openssl-3.0.x' >> .env
         echo DESIGNATION_UPDATE_QUEUE=${{ secrets.DESIGNATION_UPDATE_QUEUE }} >> .env
+        echo GEMINI_KEY=${{ secrets.GEMINI_KEY }} >> .env
         cat .env
     - name: Install dependencies
       run: npm install
