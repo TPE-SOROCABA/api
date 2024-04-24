@@ -207,8 +207,21 @@ export class Designation {
   }
 
   public isParticipantsWithoutAssignments(): { status: boolean; message: string } {
-    const status =  this.participants.some((participant) => participant.profile == ParticipantProfile.PARTICIPANT && participant?.incident_history?.status === IncidentStatus.OPEN);
-    const nomes = this.participants.filter((participant) => participant.profile == ParticipantProfile.PARTICIPANT && participant?.incident_history?.status === IncidentStatus.OPEN).map((participant) => participant.name);
+    const filterParticipant = (participant: Participant): boolean => {
+      if (participant.profile !== ParticipantProfile.CAPTAIN && participant.profile !== ParticipantProfile.COORDINATOR) {
+        if (participant.incident_history) {
+          if (participant.incident_history.status == IncidentStatus.OPEN) {
+            return false;
+          }
+          return true;
+        } else {
+          return true;
+        }
+      }
+      return false;
+    };
+    const status = this.participants.some(filterParticipant);
+    const nomes = this.participants.filter(filterParticipant).map((participant) => participant.name);
     return { status, message: nomes.join(", ") };
   }
 

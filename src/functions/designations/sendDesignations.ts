@@ -42,7 +42,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     console.log(`Capitão encontrado: ${captain?.name}`);
 
     console.log(`Verificando se a designação está aberta ou em andamento`);
-    if (designation.status !== DesignationStatus.OPEN && designation.status !== DesignationStatus.IN_PROGRESS) {
+    if (designation.status !== DesignationStatus.OPEN) {
       console.log(`Designação ${designation.status}`);
       throw new Exception(400, `Designação ${designation.status}`);
     }
@@ -61,7 +61,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     participants.push(...designation.participants.filter((participant) => participant.profile !== ParticipantProfile.PARTICIPANT && participant?.incident_history?.status !== IncidentStatus.OPEN));
 
     for (const participant of participants) {
-      const message = designation.status === DesignationStatus.IN_PROGRESS ? getMessageInProgress(designation, participant, captain) : getMessage(designation, participant, captain);
+      const message = getMessage(designation, participant, captain);
       console.log(`Enviando mensagem para ${participant.name} - ${participant.phone} tipo: ${designation.status}`);
       if (participant.phone.includes("FAKE")) {
         continue;
