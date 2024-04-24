@@ -7,6 +7,7 @@ import { Exception } from "../../shared/Exception";
 import { DesignationRepository } from "../../repositories/DesignationRepository";
 import { prisma } from "../../infra/prismaClient";
 import { LoginService } from "../../services/LoginService";
+import { ParticipantProfile } from "@prisma/client";
 
 interface IParticipant {
   id: string;
@@ -40,6 +41,10 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     if (!participant) {
       console.log(`Usuário ${login.cpf} não encontrado`);
       throw new Exception(401, "Credenciais inválidas");
+    }
+    if (participant.profile === ParticipantProfile.PARTICIPANT){
+      console.log(`Usuário ${participant.name} não tem permissão para logar`);
+      throw new Exception(403, "Usuário não tem permissão para logar");
     }
     console.log(`Usuário ${participant.name} logado com sucesso`);
 

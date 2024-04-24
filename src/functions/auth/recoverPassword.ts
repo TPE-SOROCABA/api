@@ -7,6 +7,7 @@ import { Exception } from "../../shared/Exception";
 import { Z_APIWhatsAppAdapter } from '../../infra/adapter/Z_APIWhatsAppAdapter';
 import { prisma } from '../../infra/prismaClient';
 import { LoginUtils } from "./../../domain/Login";
+import { ParticipantProfile } from '@prisma/client';
 
 const whatsAppAdapter = new Z_APIWhatsAppAdapter();
 const whatsAppService = new WhatsAppService(whatsAppAdapter);
@@ -18,15 +19,20 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     console.log(`Usuário ${body.cpf} está tentando recuperar a senha`);
     const params = await InputRecoverPassword.create(body.cpf);
 
-    const user = await prisma.participants.findUnique({ where: { cpf: params.cpf } });
-    if (!user) {
+    const participant = await prisma.participants.findUnique({ where: { cpf: params.cpf } });
+    if (!participant) {
       throw new Exception(404, "Usuário não encontrado");
+    }
+
+    if (participant.profile === ParticipantProfile.PARTICIPANT){
+      console.log(`Usuário ${participant.name} não tem permissão para logar`);
+      throw new Exception(403, "Usuário não tem permissão para logar");
     }
 
     const code = generateCode();
 
     await prisma.auth.update({
-      where: { participantId: user.id },
+      where: { participantId: participant.id },
       data: { 
         resetPasswordCode: String(code),
         updatedAt: new Date(),
@@ -35,13 +41,13 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     });
    
     const payload = LoginUtils.createJWT({
-      cpf: user.cpf,
+      cpf: participant.cpf,
       code
     })
 
-    const message = `Olá, ${user.name}! Seu código de recuperação de senha é \n\n*${code}*\n\nEle expirará em 5 minutos.\nNão compartilhe com ninguém.\n\nAtenciosamente, TPE Digital`;
+    const message = `Olá, ${participant.name}! Seu código de recuperação de senha é \n\n*${code}*\n\nEle expirará em 5 minutos.\nNão compartilhe com ninguém.\n\nAtenciosamente, TPE Digital`;
     await whatsAppService.sendMessage({
-      phone: user.phone,
+      phone: participant.phone,
       message,
       title: "*TPE Digital - Recuperação de senha*",
       linkUrl: `${process.env.FRONTEND_URL}/forgot-password/check-number?code=${payload}`,

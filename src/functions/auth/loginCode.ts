@@ -7,6 +7,7 @@ import { LoginUtils } from "../../domain/Login";
 import { prisma } from "../../infra/prismaClient";
 import { DesignationRepository } from "../../repositories/DesignationRepository";
 import { LoginService } from "../../services/LoginService";
+import { ParticipantProfile } from "@prisma/client";
 
 const designationRepository = new DesignationRepository();
 const loginService = new LoginService(designationRepository);
@@ -23,6 +24,11 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       throw new Exception(404, "Usuário não encontrado ou código de recuperação inválido");
     }
 
+    if (participant.profile === ParticipantProfile.PARTICIPANT){
+      console.log(`Usuário ${participant.name} não tem permissão para logar`);
+      throw new Exception(403, "Usuário não tem permissão para logar");
+    }
+
     if (participant.Auth.resetPasswordCode !== params.code) {
       throw new Exception(400, "Código de recuperação inválido");
     }
@@ -33,7 +39,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
 
     const payload = await loginService.execute({
       name: participant.name,
-      cpf: participant.cpf,
+      cpf: participant.cpf || "",
       profile: participant.profile,
       participantId: participant.id,
       profile_photo: participant.profile_photo || "",

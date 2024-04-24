@@ -5,6 +5,7 @@ import { JsonHandler } from "../../shared/JsonHandler";
 import { Exception } from "../../shared/Exception";
 import { LoginUtils } from "../../domain/Login";
 import { prisma } from "../../infra/prismaClient";
+import { ParticipantProfile } from "@prisma/client";
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
   try {
@@ -17,6 +18,11 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     if (!participant) {
       console.log(`Usuário ${login.cpf} não encontrado`);
       throw new Exception(401, "Credenciais inválidas");
+    }
+
+    if (participant.profile === ParticipantProfile.PARTICIPANT){
+      console.log(`Usuário ${participant.name} não tem permissão para logar`);
+      throw new Exception(403, "Usuário não tem permissão para logar");
     }
 
     await prisma.auth.update({
