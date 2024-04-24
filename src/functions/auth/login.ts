@@ -29,17 +29,17 @@ const loginService = new LoginService(designationRepository);
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
   try {
     const body = JsonHandler.parse<InputLogin>(_event.body);
-    const login = await InputLogin.create(body.cpf, body.password);
-    console.log(`Usuário ${login.cpf} está tentando logar`);
+    const login = await InputLogin.create(body.phone, body.password);
+    console.log(`Usuário ${login.phone} está tentando logar`);
 
     const [participant] = await prisma.$queryRaw<IParticipant[]>`
     select * from participants p 
     inner join auths a on a.participant_id = p.id
-    where p.cpf = ${login.cpf} and a.password = ${LoginUtils.encryptPassword(login.password)}
+    where p.phone = ${login.phone} and a.password = ${LoginUtils.encryptPassword(login.password)}
   `;
 
     if (!participant) {
-      console.log(`Usuário ${login.cpf} não encontrado`);
+      console.log(`Usuário ${login.phone} não encontrado`);
       throw new Exception(401, "Credenciais inválidas");
     }
     if (participant.profile === ParticipantProfile.PARTICIPANT){

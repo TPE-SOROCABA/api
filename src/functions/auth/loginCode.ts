@@ -15,10 +15,10 @@ const loginService = new LoginService(designationRepository);
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
   try {
     const body = JsonHandler.parse<InputLoginCode>(_event.body || "{}");
-    console.log(`Usuário ${body.cpf} está tentando recuperar a senha`);
-    const params = await InputLoginCode.create(body.cpf, body.code);
+    console.log(`Usuário ${body.phone} está tentando recuperar a senha`);
+    const params = await InputLoginCode.create(body.phone, body.code);
 
-    const participant = await prisma.participants.findUnique({ where: { cpf: params.cpf }, include: { Auth: true } });
+    const participant = await prisma.participants.findUnique({ where: { phone: params.phone }, include: { Auth: true } });
 
     if (!participant || !participant.Auth?.expiredAt) {
       throw new Exception(404, "Usuário não encontrado ou código de recuperação inválido");
