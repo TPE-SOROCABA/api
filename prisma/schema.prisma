@@ -60,7 +60,8 @@ enum ParticipantSex {
 model Participants {
   id                  String              @id @default(uuid())
   name                String
-  cpf                 String              @unique
+  cpf                 String?             @unique
+  email               String?             @unique
   phone               String              @unique
   profile_photo       String?
   profile             ParticipantProfile  @default(PARTICIPANT)
