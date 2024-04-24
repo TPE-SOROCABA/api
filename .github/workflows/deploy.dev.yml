@@ -22,16 +22,14 @@ jobs:
     - name: Create env file
       run: |
         touch .env
-        echo MONGODB_URI=${{ secrets.MONGODB_URI }} >> .env
-        echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> .env
+        echo PRISMA_CLI_BINARY_TARGETS='debian-openssl-3.0.x' >> .env
         echo Z_API_URL=${{ secrets.Z_API_URL }} >> .env
         echo INSTANCE_ID=${{ secrets.INSTANCE_ID }} >> .env
         echo INSTANCE_TOKEN=${{ secrets.INSTANCE_TOKEN }} >> .env
         echo USER_TOKEN_ID=${{ secrets.USER_TOKEN_ID }} >> .env
-        echo DATABASE_NAME=${{ secrets.DATABASE_NAME }} >> .env
+        echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> .env
         echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env
         echo FRONTEND_URL=${{ secrets.FRONTEND_URL }} >> .env
-        echo PRISMA_CLI_BINARY_TARGETS='debian-openssl-3.0.x' >> .env
         echo DESIGNATION_UPDATE_QUEUE=${{ secrets.DESIGNATION_UPDATE_QUEUE }} >> .env
         echo GEMINI_KEY=${{ secrets.GEMINI_KEY }} >> .env
         cat .env

@@ -22,18 +22,26 @@ jobs:
     - name: Create env file
       run: |
         touch .env
-        echo TESTE=${{ secrets.TESTE }} >> .env
+        echo PRISMA_CLI_BINARY_TARGETS='debian-openssl-3.0.x' >> .env
+        echo Z_API_URL=${{ secrets.Z_API_URL }} >> .env
+        echo INSTANCE_ID=${{ secrets.INSTANCE_ID }} >> .env
+        echo INSTANCE_TOKEN=${{ secrets.INSTANCE_TOKEN }} >> .env
+        echo USER_TOKEN_ID=${{ secrets.USER_TOKEN_ID }} >> .env
+        echo JWT_SECRET=${{ secrets.HMG_JWT_SECRET }} >> .env
+        echo DATABASE_URL=${{ secrets.HMG_DATABASE_URL }} >> .env
+        echo FRONTEND_URL=${{ secrets.HMG_FRONTEND_URL }} >> .env
+        echo DESIGNATION_UPDATE_QUEUE=${{ secrets.HMG_DESIGNATION_UPDATE_QUEUE }} >> .env
         echo .env
         cat .env
-    # - name: Install dependencies
-    #   run: npm install
-    # - name: Check types
-    #   run: npm run build
-    # - name: Configure AWS credentials
-    #   uses: aws-actions/configure-aws-credentials@v3
-    #   with:
-    #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    #     aws-region: ${{ secrets.AWS_REGION }}
-    # - name: Serverless Framework deploy
-    #   run: npm run deploy:hmg
+    - name: Install dependencies
+      run: npm install
+    - name: Check types
+      run: npm run build
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v3
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+    - name: Serverless Framework deploy
+      run: npm run deploy:hmg
