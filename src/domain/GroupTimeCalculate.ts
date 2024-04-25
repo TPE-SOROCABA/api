@@ -18,12 +18,20 @@ export class GroupTimeCalculate {
         .day(WeekdayNumber[weekday])
         .hour(Number(startHour.split(":")[0]))
         .minute(Number(startHour.split(":")[1]))
+        .subtract(3, 'hours')
         .toDate();
       this.groupDateEnd = dayjs(groupDateActual)
         .day(WeekdayNumber[weekday])
         .hour(Number(endHour.split(":")[0]))
         .minute(Number(endHour.split(":")[1]))
+        .subtract(3, 'hours')
         .toDate();
+
+        console.log({
+            groupDateStart: this.groupDateStart,
+            groupDateEnd: this.groupDateEnd,
+            groupDateActual: this.groupDateActual
+        })
     }
   
     get isDesignationStart(): boolean {

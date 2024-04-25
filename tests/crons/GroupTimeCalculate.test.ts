@@ -1,10 +1,13 @@
+import { Weekday } from "@prisma/client";
 import { GroupTimeCalculate } from "../../src/domain/GroupTimeCalculate";
 import dayjs from "dayjs";
+
+process.env.TZ = "UTC";
 
 describe("Mudança de status da designação", () => {
   describe("Início da designação", () => {
     test("Deve validar se a designação deve ser iniciada [+10 minutos]", () => {
-      const dataAtual = dayjs("2024-04-21T08:40:00").toDate();
+      const dataAtual = dayjs("2024-04-21T08:40:00").subtract(3, "hours").toDate();
       const group = {
         id: "75bad0aa-291c-4395-a185-83391b733a25",
         name: "Domingo Manhã",
@@ -12,7 +15,7 @@ describe("Mudança de status da designação", () => {
         config_min: 10,
         config_start_hour: "08:30",
         config_end_hour: "13:00",
-        config_weekday: "SUNDAY",
+        config_weekday: Weekday.SUNDAY
       };
       const calculate = new GroupTimeCalculate(group as any, dataAtual);
 
@@ -21,7 +24,7 @@ describe("Mudança de status da designação", () => {
     });
 
     test("Deve validar se a designação não deve ser iniciada[-10 minutos]", () => {
-      const dataAtual = dayjs("2024-04-21T08:20:00").toDate();
+      const dataAtual = dayjs("2024-04-21T08:20:00").subtract(3, "hours").toDate();
       const group = {
         id: "75bad0aa-291c-4395-a185-83391b733a25",
         name: "Segunda Manhã",
@@ -41,7 +44,7 @@ describe("Mudança de status da designação", () => {
 
   describe("Fim da designação", () => {
     test("Deve validar se a designação deve ser finalizada [+10 minutos]", () => {
-      const dataAtual = dayjs("2024-04-21T13:10:00").toDate();
+      const dataAtual = dayjs("2024-04-21T13:10:00").subtract(3, "hours").toDate();
       const group = {
         id: "75bad0aa-291c-4395-a185-83391b733a25",
         name: "Segunda Manhã",
@@ -58,7 +61,7 @@ describe("Mudança de status da designação", () => {
     });
 
     test("Deve validar se a designação não deve ser finalizada [-10 minutos]", () => {
-      const dataAtual = dayjs("2024-04-21T12:50:00").toDate();
+      const dataAtual = dayjs("2024-04-21T12:50:00").subtract(3, "hours").toDate();
       const group = {
         id: "75bad0aa-291c-4395-a185-83391b733a25",
         name: "Segunda Manhã",
@@ -77,7 +80,7 @@ describe("Mudança de status da designação", () => {
 
   describe("Falta 2 horas para a designação começar", () => {
     test("Deve validar se falta 2 horas para a designação começar [+10 minutos]", () => {
-      const dataAtual = dayjs("2024-04-21T06:40:00").toDate();
+      const dataAtual = dayjs("2024-04-21T06:40:00").subtract(3, "hours").toDate();
       const group = {
         id: "75bad0aa-291c-4395-a185-83391b733a25",
         name: "Segunda Manhã",
@@ -93,7 +96,7 @@ describe("Mudança de status da designação", () => {
     });
 
     test("Deve validar se falta 2 horas para a designação começar [-10 minutos]", () => {
-      const dataAtual = dayjs("2024-04-21T06:10:00").toDate();
+      const dataAtual = dayjs("2024-04-21T06:10:00").subtract(3, "hours").toDate();
       const group = {
         id: "75bad0aa-291c-4395-a185-83391b733a25",
         name: "Segunda Manhã",
@@ -111,7 +114,7 @@ describe("Mudança de status da designação", () => {
 
   describe("Passou 48 horas da designação ser finalizada", () => {
     test("Deve validar se passou 48 horas da designação ser finalizada [+10 minutos]", () => {
-      const dataAtual = dayjs("2024-04-23T13:10:00").toDate();
+      const dataAtual = dayjs("2024-04-23T13:10:00").subtract(3, "hours").toDate();
       const group = {
         id: "75bad0aa-291c-4395-a185-83391b733a25",
         name: "Segunda Manhã",
@@ -127,7 +130,7 @@ describe("Mudança de status da designação", () => {
     });
 
     test("Deve validar se passou 48 horas da designação ser finalizada [-10 minutos]", () => {
-      const dataAtual = dayjs("2024-04-23T12:50:00").toDate();
+      const dataAtual = dayjs("2024-04-23T12:50:00").subtract(3, "hours").toDate();
       const group = {
         id: "75bad0aa-291c-4395-a185-83391b733a25",
         name: "Segunda Manhã",
