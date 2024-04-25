@@ -3,12 +3,24 @@
     "lib": ["ES2022"],
     "module": "ES2022",
     "moduleResolution": "Bundler",
+    "esModuleInterop": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "target": "ES2022",
     "rootDir": "./",
-    "strict": true
+    "baseUrl": "./",
+    "strict": true,
+    "paths": {
+      "infra/*": ["src/infra/*"],
+      "domain/*": ["src/domain/*"],
+      "services/*": ["src/services/*"],
+      "repositories/*": ["src/repositories/*"],
+      "mappers/*": ["src/mappers/*"],
+      "shared/*": ["src/shared/*"],
+      "interfaces/*": ["src/interfaces/*"],
+      "enums/*": ["src/enums/*"],
+    }
   },
   "include": ["src/**/*.ts"],
   "exclude": ["src/scripts/**/*.ts"]

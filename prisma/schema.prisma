@@ -35,10 +35,11 @@ enum Weekday {
 }
 
 enum DesignationStatus {
-  OPEN
-  CANCELLED
-  CLOSED
-  IN_PROGRESS
+  OPEN 
+  CANCELLED 
+  IN_PROGRESS 
+  CLOSED 
+  ARCHIVED 
 }
 
 enum EventStatus {
