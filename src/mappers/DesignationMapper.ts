@@ -1,6 +1,6 @@
+import { DesignationStatus } from "@prisma/client";
 import { Designation, Participant, Assignments } from "../domain/Designation";
 import { IDesignationModel } from "../functions/designations/interfaces/IDesignationModel";
-import { DesignationStatus } from "../enums/DesignationStatus";
 
 export abstract class DesignationMapper {
   static toDomain(designationModel: IDesignationModel): Designation {

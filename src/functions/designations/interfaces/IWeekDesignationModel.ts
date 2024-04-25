@@ -1,4 +1,4 @@
-import { DesignationStatus } from "../../../enums/DesignationStatus";
+import { DesignationStatus } from "@prisma/client";
 import { IncidentStatus } from "../../../enums/IncidentStatus";
 import { ParticipantSex } from "../../../enums/ParticipantSex";
 

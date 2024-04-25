@@ -1,5 +1,4 @@
-import { Weekday } from "@prisma/client";
-import { DesignationStatus } from "../enums/DesignationStatus";
+import { DesignationStatus, Weekday } from "@prisma/client";
 import { IncidentStatus } from "../enums/IncidentStatus";
 import { ParticipantProfile } from "../enums/ParticipantProfile";
 import { ParticipantSex } from "../enums/ParticipantSex";
@@ -91,7 +90,7 @@ export class Designation {
     this.orderAssignment();
   }
 
-  get captainsAndCoordinators(): number {
+  get captainsAndCoordinatorsNumber(): number {
     return this.participants.filter((participant) => participant.profile === ParticipantProfile.CAPTAIN || participant.profile === ParticipantProfile.COORDINATOR).length;
   }
 
@@ -111,7 +110,16 @@ export class Designation {
   }
 
   get retryGenerateAssignment() {
-    return this.participants.filter((participant) => !Boolean(participant.incident_history)).length > this.captainsAndCoordinators || this.oneParticipantAssignments;
+    return this.participants.filter((participant) => !Boolean(participant.incident_history)).length > this.captainsAndCoordinatorsNumber || this.oneParticipantAssignments;
+  }
+
+  get captainsAndCoordinators(): Participant[] {
+    const participants: Participant[] = [];
+    console.log(`Procurando responsáveis`);
+    participants.push(...this.participants.filter((p) => p.profile === ParticipantProfile.CAPTAIN || p.profile === ParticipantProfile.COORDINATOR));
+    participants.push(...this.assignments.map((a) => a.participants.filter((p) => p.profile === ParticipantProfile.CAPTAIN || p.profile === ParticipantProfile.COORDINATOR)).flat());
+
+    return participants;
   }
 
   public generateAssignment(retry = 100): void {

@@ -1,5 +1,5 @@
 export class ParticipantUtils {
-  static calculateComputedField({ cpf, name, phone }: any): string {
-    return `${cpf} ${name} ${phone}`;
+  static calculateComputedField({ name, phone }: { name: string; phone: string }) {
+    return `${name} ${phone}`;
   }
 }

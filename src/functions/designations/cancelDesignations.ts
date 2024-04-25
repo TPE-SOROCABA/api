@@ -1,10 +1,10 @@
 import type { Context, APIGatewayProxyStructuredResultV2, APIGatewayProxyEventV2, Handler } from "aws-lambda";
 import { ResponseHandler } from "../../shared/ResponseHandler";
-import { DesignationStatus } from "../../enums/DesignationStatus";
 import { DesignationRepository } from "../../repositories/DesignationRepository";
 import { WhatsAppService } from "../../services/WhatsAppService";
 import { Z_APIWhatsAppAdapter } from "../../infra/adapter/Z_APIWhatsAppAdapter";
 import { Weekday_PT_BR } from "../../enums/Weekday";
+import { DesignationStatus } from "@prisma/client";
 
 const designationRepository = new DesignationRepository();
 const whatsaapService = new WhatsAppService(new Z_APIWhatsAppAdapter());
