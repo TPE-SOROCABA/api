@@ -35,11 +35,11 @@ enum Weekday {
 }
 
 enum DesignationStatus {
-  OPEN 
-  CANCELLED 
-  IN_PROGRESS 
-  CLOSED 
-  ARCHIVED 
+  OPEN
+  CANCELLED
+  IN_PROGRESS
+  CLOSED
+  ARCHIVED
 }
 
 enum EventStatus {
@@ -74,6 +74,7 @@ model Participants {
 
   AssignmentsParticipants AssignmentsParticipants[]
   ParticipantsGroup       ParticipantsGroups[]
+  Groups                  Groups[]
 
   @@map("participants")
 }
@@ -164,6 +165,9 @@ model Groups {
   config_end_hour   String  @map("config_end_hour")
   config_weekday    Weekday @map("config_weekday")
 
+  coordinator   Participants? @relation(fields: [coordinatorId], references: [id])
+  coordinatorId String?        @map("coordinator_id")
+
   Designations         Designations[]
   ParticipantsGroup    ParticipantsGroups[]
   EventDayGroup        EventDayGroups[]
@@ -196,13 +200,16 @@ model EventDayGroups {
 }
 
 model Designations {
-  id        String            @id @default(uuid())
-  name      String
-  group     Groups            @relation(fields: [groupId], references: [id])
-  groupId   String            @map("group_id")
-  status    DesignationStatus
-  createdAt DateTime          @default(now()) @map("created_at")
-  updatedAt DateTime          @updatedAt @map("updated_at")
+  id                        String            @id @default(uuid())
+  name                      String
+  group                     Groups            @relation(fields: [groupId], references: [id])
+  groupId                   String            @map("group_id")
+  status                    DesignationStatus
+  createdAt                 DateTime          @default(now()) @map("created_at")
+  updatedAt                 DateTime          @updatedAt @map("updated_at")
+  designationDate           DateTime          @default(now()) @map("designation_date")
+  mandatoryPresence         Boolean           @default(true) @map("mandatory_presence")
+  cancellationJustification String?           @map("cancellation_justification")
 
   assignments       Assignments[]
   IncidentHistories IncidentHistories[]
