@@ -169,7 +169,9 @@ transactionStatusDesignations:
     handler: src/functions/designations/transactionStatusDesignations.handler
     description: Atualizar status de designações
     events:
-      - schedule: cron(0/10 3-21 ? * * *)
+      - schedule: cron(10 9-21 ? * * *) # Para BR seria 06:10 até 18:10
+      - schedule: cron(35 9 ? * * *)  # Para BR seria 06:35
+      - schedule: cron(35 13 ? * * *)  # Para BR seria 10:35
         
 hookMessage:
     handler: src/functions/hookMessage.handler
