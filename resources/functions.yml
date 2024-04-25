@@ -136,12 +136,21 @@ sendDesignation:
           cors: true
           authorizer: check-authorizer
 
+designationsById:
+    handler: src/functions/designations/designationsById.handler
+    description: Buscar designações por id
+    events:
+      - http:
+          path: designations/{designationId}
+          method: GET
+          cors: true
+
 weekParticipantDesignations:
     handler: src/functions/designations/weekParticipantDesignations.handler
     description: Listar todas as designações da semana de um participante
     events:
       - http:
-          path: designations/week/participant/{participantId}
+          path: designations/{designationId}/participant/{participantId}
           method: GET
           cors: true
 

@@ -12,21 +12,20 @@ const designationRepository = new DesignationRepository();
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
   try {
     const participantId = _event.pathParameters?.participantId;
+    const designationId = _event.pathParameters?.designationId;
 
-    if (!participantId) {
+    if (!participantId || !designationId) {
       return ResponseHandler.error({ message: "Parâmetros inválidos" });
     }
 
-    const designation = await designationRepository.findByParticipantId(participantId);
+    const designation = await designationRepository.findByDesignationId(designationId);
 
-    if (!designation.length) {
+    if (!designation) {
       throw new Exception(404, "Designação não encontrada");
     }
 
-    designation.forEach((d) => {
-      d.assignments = d.assignments.filter((a) => a.participants.some((p) => p.id === participantId));
-    });
-
+    designation.assignments = designation.assignments.filter((a) => a.participants.some((p) => p.id === participantId));
+  
     const participant = await prisma.participants.findUnique({
       where: {
         id: participantId,
@@ -47,7 +46,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
 
     const eventDay = await prisma.eventDayGroups.findFirst({
       where: {
-        groupId: designation[0].group.id,
+        groupId: designation.group.id,
       },
       include: {
         eventDay: true,
@@ -55,7 +54,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     });
 
     return ResponseHandler.success(
-      designation.map((d) => {
+      [designation].map((d) => {
         const sexEmoticon = (sex: ParticipantSex) => (sex === ParticipantSex.MALE ? "🧑🏻‍💼" : "👩🏻‍💼");
 
         const [assignments] = d.assignments.map((a) => ({
@@ -81,7 +80,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
                 publication_carts: assignments.publication_carts,
               };
 
-        if (participant.profile !== ParticipantProfile.PARTICIPANT) {
+        if (participant.profile == ParticipantProfile.CAPTAIN || participant.profile == ParticipantProfile.COORDINATOR) {
           const captais = d.participants.filter((p) => p.profile == ParticipantProfile.CAPTAIN || p.profile == ParticipantProfile.COORDINATOR);
           details = {
             point: "Visitas de Encorajamento",
