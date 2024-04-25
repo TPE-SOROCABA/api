@@ -5,7 +5,7 @@ import { ParticipantSex } from "../../enums/ParticipantSex";
 import { IncidentStatus } from "../../enums/IncidentStatus";
 import { DesignationRepository } from "../../repositories/DesignationRepository";
 import { prisma } from "../../infra/prismaClient";
-import { ParticipantProfile } from "@prisma/client";
+import { DesignationStatus, ParticipantProfile } from "@prisma/client";
 
 const designationRepository = new DesignationRepository();
 
@@ -22,6 +22,10 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
 
     if (!designation) {
       throw new Exception(404, "Designação não encontrada");
+    }
+
+    if (designation.status !== DesignationStatus.CLOSED && designation.status !== DesignationStatus.IN_PROGRESS) {
+      return ResponseHandler.success([]);
     }
 
     designation.assignments = designation.assignments.filter((a) => a.participants.some((p) => p.id === participantId));

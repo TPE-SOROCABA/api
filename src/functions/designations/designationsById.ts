@@ -4,6 +4,7 @@ import { Exception } from "../../shared/Exception";
 import { ParticipantSex } from "../../enums/ParticipantSex";
 import { DesignationRepository } from "../../repositories/DesignationRepository";
 import { prisma } from "../../infra/prismaClient";
+import { DesignationStatus, IncidentStatus } from "@prisma/client";
 
 const designationRepository = new DesignationRepository();
 
@@ -19,6 +20,10 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
 
     if (!designation) {
       throw new Exception(404, "Designação não encontrada");
+    }
+
+    if (designation.status !== DesignationStatus.IN_PROGRESS) {
+      return ResponseHandler.success([]);
     }
 
     const eventDay = await prisma.eventDayGroups.findFirst({
