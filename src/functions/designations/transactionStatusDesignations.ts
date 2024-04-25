@@ -1,5 +1,6 @@
 import { DesignationStatus } from "@prisma/client";
 import type { ScheduledHandler } from "aws-lambda";
+import dayjs from "dayjs";
 import { GroupTimeCalculate } from "domain/GroupTimeCalculate";
 import { prisma } from "infra/prismaClient";
 import { TransactionDesignationClosedEndMore48Hours } from "services/transaction-designation/TransactionDesignationClosedEndMore48Hours";
@@ -21,7 +22,7 @@ export const handler: ScheduledHandler = async (): Promise<void> => {
   });
 
   for (const group of groups) {
-    const groupTimeCalculate = new GroupTimeCalculate(group, new Date());
+    const groupTimeCalculate = new GroupTimeCalculate(group, dayjs().subtract(3, 'hours').toDate());
     if (groupTimeCalculate.isDesignationStartLess2Hours) {
       const designationOpen = group.Designations.find(d => d.status === DesignationStatus.OPEN)
       if(designationOpen) {
