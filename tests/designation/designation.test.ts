@@ -24,7 +24,7 @@ describe("Designação Semana", () => {
 
   test("Deve validar os getters", async () => {
     const designation = setupDesignationMock();
-    expect(designation.captainsAndCoordinators).toBe(1);
+    expect(designation.captainsAndCoordinatorsNumber).toBe(1);
     expect(designation.oneParticipantAssignments).toBe(false);
     expect(designation.participantsCount).toBe(54);
     expect(designation.totalVacancies).toBe(63);

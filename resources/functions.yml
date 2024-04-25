@@ -156,6 +156,12 @@ updateDesignation:
               - Arn
           batchSize: 1 # quantidade de mensagens que serão processadas por vez
 
+transactionStatusDesignations:
+    handler: src/functions/designations/transactionStatusDesignations.handler
+    description: Atualizar status de designações
+    events:
+      - schedule: cron(0/10 3-21 ? * * *)
+        
 hookMessage:
     handler: src/functions/hookMessage.handler
     description: Enviar mensagem para um webhook
