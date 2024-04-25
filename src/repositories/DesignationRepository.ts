@@ -101,6 +101,8 @@ export class DesignationRepository {
           },
           data: {
             status: designation.status,
+            cancellationJustification: designation.cancellationJustification,
+            mandatoryPresence: designation.mandatoryPresence,
           },
         }),
       ]);

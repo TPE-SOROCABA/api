@@ -1,5 +1,7 @@
 import { DesignationStatus, Designations, ParticipantProfile } from "@prisma/client";
+import { Designation } from "domain/Designation";
 import { Z_APIWhatsAppAdapter } from "infra/adapter/Z_APIWhatsAppAdapter";
+import { prisma } from "infra/prismaClient";
 import { DesignationRepository } from "repositories/DesignationRepository";
 import { SendAssignmentDesignation } from "services/SendAssignmentDesignation";
 import { WhatsAppService } from "services/WhatsAppService";
@@ -24,8 +26,9 @@ export async function TransactionStatusDesignationOpenLess2Hours(designationOpen
   await designationRepository.update(designation);
 
   console.log("Avise o coordenador sobre o atraso da designação");
-  const coordinator = designation.captainsAndCoordinators.find((participant) => participant.profile === ParticipantProfile.COORDINATOR);
-  if (coordinator) {
+  const data = await getCoordinatorGroup(designation)
+  if (data?.group?.coordinator) {
+    const { coordinator } = data.group;
     await whatsaapService.sendMessage({
       phone: coordinator.phone,
       message: `Olá, a designação ${designation.group.name} foi aberta com menos de 2 horas para o início. Por favor, verifique se todos os participantes estão cientes e prontos para a designação.\n\n`,
@@ -37,3 +40,23 @@ export async function TransactionStatusDesignationOpenLess2Hours(designationOpen
 
   console.log("Designação aberta com sucesso")
 }
+
+async function getCoordinatorGroup(designation: Designation) {
+  return await prisma.designations.findFirst({
+    where: {
+      id: designation.id,
+    },
+    select: {
+      group: {
+        select: {
+          coordinator: {
+            select: {
+              phone: true,
+            },
+          },
+        },
+      },
+    },
+  });
+}
+

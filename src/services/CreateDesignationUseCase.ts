@@ -1,6 +1,7 @@
-import { DesignationStatus, Prisma } from "@prisma/client";
+import { DesignationStatus, Groups, Prisma } from "@prisma/client";
 import { prisma } from "../infra/prismaClient";
 import { Exception } from "../shared/Exception";
+import { WeekdayNumber } from "enums/Weekday";
 
 export class CreateDesignationUseCase {
   constructor(readonly prismaClient = prisma) {}
@@ -41,6 +42,7 @@ export class CreateDesignationUseCase {
             name: `Designação ${group.name}`,
             groupId,
             status: DesignationStatus.OPEN,
+            designationDate: this.getNextDate(new Date(), group),
           },
         });
         console.log(`Designação ${designation.name} criada com sucesso`);
@@ -75,5 +77,19 @@ export class CreateDesignationUseCase {
         isolationLevel: Prisma.TransactionIsolationLevel.Serializable, // optional, default defined by database configuration
       }
     );
+  }
+
+  private getNextDate(today = new Date(), group: Groups): Date {
+    const weekday = WeekdayNumber[group.config_weekday];
+    const nextDate = new Date(today);
+    nextDate.setDate(today.getDate() + ((+weekday + 7 - today.getDay()) % 7));
+    nextDate.setHours(+group.config_start_hour.split(":")[0]);
+    nextDate.setMinutes(+group.config_start_hour.split(":")[1]);
+
+    if (nextDate < today) {
+      nextDate.setDate(nextDate.getDate() + 7);
+    }
+
+    return nextDate;
   }
 }

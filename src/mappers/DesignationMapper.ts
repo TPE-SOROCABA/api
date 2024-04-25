@@ -86,6 +86,9 @@ export abstract class DesignationMapper {
       designationModel?.updatedAt
     );
 
+    designation.mandatoryPresence = designationModel.mandatoryPresence;
+    designation.cancellationJustification = designationModel?.cancellationJustification || ""
+
     return designation;
   }
 }

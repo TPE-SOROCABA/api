@@ -8,6 +8,8 @@ export interface IDesignationModel {
   createdAt:   Date;
   updatedAt:   Date;
   group:       Group;
+  cancellationJustification?: string;
+  mandatoryPresence:        boolean;
   assignments: Assignment[];
 }
 

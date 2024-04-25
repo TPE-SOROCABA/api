@@ -54,6 +54,9 @@ let count: number = 0;
 export class Designation {
   public incidents: Participant[] = [];
   public assignmentsFiltered: Assignments[] = [];
+  public cancellationJustification: string = "";
+  public mandatoryPresence: boolean = true;
+
   constructor(
     readonly id: string,
     public group: Group,
@@ -273,6 +276,17 @@ export class Designation {
 
   public updateStatus(status: DesignationStatus): void {
     this.status = status;
+    this.updatedAt = new Date();
+  }
+
+  public cancelDesignation(justification: string): void {
+    this.status = DesignationStatus.CANCELLED;
+    this.cancellationJustification = justification;
+    this.updatedAt = new Date();
+  }
+
+  public setMandatoryPresence(mandatoryPresence: boolean): void {
+    this.mandatoryPresence = mandatoryPresence;
     this.updatedAt = new Date();
   }
 
