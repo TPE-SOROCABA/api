@@ -168,10 +168,13 @@ updateDesignation:
 transactionStatusDesignations:
     handler: src/functions/designations/transactionStatusDesignations.handler
     description: Atualizar status de designações
-    events:
-      - schedule: cron(10 9-21 ? * * *) # Para BR seria 06:10 até 18:10
+    events: # BR 06:35, 10:35, 13:05, 17:05
       - schedule: cron(35 9 ? * * *)  # Para BR seria 06:35
       - schedule: cron(35 13 ? * * *)  # Para BR seria 10:35
+      - schedule: cron(10 16 ? * * *)  # Para BR seria 13:05
+      - schedule: cron(10 20 ? * * *)  # Para BR seria 17:05
+      # - schedule: cron(10 9-21 ? * * *) # Para BR seria 06:10 até 18:10
+      
         
 hookMessage:
     handler: src/functions/hookMessage.handler
