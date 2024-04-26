@@ -145,6 +145,16 @@ designationsById:
           method: GET
           cors: true
 
+groupDesignationsDetails:
+    handler: src/functions/designations/groupDesignationsDetails.handler
+    description: Buscar detalhes de designações de um grupo
+    events:
+      - http:
+          path: designations/group/{groupId}/details
+          method: GET
+          cors: true
+          authorizer: check-authorizer
+
 weekParticipantDesignations:
     handler: src/functions/designations/weekParticipantDesignations.handler
     description: Listar todas as designações da semana de um participante
