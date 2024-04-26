@@ -22,7 +22,7 @@ export const handler: ScheduledHandler = async (): Promise<void> => {
   });
 
   for (const group of groups) {
-    const groupTimeCalculate = new GroupTimeCalculate(group, dayjs().toDate());
+    const groupTimeCalculate = new GroupTimeCalculate(group, dayjs().subtract(3,'hours').toDate());
     if (groupTimeCalculate.isDesignationStartLess2Hours) {
       const designationOpen = group.Designations.find(d => d.status === DesignationStatus.OPEN)
       if(designationOpen) {
