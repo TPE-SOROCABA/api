@@ -4,6 +4,7 @@ import { DesignationRepository } from "../../repositories/DesignationRepository"
 import { JsonHandler } from "../../shared/JsonHandler";
 import { Exception } from "../../shared/Exception";
 import { SendUpdateDesignation } from "../../services/SendUpdateDesignation";
+import { DesignationStatus } from "@prisma/client";
 
 const designationRepository = new DesignationRepository();
 const sendUpdateDesignation = new SendUpdateDesignation();
@@ -20,6 +21,10 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     const designation = await designationRepository.findByDesignationId(designationId);
     if (!designation) {
       throw new Exception(404, "Designação não encontrada");
+    }
+
+    if (designation.status !== DesignationStatus.OPEN && designation.status !== DesignationStatus.IN_PROGRESS) {
+      throw new Exception(403, "Designação não pode ser alterada");
     }
 
     designation.updateParticipants(pointId, body.participants);
