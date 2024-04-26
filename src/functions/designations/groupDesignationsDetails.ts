@@ -15,7 +15,7 @@ export interface IGroup {
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
   try {
-    const groupId = _event.queryStringParameters?.groupId;
+    const groupId = _event.pathParameters?.groupId;
 
     if (!groupId) {
       throw new Exception(404, "Parâmetros inválidos");
