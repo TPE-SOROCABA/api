@@ -6,6 +6,7 @@ import { IncidentStatus } from "../../../enums/IncidentStatus";
 import { Exception } from "../../../shared/Exception";
 import { decode } from "jsonwebtoken";
 import { prisma } from "../../../infra/prismaClient";
+import { DesignationStatus } from "@prisma/client";
 
 type APIGatewayEventCustom = APIGatewayProxyEventV2WithRequestContext<
   APIGatewayEventRequestContextWithAuthorizer<{
@@ -47,6 +48,9 @@ export const handler: Handler = async (_event: APIGatewayEventCustom): Promise<A
     const designation = await prisma.designations.findFirst({
       where: {
         groupId: group.groupId,
+        status: {
+          notIn: [DesignationStatus.CANCELLED, DesignationStatus.ARCHIVED]
+        }
       },
     });
 
