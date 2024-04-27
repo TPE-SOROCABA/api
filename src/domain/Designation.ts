@@ -233,7 +233,8 @@ export class Designation {
     };
     const status = this.participants.some(filterParticipant);
     const nomes = this.participants.filter(filterParticipant).map((participant) => participant.name);
-    return { status, message: nomes.join(", ") };
+    const message = `Participantes sem atribuições: ${nomes.join(", ")}`;
+    return { status, message };
   }
 
   public updatePointStatus(pointId: string, status: boolean): void {

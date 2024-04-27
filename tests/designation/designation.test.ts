@@ -99,7 +99,7 @@ describe("Designação Semana", () => {
     console.log(designation.participants)
     const hasParticipantsWithoutAssignments = designation.isParticipantsWithoutAssignments();
     console.log(hasParticipantsWithoutAssignments)
-    expect(hasParticipantsWithoutAssignments.message).toBe("Giulia Felipe");
+    expect(hasParticipantsWithoutAssignments.message).toBe("Participantes sem atribuições: Giulia Felipe");
     expect(hasParticipantsWithoutAssignments.status).toBe(true);
   });
 
@@ -129,7 +129,7 @@ describe("Designação Semana", () => {
     console.log(designation.participants)
     const hasParticipantsWithoutAssignments = designation.isParticipantsWithoutAssignments();
     console.log(hasParticipantsWithoutAssignments)
-    expect(hasParticipantsWithoutAssignments.message).toBe("Giulia Felipe");
+    expect(hasParticipantsWithoutAssignments.message).toBe("Participantes sem atribuições: Giulia Felipe");
     expect(hasParticipantsWithoutAssignments.status).toBe(true);
   });
 
