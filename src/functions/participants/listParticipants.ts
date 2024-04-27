@@ -2,6 +2,7 @@ import type { Context, APIGatewayProxyStructuredResultV2, APIGatewayProxyEventV2
 import { ResponseHandler } from "../../shared/ResponseHandler";
 import { ParticipantProfile } from "../../enums/ParticipantProfile";
 import { prisma } from "../../infra/prismaClient";
+import { DesignationStatus } from "@prisma/client";
 
 interface IncidentOutput {
   id: string;
@@ -45,6 +46,14 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
         participant: {
           include: {
             IncidentParticipant: {
+              where: {
+                designation: {
+                  groupId: groupId,
+                  status: {
+                    not: DesignationStatus.ARCHIVED,
+                  },
+                },
+              },
               orderBy: {
                 createdAt: "desc",
               },

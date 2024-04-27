@@ -4,6 +4,7 @@ import { Designation, Participant } from "domain/Designation";
 import { BadRequestException } from "shared/Exception";
 import { DesignationStatus, IncidentStatus, ParticipantProfile } from "@prisma/client";
 import { Weekday_PT_BR } from "src/enums/Weekday";
+import { DesignationStatusPT_BR } from "enums/DesignationStatusPT_BR";
 
 const whatsaapService = new WhatsAppService(new Z_APIWhatsAppAdapter());
 
@@ -19,7 +20,7 @@ export async function SendAssignmentDesignation(designation: Designation) {
   console.log(`Verificando se a designação está aberta ou em andamento`);
   if (designation.status !== DesignationStatus.OPEN) {
     console.log(`Designação ${designation.status}`);
-    throw new BadRequestException( `Designação ${designation.status}`);
+    throw new BadRequestException( `Designação não pode ser enviada, pois está ${DesignationStatusPT_BR[designation.status]}`);
   }
 
   let captain = designation.captainsAndCoordinators.find((participant) => participant.profile === ParticipantProfile.CAPTAIN);
