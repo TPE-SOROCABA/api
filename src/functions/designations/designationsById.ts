@@ -1,6 +1,6 @@
 import type { Context, APIGatewayProxyStructuredResultV2, APIGatewayProxyEventV2, Handler } from "aws-lambda";
 import { ResponseHandler } from "../../shared/ResponseHandler";
-import { Exception } from "../../shared/Exception";
+import { BadRequestException, Exception } from "../../shared/Exception";
 import { ParticipantSex } from "../../enums/ParticipantSex";
 import { DesignationRepository } from "../../repositories/DesignationRepository";
 import { prisma } from "../../infra/prismaClient";
@@ -13,7 +13,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     const designationId = _event.pathParameters?.designationId;
 
     if (!designationId) {
-      return ResponseHandler.error({ message: "Parâmetros inválidos" });
+      throw new BadRequestException("Parâmetros inválidos");
     }
 
     const designation = await designationRepository.findByDesignationId(designationId);

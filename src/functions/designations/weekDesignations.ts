@@ -2,6 +2,7 @@ import { DesignationRepository } from "./../../repositories/DesignationRepositor
 import type { Context, APIGatewayProxyStructuredResultV2, APIGatewayProxyEventV2, Handler } from "aws-lambda";
 import { ResponseHandler } from "../../shared/ResponseHandler";
 import { SendUpdateDesignation } from "../../services/SendUpdateDesignation";
+import { BadRequestException } from "shared/Exception";
 
 const designationRepository = new DesignationRepository();
 const sendUpdateDesignation = new SendUpdateDesignation();
@@ -12,7 +13,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     const random = _event.queryStringParameters?.random;
     const filter = _event.queryStringParameters?.filter;
     if (!groupId) {
-      return ResponseHandler.error({ message: "Parâmetros inválidos" });
+      throw new BadRequestException("Parâmetros inválidos");
     }
 
     const designation = await designationRepository.findOne(groupId);

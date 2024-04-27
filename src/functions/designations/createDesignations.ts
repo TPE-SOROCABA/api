@@ -1,6 +1,7 @@
 import type { Context, APIGatewayProxyStructuredResultV2, APIGatewayProxyEventV2, Handler } from "aws-lambda";
 import { ResponseHandler } from "../../shared/ResponseHandler";
 import { CreateDesignationUseCase } from "../../services/CreateDesignationUseCase";
+import { BadRequestException } from "shared/Exception";
 
 const createDesignationUseCase = new CreateDesignationUseCase();
 
@@ -8,7 +9,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
   try {
     const groupId = _event.queryStringParameters?.groupId;
     if (!groupId) {
-      return ResponseHandler.error({ message: "Parâmetros inválidos" });
+      throw new BadRequestException("Parâmetros inválidos");
     }
 
     await createDesignationUseCase.execute(groupId);

@@ -4,6 +4,7 @@ import { DesignationRepository } from "../../repositories/DesignationRepository"
 import { SendUpdateDesignation } from "../../services/SendUpdateDesignation";
 import { SendAssignmentDesignation } from "services/SendAssignmentDesignation";
 import { DesignationStatus } from "@prisma/client";
+import { BadRequestException } from "shared/Exception";
 
 const designationRepository = new DesignationRepository();
 const sendUpdateDesignation = new SendUpdateDesignation();
@@ -14,7 +15,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     const designationId = _event.pathParameters?.designationId;
     const body = JSON.parse(_event.body || "{}");
     if (!designationId) {
-      return ResponseHandler.error({ message: "Parâmetros inválidos" });
+      throw new BadRequestException("Parâmetros inválidos");
     }
 
     const designation = await designationRepository.findByDesignationId(designationId);
