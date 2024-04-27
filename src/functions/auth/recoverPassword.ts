@@ -16,10 +16,10 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
   try {
 
     const body = JsonHandler.parse<InputRecoverPassword>(_event.body || "{}");
-    console.log(`Usuário ${body.cpf} está tentando recuperar a senha`);
-    const params = await InputRecoverPassword.create(body.cpf);
+    console.log(`Usuário ${body.phone} está tentando recuperar a senha`);
+    const params = await InputRecoverPassword.create(body.phone);
 
-    const participant = await prisma.participants.findUnique({ where: { cpf: params.cpf } });
+    const participant = await prisma.participants.findUnique({ where: { phone: params.phone } });
     if (!participant) {
       throw new Exception(404, "Usuário não encontrado");
     }
@@ -41,7 +41,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     });
    
     const payload = LoginUtils.createJWT({
-      cpf: participant.cpf,
+      phone: participant.phone,
       code
     })
 

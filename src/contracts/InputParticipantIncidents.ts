@@ -8,12 +8,12 @@ type InputParticipantIncidentsProps = {
 };
 
 export class InputParticipantIncidents extends BaseValidate {
-  @Length(3, 255, { message: "A propriedade 'reason' deve ter entre 3 e 255 caracteres" })
-  @IsString({ message: "A propriedade 'reason' deve ser uma string" })
+  @Length(3, 255, { message: "O motivo deve ter entre 3 e 255 caracteres" })
+  @IsString({ message: "O motivo deve ser uma sequência de caracteres" })
   reason: string;
 
-  @IsString({ message: "A propriedade 'status' deve ser uma string" })
-  @IsNotEmpty({ message: "A propriedade 'status' não pode ser vazia" })
+  @IsString({ message: "O status deve ser uma sequência de caracteres" })
+  @IsNotEmpty({ message: "O status não pode estar vazio" })
   status: IncidentStatus;
 
   private constructor(reason: string, status: IncidentStatus = IncidentStatus.OPEN) {

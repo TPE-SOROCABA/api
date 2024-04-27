@@ -2,12 +2,12 @@ import { IsString, Length } from "class-validator";
 import { BaseValidate } from "../shared/BaseValidate";
 
 export class InputLogin extends BaseValidate { // 15981217448
-  @Length(11, 11, { message: "A propriedade 'phone' deve ter entre 11 caracteres" })
-  @IsString({ message: "A propriedade 'phone' deve ser uma string" })
+  @Length(11, 11, { message: "O número de telefone deve ter 11 dígitos" })
+  @IsString({ message: "O número de telefone deve ser uma sequência de números" })
   phone: string;
-
-  @Length(6, 16, { message: "A propriedade 'password' deve ter entre 1 e 16 caracteres" })
-  @IsString({ message: "A propriedade 'password' deve ser uma string" })
+  
+  @Length(6, 16, { message: "A senha deve ter entre 6 e 16 caracteres" })
+  @IsString({ message: "A senha deve ser uma sequência de caracteres" })
   password: string;
 
  
