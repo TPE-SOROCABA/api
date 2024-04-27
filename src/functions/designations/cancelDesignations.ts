@@ -5,7 +5,7 @@ import { WhatsAppService } from "../../services/WhatsAppService";
 import { Z_APIWhatsAppAdapter } from "../../infra/adapter/Z_APIWhatsAppAdapter";
 import { Weekday_PT_BR } from "../../enums/Weekday";
 import { DesignationStatus } from "@prisma/client";
-import { Exception } from "shared/Exception";
+import { BadRequestException } from "shared/Exception";
 
 const designationRepository = new DesignationRepository();
 const whatsaapService = new WhatsAppService(new Z_APIWhatsAppAdapter());
@@ -16,7 +16,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     const designationId = _event.pathParameters?.designationId;
     const body = JSON.parse(_event.body || "{}");
     if (!designationId || !body?.justification) {
-      throw new Exception(400, "Parâmetros inválidos")
+      throw new BadRequestException( "Parâmetros inválidos")
     }
 
     const designation = await designationRepository.findByDesignationId(designationId);

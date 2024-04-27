@@ -2,7 +2,7 @@ import type { Context, APIGatewayProxyStructuredResultV2, APIGatewayProxyEventV2
 import { ResponseHandler } from "../../shared/ResponseHandler";
 import { JsonHandler } from "../../shared/JsonHandler";
 import { InputLoginCode } from "../../contracts/InputLoginCode";
-import { Exception } from "../../shared/Exception";
+import { BadRequestException, Exception } from "../../shared/Exception";
 import { LoginUtils } from "../../domain/Login";
 import { prisma } from "../../infra/prismaClient";
 import { DesignationRepository } from "../../repositories/DesignationRepository";
@@ -30,11 +30,11 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     }
 
     if (participant.Auth.resetPasswordCode !== params.code) {
-      throw new Exception(400, "Código de recuperação inválido");
+      throw new BadRequestException( "Código de recuperação inválido");
     }
 
     if (new Date() > participant.Auth.expiredAt) {
-      throw new Exception(400, "Código de recuperação expirado");
+      throw new BadRequestException( "Código de recuperação expirado");
     }
 
     const payload = await loginService.execute({

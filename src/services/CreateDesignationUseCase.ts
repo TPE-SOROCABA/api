@@ -1,6 +1,6 @@
 import { DesignationStatus, Groups, Prisma } from "@prisma/client";
 import { prisma } from "../infra/prismaClient";
-import { Exception } from "../shared/Exception";
+import { Exception, BadRequestException } from "../shared/Exception";
 import { WeekdayNumber } from "enums/Weekday";
 
 export class CreateDesignationUseCase {

@@ -3,7 +3,7 @@ import { ResponseHandler } from "../../../shared/ResponseHandler";
 import { JsonHandler } from "../../../shared/JsonHandler";
 import { InputParticipantIncidents } from "../../../contracts/InputParticipantIncidents";
 import { IncidentStatus } from "../../../enums/IncidentStatus";
-import { Exception } from "../../../shared/Exception";
+import { BadRequestException, Exception } from "../../../shared/Exception";
 import { decode } from "jsonwebtoken";
 import { prisma } from "../../../infra/prismaClient";
 import { DesignationStatus } from "@prisma/client";
@@ -26,15 +26,15 @@ export const handler: Handler = async (_event: APIGatewayEventCustom): Promise<A
     });
 
     if (!id) {
-      throw new Exception(400, "Id do participante não informado");
+      throw new BadRequestException( "Id do participante não informado");
     }
 
     if (!params.reason) {
-      throw new Exception(400, "Motivo do incidente não informado");
+      throw new BadRequestException( "Motivo do incidente não informado");
     }
 
     if (!reporterId) {
-      throw new Exception(400, "Id do reporter não informado");
+      throw new BadRequestException( "Id do reporter não informado");
     }
 
     const participant = await prisma.participants.findFirst({ where: { id } });

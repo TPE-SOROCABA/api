@@ -3,7 +3,7 @@ import { IncidentStatus } from "../enums/IncidentStatus";
 import { ParticipantProfile } from "../enums/ParticipantProfile";
 import { ParticipantSex } from "../enums/ParticipantSex";
 import { WeekdayNumber } from "../enums/Weekday";
-import { Exception } from "../shared/Exception";
+import { Exception, BadRequestException } from "../shared/Exception";
 
 export type Participant = {
   id: string;
@@ -181,7 +181,7 @@ export class Designation {
         count++;
         this.generateAssignment(retry);
       } else {
-        throw new Exception(400, `Não foi possível designar todos os participantes. Total participantes: ${this.participantsCount}, Total vagas: ${this.totalVacancies}`);
+        throw new BadRequestException( `Não foi possível designar todos os participantes. Total participantes: ${this.participantsCount}, Total vagas: ${this.totalVacancies}`);
       }
     }
   }

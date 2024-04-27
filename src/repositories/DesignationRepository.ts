@@ -1,7 +1,7 @@
 import { Designation } from "../domain/Designation";
 import { IDesignationModel } from "../functions/designations/interfaces/IDesignationModel";
 import { DesignationMapper } from "../mappers/DesignationMapper";
-import { Exception } from "../shared/Exception";
+import { Exception, BadRequestException } from "../shared/Exception";
 
 import { prisma } from "../infra/prismaClient";
 import { DesignationStatus } from "@prisma/client";

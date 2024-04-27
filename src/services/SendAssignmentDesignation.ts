@@ -1,7 +1,7 @@
 import { Z_APIWhatsAppAdapter } from "infra/adapter/Z_APIWhatsAppAdapter";
 import { WhatsAppService } from "./WhatsAppService";
 import { Designation, Participant } from "domain/Designation";
-import { Exception } from "shared/Exception";
+import { BadRequestException } from "shared/Exception";
 import { DesignationStatus, IncidentStatus, ParticipantProfile } from "@prisma/client";
 import { Weekday_PT_BR } from "src/enums/Weekday";
 
@@ -12,14 +12,14 @@ export async function SendAssignmentDesignation(designation: Designation) {
   const hasParticipantsWithoutAssignments = designation.isParticipantsWithoutAssignments();
   if (hasParticipantsWithoutAssignments.status) {
     console.log(`Designação possui participantes sem atribuições`);
-    throw new Exception(400, hasParticipantsWithoutAssignments.message);
+    throw new BadRequestException( hasParticipantsWithoutAssignments.message);
   }
   console.log(`Designação não possui participantes sem atribuições`);
 
   console.log(`Verificando se a designação está aberta ou em andamento`);
   if (designation.status !== DesignationStatus.OPEN) {
     console.log(`Designação ${designation.status}`);
-    throw new Exception(400, `Designação ${designation.status}`);
+    throw new BadRequestException( `Designação ${designation.status}`);
   }
 
   let captain = designation.captainsAndCoordinators.find((participant) => participant.profile === ParticipantProfile.CAPTAIN);

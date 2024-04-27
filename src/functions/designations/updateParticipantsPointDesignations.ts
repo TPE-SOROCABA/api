@@ -2,7 +2,7 @@ import type { Context, APIGatewayProxyStructuredResultV2, APIGatewayProxyEventV2
 import { ResponseHandler } from "../../shared/ResponseHandler";
 import { DesignationRepository } from "../../repositories/DesignationRepository";
 import { JsonHandler } from "../../shared/JsonHandler";
-import { Exception } from "../../shared/Exception";
+import { BadRequestException, Exception } from "../../shared/Exception";
 import { SendUpdateDesignation } from "../../services/SendUpdateDesignation";
 import { DesignationStatus } from "@prisma/client";
 
@@ -14,9 +14,9 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     const designationId = _event.pathParameters?.designationId;
     const pointId = _event.pathParameters?.pointId;
     const body = JsonHandler.parse<{ participants: string[] }>(_event.body);
-    if (!designationId) throw new Exception(400, "Parâmetros inválidos");
+    if (!designationId) throw new BadRequestException( "Parâmetros inválidos");
 
-    if (!pointId) throw new Exception(400, "Ponto inválido");
+    if (!pointId) throw new BadRequestException( "Ponto inválido");
 
     const designation = await designationRepository.findByDesignationId(designationId);
     if (!designation) {

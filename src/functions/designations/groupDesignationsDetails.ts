@@ -3,7 +3,7 @@ import type { Context, APIGatewayProxyStructuredResultV2, APIGatewayProxyEventV2
 import { ResponseHandler } from "../../shared/ResponseHandler";
 import { prisma } from "infra/prismaClient";
 import { DesignationStatus, Designations, Participants } from "@prisma/client";
-import { Exception } from "shared/Exception";
+import { BadRequestException, Exception } from "shared/Exception";
 
 export interface IGroup {
   id:                string;
