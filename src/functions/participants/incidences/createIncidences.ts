@@ -7,6 +7,8 @@ import { BadRequestException, Exception } from "../../../shared/Exception";
 import { decode } from "jsonwebtoken";
 import { prisma } from "../../../infra/prismaClient";
 import { DesignationStatus } from "@prisma/client";
+import { DesignationRepository } from "repositories/DesignationRepository";
+import { SendUpdateDesignation } from "services/SendUpdateDesignation";
 
 type APIGatewayEventCustom = APIGatewayProxyEventV2WithRequestContext<
   APIGatewayEventRequestContextWithAuthorizer<{
@@ -14,6 +16,9 @@ type APIGatewayEventCustom = APIGatewayProxyEventV2WithRequestContext<
     principalId: string;
   }>
 >;
+
+const designationRepository = new DesignationRepository();
+const sendUpdateDesignation = new SendUpdateDesignation();
 
 export const handler: Handler = async (_event: APIGatewayEventCustom): Promise<APIGatewayProxyStructuredResultV2> => {
   const responseHandler = new ResponseHandler(_event);
@@ -46,14 +51,7 @@ export const handler: Handler = async (_event: APIGatewayEventCustom): Promise<A
       throw new Exception(404, "Parâmetros inválidos");
     }
 
-    const designation = await prisma.designations.findFirst({
-      where: {
-        groupId: group.groupId,
-        status: {
-          notIn: [DesignationStatus.CANCELLED, DesignationStatus.ARCHIVED],
-        },
-      },
-    });
+    const designation = await designationRepository.findOne(group.groupId);
 
     if (!designation) {
       throw new Exception(404, "Designação não encontrada");
@@ -76,28 +74,15 @@ export const handler: Handler = async (_event: APIGatewayEventCustom): Promise<A
           console.log(error);
           throw new BadRequestException("Erro ao criar incidente");
         });
-      const assignment = await tx.assignments.findFirst({
-        where: {
-          designationsId: designation.id,
-        },
-      });
 
-      if (!assignment) {
-        throw new BadRequestException("Erro ao criar incidente");
-      }
-      const { id, name } = await tx.$queryRaw<{ id: string; name: string }>`
-      select p."name",ap.id from assignments a 
-      inner join assignments_participants ap on a.id = ap.assignment_id 
-      inner join participants p on p.id = ap.participant_id 
-      where a.designations_id  = ${designation.id} and ap.participant_id = ${participant.id}`;
+      designation.filterAssignment(participant.name);
+      const assignment = designation.assignmentsFiltered.filter((a) => a.participants.some((p) => p.id === id))[0];
+      console.log(`Removendo participante ${participant.name} da designação`);
 
-      console.log(`Deletando atribuições do participante ${name}`);
-      await tx.assignmentsParticipants.deleteMany({
-        where: {
-          id,
-        },
-      });
-      console.log(`Atribuições deletadas com sucesso`);
+      designation.assignments.push(assignment);
+      const participants = assignment.participants.filter((p) => p.id !== id).map((p) => p.id);
+      designation.updateParticipants(assignment.point.id, participants);
+      await sendUpdateDesignation.execute(designation);
     });
 
     return responseHandler.success({ message: "Incidente criado com sucesso" });
