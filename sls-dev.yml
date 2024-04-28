@@ -41,7 +41,12 @@ provider:
     NODE_ENV: ${self:provider.stage}
 
 
-functions: ${file(./resources/functions.yml)}
+functions: 
+  - ${file(./resources/infra.yml)}
+  - ${file(./resources/auth.yml)}
+  - ${file(./resources/groups.yml)}
+  - ${file(./resources/designations.yml)}
+  - ${file(./resources/participants.yml)}
 
 resources:
   Resources:
