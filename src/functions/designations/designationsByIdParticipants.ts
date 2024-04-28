@@ -9,6 +9,7 @@ import { DesignationStatus, IncidentStatus } from "@prisma/client";
 const designationRepository = new DesignationRepository();
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
+ const responseHandler = new ResponseHandler(_event);
   try {
     const designationId = _event.pathParameters?.designationId;
 
@@ -23,7 +24,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     }
 
     if (designation.status !== DesignationStatus.IN_PROGRESS) {
-      return ResponseHandler.success([]);
+      return responseHandler.success([]);
     }
 
     const eventDay = await prisma.eventDayGroups.findFirst({
@@ -35,7 +36,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       },
     });
 
-    return ResponseHandler.success(
+    return responseHandler.success(
       designation.assignments.map((assignment) => {
         const sexEmoticon = (sex: ParticipantSex) => (sex === ParticipantSex.MALE ? "🧑🏻‍💼" : "👩🏻‍💼");
 
@@ -58,6 +59,6 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       })
     );
   } catch (error) {
-    return ResponseHandler.error(error);
+    return responseHandler.error(error);
   }
 };

@@ -8,6 +8,7 @@ import { prisma } from "../../infra/prismaClient";
 import { ParticipantProfile } from "@prisma/client";
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
+ const responseHandler = new ResponseHandler(_event);
   try {
     const body = JsonHandler.parse<InputLogin>(_event.body);
     const login = await InputLogin.create(body.phone, body.password);
@@ -35,10 +36,10 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       },
     });
 
-    return ResponseHandler.success({
+    return responseHandler.success({
       message: "Senha redefinida com sucesso",
     });
   } catch (error) {
-    return ResponseHandler.error(error);
+    return responseHandler.error(error);
   }
 };

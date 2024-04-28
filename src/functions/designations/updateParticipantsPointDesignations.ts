@@ -11,6 +11,7 @@ const designationRepository = new DesignationRepository();
 const sendUpdateDesignation = new SendUpdateDesignation();
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
+ const responseHandler = new ResponseHandler(_event);
   try {
     const designationId = _event.pathParameters?.designationId;
     const pointId = _event.pathParameters?.pointId;
@@ -31,8 +32,8 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     designation.updateParticipants(pointId, body.participants);
     await sendUpdateDesignation.execute(designation);
 
-    return ResponseHandler.success({ message: "Ponto atualizado com sucesso" });
+    return responseHandler.success({ message: "Ponto atualizado com sucesso" });
   } catch (error) {
-    return ResponseHandler.error(error);
+    return responseHandler.error(error);
   }
 };

@@ -14,6 +14,7 @@ export interface IGroup {
 }
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
+ const responseHandler = new ResponseHandler(_event);
   try {
     const groupId = _event.pathParameters?.groupId;
 
@@ -41,7 +42,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       throw new Exception(404, "Grupo não encontrado");
     }
 
-    return ResponseHandler.success<IGroup>({
+    return responseHandler.success<IGroup>({
       id: group.id,
       name: group.name,
       configWeekday: Weekday_PT_BR[group.config_weekday],
@@ -49,7 +50,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       designation: group?.Designations[0],
     });
   } catch (error) {
-    return ResponseHandler.error(error);
+    return responseHandler.error(error);
   }
 };
 

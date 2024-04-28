@@ -5,6 +5,7 @@ import { BadRequestException } from "shared/Exception";
 import dayjs from "dayjs";
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
+ const responseHandler = new ResponseHandler(_event);
   try {
     const dateFrom = _event.queryStringParameters?.dateFrom;
     const dateTo = _event.queryStringParameters?.dateTo;
@@ -34,8 +35,8 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       },
     });
 
-    return ResponseHandler.success(designations);
+    return responseHandler.success(designations);
   } catch (error) {
-    return ResponseHandler.error(error);
+    return responseHandler.error(error);
   }
 };

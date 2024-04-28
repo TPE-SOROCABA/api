@@ -13,6 +13,7 @@ const whatsAppAdapter = new Z_APIWhatsAppAdapter();
 const whatsAppService = new WhatsAppService(whatsAppAdapter);
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
+ const responseHandler = new ResponseHandler(_event);
   try {
 
     const body = JsonHandler.parse<InputRecoverPassword>(_event.body || "{}");
@@ -53,9 +54,9 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       linkUrl: `${process.env.FRONTEND_URL}/forgot-password/check-number?code=${payload}`,
       linkDescription: "Clique aqui para acessar a recuperação de senha",
     });
-    return ResponseHandler.success({ message: "Código de recuperação enviado com sucesso" });
+    return responseHandler.success({ message: "Código de recuperação enviado com sucesso" });
   } catch (error) {
-    return ResponseHandler.error(error);
+    return responseHandler.error(error);
   }
 };
 

@@ -10,6 +10,7 @@ const designationRepository = new DesignationRepository();
 const sendUpdateDesignation = new SendUpdateDesignation();
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
+ const responseHandler = new ResponseHandler(_event);
   try {
     console.log("Enviando designações");
     const designationId = _event.pathParameters?.designationId;
@@ -31,8 +32,8 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
 
     await sendUpdateDesignation.execute(designation);
 
-    return ResponseHandler.success({ message: "Designação enviada com sucesso" });
+    return responseHandler.success({ message: "Designação enviada com sucesso" });
   } catch (error) {
-    return ResponseHandler.error(error);
+    return responseHandler.error(error);
   }
 };

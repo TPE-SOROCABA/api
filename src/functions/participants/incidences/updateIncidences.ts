@@ -7,6 +7,7 @@ import { prisma } from "../../../infra/prismaClient";
 import { DesignationStatus } from "@prisma/client";
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2 & { requestContext: { authorizer: { principalId: string } } }): Promise<APIGatewayProxyStructuredResultV2> => {
+  const responseHandler = new ResponseHandler(_event);
   try {
     const id = _event.pathParameters?.incidentId;
     const body = JsonHandler.parse<InputParticipantIncidentsUpdate>(_event.body || "{}");
@@ -44,8 +45,8 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2 & { reques
       },
     });
     
-    return ResponseHandler.success({ message: "Incidente atualizado com sucesso" });
+    return responseHandler.success({ message: "Incidente atualizado com sucesso" });
   } catch (error) {
-    return ResponseHandler.error(error);
+    return responseHandler.error(error);
   }
 };

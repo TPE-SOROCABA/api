@@ -16,6 +16,7 @@ type APIGatewayEventCustom = APIGatewayProxyEventV2WithRequestContext<
 >;
 
 export const handler: Handler = async (_event: APIGatewayEventCustom): Promise<APIGatewayProxyStructuredResultV2> => {
+  const responseHandler = new ResponseHandler(_event);
   try {
     const id = _event.pathParameters?.participantId;
     const body = JsonHandler.parse<InputParticipantIncidents>(_event.body || "{}");
@@ -99,9 +100,9 @@ export const handler: Handler = async (_event: APIGatewayEventCustom): Promise<A
       console.log(`Atribuições deletadas com sucesso`);
     });
 
-    return ResponseHandler.success({ message: "Incidente criado com sucesso" });
+    return responseHandler.success({ message: "Incidente criado com sucesso" });
   } catch (error) {
-    return ResponseHandler.error(error);
+    return responseHandler.error(error);
   }
 };
 

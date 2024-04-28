@@ -11,6 +11,7 @@ const designationRepository = new DesignationRepository();
 const whatsaapService = new WhatsAppService(new Z_APIWhatsAppAdapter());
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
+ const responseHandler = new ResponseHandler(_event);
   try {
     
     const designationId = _event.pathParameters?.designationId;
@@ -56,8 +57,8 @@ TPE - Digital.
         });
       }
     }
-    return ResponseHandler.success({ message: "Designação cancelada com sucesso!" });
+    return responseHandler.success({ message: "Designação cancelada com sucesso!" });
   } catch (error) {
-    return ResponseHandler.error(error);
+    return responseHandler.error(error);
   }
 };

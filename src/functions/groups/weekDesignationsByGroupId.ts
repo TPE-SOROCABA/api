@@ -8,6 +8,7 @@ const designationRepository = new DesignationRepository();
 const sendUpdateDesignation = new SendUpdateDesignation();
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
+ const responseHandler = new ResponseHandler(_event);
   try {
     const groupId = _event.pathParameters?.groupId;
     const random = _event.queryStringParameters?.random;
@@ -27,8 +28,8 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       designation.filterAssignment(filter);
     }
 
-    return ResponseHandler.success(designation.toJson());
+    return responseHandler.success(designation.toJson());
   } catch (error) {
-    return ResponseHandler.error(error);
+    return responseHandler.error(error);
   }
 };

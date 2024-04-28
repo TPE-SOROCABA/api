@@ -6,6 +6,7 @@ import { BadRequestException } from "shared/Exception";
 const createDesignationUseCase = new CreateDesignationUseCase();
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
+ const responseHandler = new ResponseHandler(_event);
   try {
     const groupId = _event.queryStringParameters?.groupId;
     if (!groupId) {
@@ -14,8 +15,8 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
 
     await createDesignationUseCase.execute(groupId);
 
-    return ResponseHandler.success({ message: "Designação criada com sucesso!" });
+    return responseHandler.success({ message: "Designação criada com sucesso!" });
   } catch (error) {
-    return ResponseHandler.error(error);
+    return responseHandler.error(error);
   }
 };

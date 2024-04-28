@@ -13,6 +13,7 @@ const designationRepository = new DesignationRepository();
 const loginService = new LoginService(designationRepository);
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
+ const responseHandler = new ResponseHandler(_event);
   try {
     const body = JsonHandler.parse<InputLoginCode>(_event.body || "{}");
     console.log(`Usuário ${body.phone} está tentando recuperar a senha`);
@@ -45,10 +46,10 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       profile_photo: participant.profile_photo || "",
     });
 
-    return ResponseHandler.success({
+    return responseHandler.success({
       token: LoginUtils.createJWT(payload),
     });
   } catch (error) {
-    return ResponseHandler.error(error);
+    return responseHandler.error(error);
   }
 };

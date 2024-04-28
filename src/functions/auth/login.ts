@@ -27,6 +27,7 @@ const designationRepository = new DesignationRepository();
 const loginService = new LoginService(designationRepository);
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
+ const responseHandler = new ResponseHandler(_event);
   try {
     const body = JsonHandler.parse<InputLogin>(_event.body);
     const login = await InputLogin.create(body.phone, body.password);
@@ -56,11 +57,11 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       profile_photo: participant.profile_photo || "",
     });
     console.log(`Usuário ${payload.name} logado com sucesso`);
-    return ResponseHandler.success({
+    return responseHandler.success({
       token: LoginUtils.createJWT(payload),
     });
   } catch (error) {
-    return ResponseHandler.error(error);
+    return responseHandler.error(error);
   }
 };
 

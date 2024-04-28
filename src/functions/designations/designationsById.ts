@@ -6,6 +6,7 @@ import { DesignationRepository } from "../../repositories/DesignationRepository"
 const designationRepository = new DesignationRepository();
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
+ const responseHandler = new ResponseHandler(_event);
   try {
     const designationId = _event.pathParameters?.designationId;
 
@@ -19,8 +20,8 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       throw new NotFoundException("Designação não encontrada");
     }
 
-    return ResponseHandler.success(designation);
+    return responseHandler.success(designation);
   } catch (error) {
-    return ResponseHandler.error(error);
+    return responseHandler.error(error);
   }
 };
