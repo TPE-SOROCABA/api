@@ -18,7 +18,7 @@ transactionStatusDesignations:
       - schedule: cron(35 13 ? * * *)  # Para BR seria 10:35
       - schedule: cron(10 16 ? * * *)  # Para BR seria 13:05
       - schedule: cron(10 20 ? * * *)  # Para BR seria 17:05
-      # - schedule: cron(10 9-21 ? * * *) # Para BR seria 06:10 até 18:10
+      - schedule: cron(0/10 * ? * * *) # Para BR seria a cada 10 minutos
              
 hookMessage:
     handler: src/functions/hookMessage.handler
