@@ -2,16 +2,22 @@ import { DesignationStatus } from "@prisma/client";
 import { Designation, Participant, Assignments } from "../domain/Designation";
 import { IDesignationModel } from "../functions/designations/interfaces/IDesignationModel";
 
+
+
 export abstract class DesignationMapper {
   static toDomain(designationModel: IDesignationModel): Designation {
+    const incidentMapper = (incident:any) => {
+      if (incident.designationId !== designationModel.id) return null;
+      if (incident.status !== "OPEN") return null;
+      return {
+        id: incident.id,
+        reason: incident.reason,
+        status: incident.status,
+      };
+    }
+
     const participants: Participant[] = designationModel.group.ParticipantsGroup.map((participant) => {
-      const [incidentHistory] = participant.participant.IncidentParticipant.map((incident: any) => {
-        return {
-          id: incident.id,
-          reason: incident.reason,
-          status: incident.status,
-        };
-      });
+      const [incidentHistory] = participant.participant.IncidentParticipant.map(incidentMapper).filter(Boolean);
       return {
         id: participant.participant.id,
         name: participant.participant.name,
@@ -42,13 +48,7 @@ export abstract class DesignationMapper {
           assignment.AssignmentsParticipants.map((participant) => {
             const participantIndex = participants.findIndex((p) => p.id === participant.participant.id);
             if (participantIndex !== -1) participants.splice(participantIndex, 1);
-            const [incidentHistory] = participant.participant.IncidentParticipant.map((incident: any) => {
-              return {
-                id: incident.id,
-                reason: incident.reason,
-                status: incident.status,
-              };
-            });
+            const [incidentHistory] = participant.participant.IncidentParticipant.map(incidentMapper).filter(Boolean);
             return {
               id: participant.participant.id,
               name: participant.participant.name,

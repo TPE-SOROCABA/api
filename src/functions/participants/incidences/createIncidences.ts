@@ -26,15 +26,15 @@ export const handler: Handler = async (_event: APIGatewayEventCustom): Promise<A
     });
 
     if (!id) {
-      throw new BadRequestException( "Id do participante não informado");
+      throw new BadRequestException("Id do participante não informado");
     }
 
     if (!params.reason) {
-      throw new BadRequestException( "Motivo do incidente não informado");
+      throw new BadRequestException("Motivo do incidente não informado");
     }
 
     if (!reporterId) {
-      throw new BadRequestException( "Id do reporter não informado");
+      throw new BadRequestException("Id do reporter não informado");
     }
 
     const participant = await prisma.participants.findFirst({ where: { id } });
@@ -49,8 +49,8 @@ export const handler: Handler = async (_event: APIGatewayEventCustom): Promise<A
       where: {
         groupId: group.groupId,
         status: {
-          notIn: [DesignationStatus.CANCELLED, DesignationStatus.ARCHIVED]
-        }
+          notIn: [DesignationStatus.CANCELLED, DesignationStatus.ARCHIVED],
+        },
       },
     });
 
@@ -59,15 +59,20 @@ export const handler: Handler = async (_event: APIGatewayEventCustom): Promise<A
     }
 
     console.log(`Criando incidente para o participante ${participant.name}`);
-    await prisma.incidentHistories.create({
-      data: {
-        participantId: participant.id,
-        reporterId: reporter.id,
-        reason: params.reason,
-        status: IncidentStatus.OPEN,
-        designationId: designation.id,
-      },
-    });
+    await prisma.incidentHistories
+      .create({
+        data: {
+          participantId: participant.id,
+          reporterId: reporter.id,
+          reason: params.reason,
+          status: IncidentStatus.OPEN,
+          designationId: designation.id,
+        },
+      })
+      .catch((error) => {
+        console.log(error);
+        throw new BadRequestException("Erro ao criar incidente");
+      });
 
     return ResponseHandler.success({ message: "Incidente criado com sucesso" });
   } catch (error) {

@@ -28,14 +28,6 @@ export class DesignationRepository {
                 participant: {
                   include: {
                     IncidentParticipant: {
-                      where: {
-                        designation: {
-                          groupId: groupId,
-                          status: {
-                            not: DesignationStatus.ARCHIVED,
-                          },
-                        },
-                      },
                       orderBy: {
                         createdAt: "desc",
                       },

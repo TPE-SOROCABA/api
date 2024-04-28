@@ -27,3 +27,12 @@ updateIncidences:
           cors: true
           authorizer: check-authorizer
      
+deleteIncidences:
+    handler: src/functions/participants/incidences/deleteIncidences.handler
+    description: Deletar incidências de um participante
+    events:
+      - http:
+          path: participants/{participantId}/incidences/{incidentId}
+          method: DELETE
+          cors: true
+          authorizer: check-authorizer
