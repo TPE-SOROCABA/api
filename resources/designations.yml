@@ -1,0 +1,88 @@
+createDesignation:
+    handler: src/functions/designations/createDesignations.handler
+    description: Criar uma nova designação
+    events:
+      - http:
+          path: designations
+          method: POST
+          cors: true
+          authorizer: check-authorizer
+
+sendDesignation:
+    handler: src/functions/designations/sendDesignations.handler
+    description: Enviar uma designação
+    events:
+      - http:
+          path: designations/{designationId}/send
+          method: POST
+          cors: true
+          authorizer: check-authorizer
+
+cancelDesignation:
+    handler: src/functions/designations/cancelDesignations.handler
+    description: Cancelar uma designação
+    events:
+      - http:
+          path: designations/{designationId}/cancel
+          method: PATCH
+          cors: true
+          authorizer: check-authorizer
+
+updatePointDesignation:
+    handler: src/functions/designations/updatePointDesignations.handler
+    description: Atualizar uma designação
+    events:
+      - http:
+          path: designations/{designationId}/points/{pointId}
+          method: PATCH
+          cors: true
+          authorizer: check-authorizer
+
+updateParticipantsPointDesignation:
+    handler: src/functions/designations/updateParticipantsPointDesignations.handler
+    description: Atualizar participantes de uma designação
+    events:
+      - http:
+          path: designations/{designationId}/points/{pointId}/participants
+          method: PUT
+          cors: true
+          authorizer: check-authorizer
+
+designationsById:
+    handler: src/functions/designations/designationsById.handler
+    description: Buscar designações por id
+    events:
+      - http:
+          path: designations/{designationId}
+          method: GET
+          cors: true
+          authorizer: check-authorizer
+
+designationsByIdParticipants:
+    handler: src/functions/designations/designationsByIdParticipants.handler
+    description: Buscar designações de participantes por id
+    events:
+      - http:
+          path: designations/{designationId}/participants
+          method: GET
+          cors: true
+         
+weekParticipantDesignations:
+    handler: src/functions/designations/weekParticipantDesignations.handler
+    description: Listar todas as designações da semana de um participante
+    events:
+      - http:
+          path: designations/{designationId}/participants/{participantId}
+          method: GET
+          cors: true
+
+updateDesignation:
+    handler: src/functions/designations/updateDesignations.handler
+    description: Atualizar uma designação
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - DesignationQueue
+              - Arn
+          batchSize: 1 # quantidade de mensagens que serão processadas por vez

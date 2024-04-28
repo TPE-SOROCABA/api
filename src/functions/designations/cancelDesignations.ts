@@ -1,24 +1,27 @@
 import type { Context, APIGatewayProxyStructuredResultV2, APIGatewayProxyEventV2, Handler } from "aws-lambda";
 import { ResponseHandler } from "../../shared/ResponseHandler";
-import { DesignationStatus } from "../../enums/DesignationStatus";
 import { DesignationRepository } from "../../repositories/DesignationRepository";
 import { WhatsAppService } from "../../services/WhatsAppService";
 import { Z_APIWhatsAppAdapter } from "../../infra/adapter/Z_APIWhatsAppAdapter";
 import { Weekday_PT_BR } from "../../enums/Weekday";
+import { DesignationStatus } from "@prisma/client";
+import { BadRequestException } from "shared/Exception";
 
 const designationRepository = new DesignationRepository();
 const whatsaapService = new WhatsAppService(new Z_APIWhatsAppAdapter());
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
+ const responseHandler = new ResponseHandler(_event);
   try {
     
     const designationId = _event.pathParameters?.designationId;
-    if (!designationId) {
-      return ResponseHandler.error({ message: "Parâmetros inválidos" });
+    const body = JSON.parse(_event.body || "{}");
+    if (!designationId || !body?.justification) {
+      throw new BadRequestException( "Parâmetros inválidos")
     }
 
     const designation = await designationRepository.findByDesignationId(designationId);
-    designation.updateStatus(DesignationStatus.CANCELLED);
+    designation.cancelDesignation(body.justification);
     await designationRepository.update(designation);
 
     console.log(`Procurando capitão`);
@@ -54,8 +57,8 @@ TPE - Digital.
         });
       }
     }
-    return ResponseHandler.success({ message: "Designação cancelada com sucesso!" });
+    return responseHandler.success({ message: "Designação cancelada com sucesso!" });
   } catch (error) {
-    return ResponseHandler.error(error);
+    return responseHandler.error(error);
   }
 };

@@ -40,7 +40,12 @@ provider:
     NODE_ENV: ${self:provider.stage}
 
 
-functions: ${file(./resources/functions.yml)}
+functions: 
+  - ${file(./resources/infra.yml)}
+  - ${file(./resources/auth.yml)}
+  - ${file(./resources/groups.yml)}
+  - ${file(./resources/designations.yml)}
+  - ${file(./resources/participants.yml)}
 
 resources:
   Resources:
@@ -51,6 +56,15 @@ resources:
         FifoQueue: true
         ContentBasedDeduplication: true
         VisibilityTimeout: 60 # serve para garantir que a mensagem não será processada por outro lambda antes de ser excluída
+    GatewayResponseDefault4XX:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
 
 package:
   individually: true

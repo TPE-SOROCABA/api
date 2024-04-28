@@ -3,9 +3,12 @@ import { ResponseHandler } from "../../../shared/ResponseHandler";
 import { JsonHandler } from "../../../shared/JsonHandler";
 import { InputParticipantIncidents } from "../../../contracts/InputParticipantIncidents";
 import { IncidentStatus } from "../../../enums/IncidentStatus";
-import { Exception } from "../../../shared/Exception";
+import { BadRequestException, Exception } from "../../../shared/Exception";
 import { decode } from "jsonwebtoken";
 import { prisma } from "../../../infra/prismaClient";
+import { DesignationStatus } from "@prisma/client";
+import { DesignationRepository } from "repositories/DesignationRepository";
+import { SendUpdateDesignation } from "services/SendUpdateDesignation";
 
 type APIGatewayEventCustom = APIGatewayProxyEventV2WithRequestContext<
   APIGatewayEventRequestContextWithAuthorizer<{
@@ -14,7 +17,11 @@ type APIGatewayEventCustom = APIGatewayProxyEventV2WithRequestContext<
   }>
 >;
 
+const designationRepository = new DesignationRepository();
+const sendUpdateDesignation = new SendUpdateDesignation();
+
 export const handler: Handler = async (_event: APIGatewayEventCustom): Promise<APIGatewayProxyStructuredResultV2> => {
+  const responseHandler = new ResponseHandler(_event);
   try {
     const id = _event.pathParameters?.participantId;
     const body = JsonHandler.parse<InputParticipantIncidents>(_event.body || "{}");
@@ -25,15 +32,15 @@ export const handler: Handler = async (_event: APIGatewayEventCustom): Promise<A
     });
 
     if (!id) {
-      throw new Exception(400, "Id do participante não informado");
+      throw new BadRequestException("Id do participante não informado");
     }
 
     if (!params.reason) {
-      throw new Exception(400, "Motivo do incidente não informado");
+      throw new BadRequestException("Motivo do incidente não informado");
     }
 
     if (!reporterId) {
-      throw new Exception(400, "Id do reporter não informado");
+      throw new BadRequestException("Id do reporter não informado");
     }
 
     const participant = await prisma.participants.findFirst({ where: { id } });
@@ -44,30 +51,44 @@ export const handler: Handler = async (_event: APIGatewayEventCustom): Promise<A
       throw new Exception(404, "Parâmetros inválidos");
     }
 
-    const designation = await prisma.designations.findFirst({
-      where: {
-        groupId: group.groupId,
-      },
-    });
+    const designation = await designationRepository.findOne(group.groupId);
 
     if (!designation) {
       throw new Exception(404, "Designação não encontrada");
     }
 
     console.log(`Criando incidente para o participante ${participant.name}`);
-    await prisma.incidentHistories.create({
-      data: {
-        participantId: participant.id,
-        reporterId: reporter.id,
-        reason: params.reason,
-        status: IncidentStatus.OPEN,
-        designationId: designation.id,
-      },
+    await prisma.$transaction(async (tx) => {
+      console.log(`Criando incidente para o participante ${participant.name}`);
+      await tx.incidentHistories
+        .create({
+          data: {
+            participantId: participant.id,
+            reporterId: reporter.id,
+            reason: params.reason,
+            status: IncidentStatus.OPEN,
+            designationId: designation.id,
+          },
+        })
+        .catch((error) => {
+          console.log(error);
+          throw new BadRequestException("Erro ao criar incidente");
+        });
+
+      designation.filterAssignment(participant.name);
+      if (designation.assignmentsFiltered){
+        const assignment = designation.assignmentsFiltered.filter((a) => a.participants.some((p) => p.id === id))[0];
+        console.log(`Removendo participante ${participant.name} da designação`);
+        designation.assignments.push(assignment);
+        const participants = assignment.participants.filter((p) => p.id !== id).map((p) => p.id);
+        designation.updateParticipants(assignment.point.id, participants);
+        await sendUpdateDesignation.execute(designation);
+      }
     });
 
-    return ResponseHandler.success({ message: "Incidente criado com sucesso" });
+    return responseHandler.success({ message: "Incidente criado com sucesso" });
   } catch (error) {
-    return ResponseHandler.error(error);
+    return responseHandler.error(error);
   }
 };
 

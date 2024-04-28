@@ -1,32 +1,36 @@
 import type { Context, APIGatewayProxyStructuredResultV2, APIGatewayProxyEventV2, Handler } from "aws-lambda";
 import { ResponseHandler } from "../../shared/ResponseHandler";
-import { Exception } from "../../shared/Exception";
+import { BadRequestException, Exception } from "../../shared/Exception";
 import { ParticipantSex } from "../../enums/ParticipantSex";
 import { IncidentStatus } from "../../enums/IncidentStatus";
 import { DesignationRepository } from "../../repositories/DesignationRepository";
 import { prisma } from "../../infra/prismaClient";
-import { ParticipantProfile } from "@prisma/client";
+import { DesignationStatus, ParticipantProfile } from "@prisma/client";
 
 const designationRepository = new DesignationRepository();
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
+ const responseHandler = new ResponseHandler(_event);
   try {
     const participantId = _event.pathParameters?.participantId;
+    const designationId = _event.pathParameters?.designationId;
 
-    if (!participantId) {
-      return ResponseHandler.error({ message: "Parâmetros inválidos" });
+    if (!participantId || !designationId) {
+      throw new BadRequestException("Parâmetros inválidos");
     }
 
-    const designation = await designationRepository.findByParticipantId(participantId);
+    const designation = await designationRepository.findByDesignationId(designationId);
 
-    if (!designation.length) {
+    if (!designation) {
       throw new Exception(404, "Designação não encontrada");
     }
 
-    designation.forEach((d) => {
-      d.assignments = d.assignments.filter((a) => a.participants.some((p) => p.id === participantId));
-    });
+    if (designation.status !== DesignationStatus.CLOSED && designation.status !== DesignationStatus.IN_PROGRESS) {
+      return responseHandler.success([]);
+    }
 
+    designation.assignments = designation.assignments.filter((a) => a.participants.some((p) => p.id === participantId));
+  
     const participant = await prisma.participants.findUnique({
       where: {
         id: participantId,
@@ -47,21 +51,21 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
 
     const eventDay = await prisma.eventDayGroups.findFirst({
       where: {
-        groupId: designation[0].group.id,
+        groupId: designation.group.id,
       },
       include: {
         eventDay: true,
       },
     });
 
-    return ResponseHandler.success(
-      designation.map((d) => {
-        const sexEmoticon = (sex: ParticipantSex) => (sex === ParticipantSex.MALE ? "🧑🏻‍💼" : "👩🏻‍💼");
+    return responseHandler.success(
+      [designation].map((d) => {
+       
 
         const [assignments] = d.assignments.map((a) => ({
           point: a.point.name,
           publication_carts: a.publication_carts.map((p) => p.name),
-          participants: a.participants.map((p) => `${p.name}(${sexEmoticon(p.sex as unknown as ParticipantSex)})`),
+          participants: a.participants.map((p) => ({name: p.name, profile_photo: p.profile_photo})),
         }));
 
         const isParticipantAssigned = d.assignments.some((a) => a.participants.some((p) => p.id === participantId));
@@ -72,7 +76,10 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
           Boolean(status == IncidentStatus.OPEN) || !isParticipantAssigned
             ? {
                 point: "Sem designação",
-                participants: [`${participant.name} (${sexEmoticon(participant.sex as unknown as ParticipantSex)})`],
+                participants: {
+                  name: participant.name,
+                  profile_photo: participant.profile_photo,
+                },
                 publication_carts: [],
               }
             : {
@@ -81,11 +88,11 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
                 publication_carts: assignments.publication_carts,
               };
 
-        if (participant.profile !== ParticipantProfile.PARTICIPANT) {
+        if (participant.profile == ParticipantProfile.CAPTAIN || participant.profile == ParticipantProfile.COORDINATOR) {
           const captais = d.participants.filter((p) => p.profile == ParticipantProfile.CAPTAIN || p.profile == ParticipantProfile.COORDINATOR);
           details = {
             point: "Visitas de Encorajamento",
-            participants: captais.map((p) => `${p.name} (${sexEmoticon(p.sex as unknown as ParticipantSex)})`),
+            participants: captais.map((p) => ({name: p.name, profile_photo: p.profile_photo})),
             publication_carts: [],
           };
         }
@@ -107,6 +114,6 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       })
     );
   } catch (error) {
-    return ResponseHandler.error(error);
+    return responseHandler.error(error);
   }
 };

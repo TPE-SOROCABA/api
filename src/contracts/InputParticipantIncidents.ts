@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsString, Length } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString, Length } from "class-validator";
 import { BaseValidate } from "../shared/BaseValidate";
 import { IncidentStatus } from "../enums/IncidentStatus";
 
@@ -8,18 +8,18 @@ type InputParticipantIncidentsProps = {
 };
 
 export class InputParticipantIncidents extends BaseValidate {
-  @Length(3, 255, { message: "A propriedade 'reason' deve ter entre 3 e 255 caracteres" })
-  @IsString({ message: "A propriedade 'reason' deve ser uma string" })
+  @Length(3, 255, { message: "O motivo deve ter entre 3 e 255 caracteres" })
+  @IsString({ message: "O motivo deve ser uma sequência de caracteres" })
   reason: string;
 
-  @IsString({ message: "A propriedade 'status' deve ser uma string" })
-  @IsNotEmpty({ message: "A propriedade 'status' não pode ser vazia" })
+  @IsString({ message: "O status deve ser uma sequência de caracteres" })
+  @IsNotEmpty({ message: "O status não pode estar vazio" })
   status: IncidentStatus;
 
   private constructor(reason: string, status: IncidentStatus = IncidentStatus.OPEN) {
     super();
-    this.reason = reason
-    this.status = status
+    this.reason = reason;
+    this.status = status;
   }
 
   static async create(params: InputParticipantIncidentsProps): Promise<InputParticipantIncidents> {
@@ -27,21 +27,25 @@ export class InputParticipantIncidents extends BaseValidate {
     await InputParticipantIncidents.validate(createParticipantIncidents);
     return createParticipantIncidents;
   }
-  
 }
 
 export class InputParticipantIncidentsUpdate extends BaseValidate {
-  @IsEnum(IncidentStatus, { message: `O status deve ser um dos valores: ${Object.values(IncidentStatus).join(", ")}` })
-  @IsNotEmpty({ message: "A propriedade 'status' não pode ser vazia" })
-  status: IncidentStatus;
+  @IsString({ message: "O motivo deve ser uma sequência de caracteres" })
+  @IsOptional()
+  reason?: string;
 
-  private constructor(status: IncidentStatus = IncidentStatus.OPEN) {
+  @IsString({ message: "O status deve ser uma sequência de caracteres" })
+  @IsOptional()
+  status?: IncidentStatus;
+
+  private constructor(reason?: string, status?: IncidentStatus) {
     super();
-    this.status = status
+    this.status = status;
+    this.reason = reason;
   }
-  
-  static async create(status: IncidentStatus): Promise<InputParticipantIncidentsUpdate> {
-    const createParticipantIncidents = new InputParticipantIncidentsUpdate(status);
+
+  static async create(reason?: string, status?: IncidentStatus): Promise<InputParticipantIncidentsUpdate> {
+    const createParticipantIncidents = new InputParticipantIncidentsUpdate(reason, status);
     await InputParticipantIncidentsUpdate.validate(createParticipantIncidents);
     return createParticipantIncidents;
   }

@@ -22,7 +22,10 @@ export class LoginService {
     let designation: Designation | null = null;
 
     if (group) {
-      designation = await this.designationRepository.findOne(group.groupId);
+      designation = await this.designationRepository.findOne(group.groupId).catch((error) => {
+        console.error(`Error: ${error}`);
+        return null;
+      })
     }
 
     const payload = {

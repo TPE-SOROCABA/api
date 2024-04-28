@@ -4,12 +4,16 @@ import { DesignationMapper } from "../mappers/DesignationMapper";
 import { Exception } from "../shared/Exception";
 
 import { prisma } from "../infra/prismaClient";
+import { DesignationStatus } from "@prisma/client";
 
 export class DesignationRepository {
   async findOne(groupId: string) {
     const designationModel = await prisma.designations.findFirst({
       where: {
         groupId: groupId,
+        status: {
+          not: DesignationStatus.ARCHIVED,
+        }
       },
       include: {
         group: {
@@ -101,6 +105,8 @@ export class DesignationRepository {
           },
           data: {
             status: designation.status,
+            cancellationJustification: designation.cancellationJustification,
+            mandatoryPresence: designation.mandatoryPresence,
           },
         }),
       ]);

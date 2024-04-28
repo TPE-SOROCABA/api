@@ -11,27 +11,27 @@ type InputUserProps = {
 };
 
 export class InputUser extends BaseValidate {
-  @Length(1, 255, { message: "A propriedade 'name' deve ter entre 1 e 255 caracteres" })
-  @IsString({ message: "A propriedade 'name' deve ser uma string" })
+  @Length(1, 255, { message: "O nome deve ter entre 1 e 255 caracteres" })
+  @IsString({ message: "O nome deve ser uma sequência de caracteres" })
   name: string;
 
-  @Length(1, 255, { message: "A propriedade 'email' deve ter entre 1 e 255 caracteres" })
-  @IsString({ message: "A propriedade 'email' deve ser uma string" })
+  @Length(1, 255, { message: "O e-mail deve ter entre 1 e 255 caracteres" })
+  @IsString({ message: "O e-mail deve ser uma sequência de caracteres" })
   email: string;
 
-  @Length(1, 11, { message: "A propriedade 'cpf' deve ter entre 1 e 11 caracteres" })
-  @IsString({ message: "A propriedade 'cpf' deve ser uma string" })
+  @Length(1, 11, { message: "O CPF deve ter entre 1 e 11 caracteres" })
+  @IsString({ message: "O CPF deve ser uma sequência de caracteres" })
   cpf: string;
 
-  @Length(1, 16, { message: "A propriedade 'password' deve ter entre 1 e 16 caracteres" })
-  @IsString({ message: "A propriedade 'password' deve ser uma string" })
+  @Length(1, 16, { message: "A senha deve ter entre 1 e 16 caracteres" })
+  @IsString({ message: "A senha deve ser uma sequência de caracteres" })
   password: string;
 
-  @Length(1, 11, { message: "A propriedade 'phone' deve ter entre 1 e 16 caracteres" })
-  @IsString({ message: "A propriedade 'phone' deve ser uma string" })
+  @Length(1, 11, { message: "O número de telefone deve ter entre 1 e 11 caracteres" })
+  @IsString({ message: "O número de telefone deve ser uma sequência de caracteres" })
   phone: string;
 
-  @IsString({ message: "A propriedade 'email' deve ser uma string" })
+  @IsString({ message: "O avatar deve ser uma sequência de caracteres" })
   @IsOptional()
   avatar?: string;
 

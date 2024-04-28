@@ -1,0 +1,30 @@
+listWeekDesignations:
+    handler: src/functions/groups/weekDesignationsByGroupId.handler
+    description: Listar todas as designações da semana
+    events:
+      - http:
+          path: groups/{groupId}/designations/week
+          method: GET
+          cors: true
+          authorizer: check-authorizer
+
+groupByIdWeekDesignation:
+    handler: src/functions/groups/groupByIdWeekDesignation.handler
+    description: Buscar detalhes de um grupo
+    events:
+      - http:
+          path: groups/{groupId}/designations/week-details
+          method: GET
+          cors: true
+          authorizer: check-authorizer
+
+listDesignationsByGroupId:
+    handler: src/functions/groups/listDesignationsByGroupId.handler
+    description: Buscar designações por grupo id
+    events:
+      - http:
+          path: groups/{groupId}/designations
+          method: GET
+          cors: true
+          authorizer: check-authorizer
+         
