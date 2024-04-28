@@ -1,25 +1,38 @@
 import { Designation } from "../../src/domain/Designation";
+import { GenderRequirementRule } from "../../src/domain/DesignationRulesValidation/GenderRequirementRule";
+import { OccupancyLimitRule } from "../../src/domain/DesignationRulesValidation/OccupancyLimitRule";
+import { ParticipantsNotAloneRule } from "../../src/domain/DesignationRulesValidation/ParticipantsNotAloneRule";
+import { ParticipantsNotAssignment } from "../../src/domain/DesignationRulesValidation/ParticipantsNotAssignment";
 
 const weekDesignationsMock = require("./weekDesignations.json") as Designation;
 jest.mock("../../src/repositories/DesignationRepository");
 
 function setupDesignationMock() {
-  return new Designation(
-    weekDesignationsMock.id,
-    weekDesignationsMock.group,
-    weekDesignationsMock.status,
-    weekDesignationsMock.assignments,
-    weekDesignationsMock.participants,
-    weekDesignationsMock.createdAt,
-    weekDesignationsMock.updatedAt
+  const weekDesignationsMockClone = JSON.parse(JSON.stringify(weekDesignationsMock));
+  const participantsNotAloneRule = new ParticipantsNotAloneRule();
+  const occupancyLimitRule = new OccupancyLimitRule();
+  const genderRequirementRule = new GenderRequirementRule();
+  const participantsNotAssignment = new ParticipantsNotAssignment();
+  const designation = new Designation(
+    weekDesignationsMockClone.id,
+    weekDesignationsMockClone.group,
+    weekDesignationsMockClone.status,
+    weekDesignationsMockClone.assignments,
+    weekDesignationsMockClone.participants,
+    weekDesignationsMockClone.createdAt,
+    weekDesignationsMockClone.updatedAt
   );
+  designation.addValidationPlugin(participantsNotAloneRule);
+  designation.addValidationPlugin(occupancyLimitRule);
+  designation.addValidationPlugin(genderRequirementRule);
+  designation.addValidationPlugin(participantsNotAssignment);
+  return designation;
 }
 
 describe("Designação Semana", () => {
-  
   test("Deve gerar uma designação aleatória", async () => {
     const designation = setupDesignationMock();
-    expect(designation).not.toBe(designation.generateAssignment(500));
+    expect(designation).not.toBe(designation.generateAssignment());
   });
 
   test("Deve validar os getters", async () => {
@@ -33,7 +46,7 @@ describe("Designação Semana", () => {
 
   test("Deve filtrar as designações", async () => {
     const designation = setupDesignationMock();
-    designation.generateAssignment(500);
+    designation.generateAssignment();
     designation.filterAssignment("Giulia");
     const participant = designation.assignmentsFiltered[0].participants.find((participant) => participant.name.includes("Giulia"));
     expect(participant?.name).toContain("Giulia");
@@ -61,7 +74,7 @@ describe("Designação Semana", () => {
 
   test("Deve mover um participante de um ponto para outro", async () => {
     const designation = setupDesignationMock();
-    designation.generateAssignment(500);
+    designation.generateAssignment();
     const pointId = "65f99ec2a74906aa343a5400";
     const participantsIds = ["65fe049ce62483e5e1758157", "65fe049ae62483e5e175813b"];
     designation.updateParticipants(pointId, participantsIds);
@@ -82,74 +95,5 @@ describe("Designação Semana", () => {
     const designation = setupDesignationMock();
     const nextDate = designation.getNextDate(new Date("2024-01-03 13:01:00.000")); // 2024-01-03 é uma quarta-feira
     expect(nextDate.getTime()).toBe(new Date("2024-01-10 13:00:00.000").getTime()); // 2024-01-10 é a próxima quarta-feira
-  });
-
-  test("Deve validar se tem participantes sem atribuições", async () => {
-    const designation = setupDesignationMock();
-    designation.generateAssignment(500);
-    designation.participants.push({
-      id: "65fe049ce62483e5e175815b",
-      name: "Giulia Felipe",
-      phone: "(01) 6972-5473FAKE",
-      profile: "PARTICIPANT",
-      profile_photo: "",
-      sex: "FEMALE",
-      incident_history: null,
-    } as any);
-    console.log(designation.participants)
-    const hasParticipantsWithoutAssignments = designation.isParticipantsWithoutAssignments();
-    console.log(hasParticipantsWithoutAssignments)
-    expect(hasParticipantsWithoutAssignments.message).toBe("Participantes sem atribuições: Giulia Felipe");
-    expect(hasParticipantsWithoutAssignments.status).toBe(true);
-  });
-
-  test("Deve validar a ausência de participantes sem atribuições", async () => {
-    const designation = setupDesignationMock();
-    designation.generateAssignment(500);
-    designation.participants = []
-    const hasParticipantsWithoutAssignments = designation.isParticipantsWithoutAssignments();
-    expect(hasParticipantsWithoutAssignments.status).toBe(false);
-  });
-
-  
-  test("Deve validar a ausência de participantes sem atribuições com incidentes fechados", async () => {
-    const designation = setupDesignationMock();
-    designation.generateAssignment(500);
-    designation.participants.push({
-      id: "65fe049ce62483e5e175815b",
-      name: "Giulia Felipe",
-      phone: "(01) 6972-5473FAKE",
-      profile: "PARTICIPANT",
-      profile_photo: "",
-      sex: "FEMALE",
-      incident_history: {
-        status: "CLOSED"
-      },
-    } as any);
-    console.log(designation.participants)
-    const hasParticipantsWithoutAssignments = designation.isParticipantsWithoutAssignments();
-    console.log(hasParticipantsWithoutAssignments)
-    expect(hasParticipantsWithoutAssignments.message).toBe("Participantes sem atribuições: Giulia Felipe");
-    expect(hasParticipantsWithoutAssignments.status).toBe(true);
-  });
-
-  test("Deve validar a ausência de participantes sem atribuições com incidentes abertos", async () => {
-    const designation = setupDesignationMock();
-    designation.generateAssignment(500);
-    designation.participants.push({
-      id: "65fe049ce62483e5e175815b",
-      name: "Giulia Felipe",
-      phone: "(01) 6972-5473FAKE",
-      profile: "PARTICIPANT",
-      profile_photo: "",
-      sex: "FEMALE",
-      incident_history: {
-        status: "OPEN"
-      },
-    } as any);
-    console.log(designation.participants)
-    const hasParticipantsWithoutAssignments = designation.isParticipantsWithoutAssignments();
-    console.log(hasParticipantsWithoutAssignments)
-    expect(hasParticipantsWithoutAssignments.status).toBe(false);
   });
 });

@@ -59,20 +59,45 @@ export const handler: Handler = async (_event: APIGatewayEventCustom): Promise<A
     }
 
     console.log(`Criando incidente para o participante ${participant.name}`);
-    await prisma.incidentHistories
-      .create({
-        data: {
-          participantId: participant.id,
-          reporterId: reporter.id,
-          reason: params.reason,
-          status: IncidentStatus.OPEN,
-          designationId: designation.id,
+    await prisma.$transaction(async (tx) => {
+      console.log(`Criando incidente para o participante ${participant.name}`);
+      await tx.incidentHistories
+        .create({
+          data: {
+            participantId: participant.id,
+            reporterId: reporter.id,
+            reason: params.reason,
+            status: IncidentStatus.OPEN,
+            designationId: designation.id,
+          },
+        })
+        .catch((error) => {
+          console.log(error);
+          throw new BadRequestException("Erro ao criar incidente");
+        });
+      const assignment = await tx.assignments.findFirst({
+        where: {
+          designationsId: designation.id,
         },
-      })
-      .catch((error) => {
-        console.log(error);
-        throw new BadRequestException("Erro ao criar incidente");
       });
+
+      if (!assignment) {
+        throw new BadRequestException("Erro ao criar incidente");
+      }
+      const { id, name } = await tx.$queryRaw<{ id: string; name: string }>`
+      select p."name",ap.id from assignments a 
+      inner join assignments_participants ap on a.id = ap.assignment_id 
+      inner join participants p on p.id = ap.participant_id 
+      where a.designations_id  = ${designation.id} and ap.participant_id = ${participant.id}`;
+
+      console.log(`Deletando atribuições do participante ${name}`);
+      await tx.assignmentsParticipants.deleteMany({
+        where: {
+          id,
+        },
+      });
+      console.log(`Atribuições deletadas com sucesso`);
+    });
 
     return ResponseHandler.success({ message: "Incidente criado com sucesso" });
   } catch (error) {

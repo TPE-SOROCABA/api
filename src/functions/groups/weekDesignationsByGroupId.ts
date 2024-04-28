@@ -27,7 +27,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       designation.filterAssignment(filter);
     }
 
-    return ResponseHandler.success(designation);
+    return ResponseHandler.success(designation.toJson());
   } catch (error) {
     return ResponseHandler.error(error);
   }

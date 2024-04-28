@@ -24,8 +24,8 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
         groupId: groupId,
         ...(isFilterByDate && {
           designationDate: {
-            gte: dayjs(dateFrom).toDate(),
-            lte: dayjs(dateTo).toDate(),
+            gte: dayjs(dateFrom + "00:00").toDate(),
+            lte: dayjs(dateTo + "23:59").toDate(),
           },
         }),
       },

@@ -10,11 +10,7 @@ const whatsaapService = new WhatsAppService(new Z_APIWhatsAppAdapter());
 
 export async function SendAssignmentDesignation(designation: Designation) {
   console.log(`Verificando se a designação possui participantes sem atribuições`);
-  const hasParticipantsWithoutAssignments = designation.isParticipantsWithoutAssignments();
-  if (hasParticipantsWithoutAssignments.status) {
-    console.log(`Designação possui participantes sem atribuições`);
-    throw new BadRequestException( hasParticipantsWithoutAssignments.message);
-  }
+  designation.applyValidations()
   console.log(`Designação não possui participantes sem atribuições`);
 
   console.log(`Verificando se a designação está aberta ou em andamento`);
@@ -42,10 +38,10 @@ export async function SendAssignmentDesignation(designation: Designation) {
   console.log(`Enviando mensagens`);
   for (const participant of participants) {
     const message = getMessage(designation, participant, captain);
-    console.log(`Enviando mensagem para ${participant.name} - ${participant.phone} tipo: ${designation.status}`);
     if (participant.phone.includes("FAKE")) {
       continue;
     }
+    console.log(`Enviando mensagem para ${participant.name} - ${participant.phone} tipo: ${designation.status}`);
 
     await whatsaapService
       .sendMessage({
@@ -59,7 +55,7 @@ export async function SendAssignmentDesignation(designation: Designation) {
         console.log(`Erro ao enviar mensagem para ${participant.name} - ${participant.phone}`);
         console.error(error);
       });
-    console.log(`Mensagem enviada para ${participant.name} - ${participant.phone} com sucesso`);
+    console.log(`Mensagem enviada para ${participant.name} - ${participant.phone} - ${ `${process.env.FRONTEND_URL}/week-designation/${designation.id}/${participant.id}`} com sucesso`);
   }
 }
 

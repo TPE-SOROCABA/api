@@ -13,7 +13,7 @@ export async function TransactionStatusDesignationOpenLess2Hours(designationOpen
   console.log(`Designação ${designationOpen.id} aberta com menos de 2 horas para o início`);
   console.log("Gerando designação automaticamente");
   const designation = await designationRepository.findByDesignationId(designationOpen.id);
-  designation.generateAssignment(500);
+  designation.generateAssignment();
   
   console.log("Enviando notificação de designação");
   await SendAssignmentDesignation(designation).catch(async (error) => {
