@@ -20,7 +20,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       throw new NotFoundException("Designação não encontrada");
     }
 
-    return responseHandler.success(designation);
+    return responseHandler.success(designation.toJson());
   } catch (error) {
     return responseHandler.error(error);
   }
