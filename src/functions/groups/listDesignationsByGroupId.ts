@@ -33,6 +33,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       orderBy: {
         designationDate: "desc",
       },
+      take: 10,
     });
 
     return responseHandler.success(designations);
