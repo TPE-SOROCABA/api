@@ -60,12 +60,12 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
 
     return responseHandler.success(
       [designation].map((d) => {
-        const sexEmoticon = (sex: ParticipantSex) => (sex === ParticipantSex.MALE ? "🧑🏻‍💼" : "👩🏻‍💼");
+       
 
         const [assignments] = d.assignments.map((a) => ({
           point: a.point.name,
           publication_carts: a.publication_carts.map((p) => p.name),
-          participants: a.participants.map((p) => `${p.name}(${sexEmoticon(p.sex as unknown as ParticipantSex)})`),
+          participants: a.participants.map((p) => ({name: p.name, profile_photo: p.profile_photo})),
         }));
 
         const isParticipantAssigned = d.assignments.some((a) => a.participants.some((p) => p.id === participantId));
@@ -76,7 +76,10 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
           Boolean(status == IncidentStatus.OPEN) || !isParticipantAssigned
             ? {
                 point: "Sem designação",
-                participants: [`${participant.name} (${sexEmoticon(participant.sex as unknown as ParticipantSex)})`],
+                participants: {
+                  name: participant.name,
+                  profile_photo: participant.profile_photo,
+                },
                 publication_carts: [],
               }
             : {
@@ -89,7 +92,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
           const captais = d.participants.filter((p) => p.profile == ParticipantProfile.CAPTAIN || p.profile == ParticipantProfile.COORDINATOR);
           details = {
             point: "Visitas de Encorajamento",
-            participants: captais.map((p) => `${p.name} (${sexEmoticon(p.sex as unknown as ParticipantSex)})`),
+            participants: captais.map((p) => ({name: p.name, profile_photo: p.profile_photo})),
             publication_carts: [],
           };
         }
