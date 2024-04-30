@@ -76,7 +76,7 @@ export const handler: Handler = async (_event: APIGatewayEventCustom): Promise<A
         });
 
       designation.filterAssignment(participant.name);
-      if (designation.assignmentsFiltered){
+      if (designation.assignmentsFiltered.length){
         const assignment = designation.assignmentsFiltered.filter((a) => a.participants.some((p) => p.id === id))[0];
         console.log(`Removendo participante ${participant.name} da designação`);
         designation.assignments.push(assignment);
