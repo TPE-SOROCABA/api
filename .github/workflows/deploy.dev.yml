@@ -31,7 +31,6 @@ jobs:
         echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env
         echo FRONTEND_URL=${{ secrets.FRONTEND_URL }} >> .env
         echo DESIGNATION_UPDATE_QUEUE=${{ secrets.DESIGNATION_UPDATE_QUEUE }} >> .env
-        echo GEMINI_KEY=${{ secrets.GEMINI_KEY }} >> .env
         cat .env
     - name: Install dependencies
       run: npm install
