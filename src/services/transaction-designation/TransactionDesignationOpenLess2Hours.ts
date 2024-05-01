@@ -31,10 +31,10 @@ export async function TransactionStatusDesignationOpenLess2Hours(designationOpen
     const { coordinator } = data.group;
     await whatsaapService.sendMessage({
       phone: coordinator.phone,
-      message: `Olá, a designação ${designation.group.name} foi aberta com menos de 2 horas para o início. Por favor, verifique se todos os participantes estão cientes e prontos para a designação.\n\n`,
+      message: `Olá, a designação ${designation.group.name} foi aberta com menos de 2 horas para o início. Por favor, verifique se todos os participantes estão cientes e prontos para a designação.`,
       title: "*TPE Digital - Atraso da Designação*",
       linkUrl: `${process.env.FRONTEND_URL}/week-designation/${designation.id}`,
-      linkDescription: "Clique aqui para ver a designação",
+      linkDescription: "Clique aqui para ver mais detalhes",
     });
   }
 

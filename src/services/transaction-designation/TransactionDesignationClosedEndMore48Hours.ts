@@ -29,7 +29,7 @@ export async function TransactionDesignationClosedEndMore48Hours(designationClos
     await whatsaapService
       .sendMessage({
         phone: coordinator.phone,
-        message: `Olá, a designação ${designation.group.name} foi encerrada.\n\nAgora não é mais possível justificar a falta.\n\nTPE Digital!\n\n`,
+        message: `Olá, a designação do grupo ${designation.group.name} foi ENCERRADA.\nAgora é possível realizar novas designações.\nObs: O publicadores não podem mais justificar a ausência desta semana.\n\nTPE Digital!\n\n`,
         title: "*TPE Digital - Designação Encerrada*",
         linkUrl: `${process.env.FRONTEND_URL}`,
         linkDescription: "Clique aqui para acessar o sistema",

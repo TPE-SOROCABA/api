@@ -26,10 +26,10 @@ export async function TransactionDesignationInProgress(designationInProgress: De
     await whatsaapService
       .sendMessage({
         phone: coordinator.phone,
-        message: `Olá, a designação ${designation.group.name} foi concluída.\n\nAgora os participantes terão 48 horas para justificar a falta.\n\nTPE Digital!\n\n`,
+        message: `Olá, a designação ${designation.group.name} foi CONCLUÍDA.\nOs participantes terão 48 horas para justificar a ausência desta semana.\nTPE Digital!`,
         title: "*TPE Digital - Designação Concluída*",
-        linkUrl: `${process.env.FRONTEND_URL}/week-designation/${designation.id}`,
-        linkDescription: "Clique aqui para ver a designação",
+        linkUrl: `${process.env.FRONTEND_URL}`,
+        linkDescription: "Clique aqui para acessar o sistema",
       })
       .catch((error) => {
         console.error(`Erro ao enviar notificação de designação para ${coordinator.name}`, error);

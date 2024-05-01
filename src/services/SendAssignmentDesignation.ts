@@ -22,11 +22,6 @@ export async function SendAssignmentDesignation(designation: Designation) {
     throw new BadRequestException(`Designação não pode ser enviada, pois está ${DesignationStatusPT_BR[designation.status]}`);
   }
 
-  let captain = designation.captainsAndCoordinators.find((participant) => participant.profile === ParticipantProfile.CAPTAIN);
-  if (!captain) {
-    captain = designation.captainsAndCoordinators.find((participant) => participant.profile === ParticipantProfile.COORDINATOR);
-  }
-
   const participants: Participant[] = [];
   for (const assignment of designation.assignments) {
     if (assignment.participants.length === 0) continue;
@@ -40,11 +35,10 @@ export async function SendAssignmentDesignation(designation: Designation) {
   participants.push(...designation.participants.filter((participant) => participant.profile !== ParticipantProfile.PARTICIPANT && participant?.incident_history?.status !== IncidentStatus.OPEN));
   console.log(`Enviando mensagens`);
   for (const participant of participants) {
-    const message = getMessage(designation, participant, captain);
+    const message = getMessage(designation, participant);
     if (participant.phone.includes("FAKE")) {
       continue;
     }
-    console.log(`Enviando mensagem para ${participant.name} - ${participant.phone} tipo: ${designation.status}`);
 
     await whatsaapService
       .sendMessage({
@@ -52,7 +46,7 @@ export async function SendAssignmentDesignation(designation: Designation) {
         message,
         title: "*TPE Digital - Designação*",
         linkUrl: `${process.env.FRONTEND_URL}/week-designation/${designation.id}/${participant.id}`,
-        linkDescription: "Clique aqui para acessar a designação",
+        linkDescription: "Clique aqui para acessar mais informações",
       })
       .catch((error) => {
         console.log(`Erro ao enviar mensagem para ${participant.name} - ${participant.phone}`);
@@ -62,18 +56,18 @@ export async function SendAssignmentDesignation(designation: Designation) {
   }
 }
 
-function getMessage(designation: Designation, participant: Participant, captain: Participant | undefined) {
-  return `*Grupo de Designação: ${designation.group.name}*
+function getMessage(designation: Designation, participant: Participant) {
+  return `*Grupo: ${designation.group.name}*
   
-  Olá, ${participant.name}, 
+Olá, ${participant.name}, 
   
-  Você está designado para ${Weekday_PT_BR[designation.group.config.weekday]}, das *${designation.group.config.startHour} às ${designation.group.config.endHour}*.
+Você está designado para ${Weekday_PT_BR[designation.group.config.weekday]}, das *${designation.group.config.startHour} às ${designation.group.config.endHour}*.
   
-  Para acessar a designação, clique no link abaixo.
+Para acessar a designação, clique no link abaixo.
+
+Qualquer dúvida, entre em contato com o capitão do seu grupo.
   
-  Se surgirem dúvidas ou preocupações, não hesite em entrar em contato com o capitão ${captain ? `${captain?.name} pelo telefone ${captain?.phone}` : ""}.
-  
-  Atenciosamente,
-  TPE - Digital.
+Atenciosamente,
+TPE - Digital.
   `;
 }
