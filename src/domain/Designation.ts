@@ -13,6 +13,10 @@ export class Designation {
   public cancellationJustification: string = "";
   public mandatoryPresence: boolean = true;
   private validations: ValidationPlugin[] = [];
+  public total = {
+    participants: 0,
+    vacancies: 0
+  }
 
   constructor(
     readonly id: string,
@@ -169,6 +173,8 @@ export class Designation {
   toJson(){
     const designationClone = JSON.parse(JSON.stringify(this))
     delete designationClone['validations']
+    designationClone.total.participants = this.participantsCount
+    designationClone.total.vacancies = this.totalVacancies
     return designationClone
   }
 }
