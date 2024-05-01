@@ -11,14 +11,14 @@ const designationRepository = new DesignationRepository();
 const sendUpdateDesignation = new SendUpdateDesignation();
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
- const responseHandler = new ResponseHandler(_event);
+  const responseHandler = new ResponseHandler(_event);
   try {
     const designationId = _event.pathParameters?.designationId;
     const pointId = _event.pathParameters?.pointId;
-    const body = JsonHandler.parse<{ participants: string[] }>(_event.body);
-    if (!designationId) throw new BadRequestException( "Parâmetros inválidos");
+    const body = JsonHandler.parse<{ participants: string[]; filter?: string }>(_event.body);
+    if (!designationId) throw new BadRequestException("Parâmetros inválidos");
 
-    if (!pointId) throw new BadRequestException( "Ponto inválido");
+    if (!pointId) throw new BadRequestException("Ponto inválido");
 
     const designation = await designationRepository.findByDesignationId(designationId);
     if (!designation) {
@@ -26,14 +26,19 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     }
 
     if (designation.status !== DesignationStatus.OPEN && designation.status !== DesignationStatus.IN_PROGRESS) {
-      throw new ForbiddenException( `Designação não pode ser enviada, pois está ${DesignationStatusPT_BR[designation.status]}`);
+      throw new ForbiddenException(`Designação não pode ser enviada, pois está ${DesignationStatusPT_BR[designation.status]}`);
     }
 
-    if(!designation.updateParticipants(pointId, body.participants)){
-      return responseHandler.success(designation.toJson(), 422)
+    if (!designation.updateParticipants(pointId, body.participants)) {
+      if (body?.filter) {
+        designation.filterAssignment(body.filter);
+      }
+      return responseHandler.success(designation.toJson(), 422);
     }
     await sendUpdateDesignation.execute(designation);
-
+    if (body?.filter) {
+      designation.filterAssignment(body.filter);
+    }
     return responseHandler.success(designation.toJson());
   } catch (error) {
     return responseHandler.error(error);
