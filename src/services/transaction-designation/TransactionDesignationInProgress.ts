@@ -26,7 +26,7 @@ export async function TransactionDesignationInProgress(designationInProgress: De
     await whatsaapService
       .sendMessage({
         phone: coordinator.phone,
-        message: `Olá, a designação ${designation.group.name} foi CONCLUÍDA.\nOs participantes terão 48 horas para justificar a ausência desta semana.\nTPE Digital!`,
+        message: `Olá, a designação ${designation.group.name} foi CONCLUÍDA.\n\nOs participantes terão 48 horas para justificar a ausência desta semana.\n\nTPE Digital!`,
         title: "*TPE Digital - Designação Concluída*",
         linkUrl: `${process.env.FRONTEND_URL}`,
         linkDescription: "Clique aqui para acessar o sistema",

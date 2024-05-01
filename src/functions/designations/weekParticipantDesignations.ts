@@ -89,7 +89,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
         if (participant.profile == ParticipantProfile.CAPTAIN || participant.profile == ParticipantProfile.COORDINATOR) {
           const captais = d.participants.filter((p) => p.profile == ParticipantProfile.CAPTAIN || p.profile == ParticipantProfile.COORDINATOR);
           details = {
-            point: "Visitas de Encorajamento",
+            point: "Capitães",
             participants: captais.map((p) => ({ name: p.name, profile_photo: FakeImage(p).profile_photo })),
             publication_carts: [],
           };
