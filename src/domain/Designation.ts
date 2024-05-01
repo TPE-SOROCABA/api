@@ -136,9 +136,9 @@ export class Designation {
   }
 
   // atualizar participantes em um ponto
-  public updateParticipants(pointId: string, participantsIds: string[]): void {
+  public updateParticipants(pointId: string, participantsIds: string[]): boolean {
     const designationState = new DesignationState(this);
-    designationState.updateParticipants(pointId, participantsIds);
+    return designationState.updateParticipants(pointId, participantsIds);
   }
 
   public updateStatus(status: DesignationStatus): void {
@@ -203,6 +203,7 @@ export type Assignments = {
     min: number;
     max: number;
   };
+  error?: string;
 };
 
 export type Group = {

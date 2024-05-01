@@ -29,10 +29,12 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       throw new ForbiddenException( `Designação não pode ser enviada, pois está ${DesignationStatusPT_BR[designation.status]}`);
     }
 
-    designation.updateParticipants(pointId, body.participants);
+    if(!designation.updateParticipants(pointId, body.participants)){
+      return responseHandler.success(designation.toJson(), 422)
+    }
     await sendUpdateDesignation.execute(designation);
 
-    return responseHandler.success({ message: "Ponto atualizado com sucesso" });
+    return responseHandler.success(designation.toJson());
   } catch (error) {
     return responseHandler.error(error);
   }
