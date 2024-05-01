@@ -3,6 +3,7 @@ import { ResponseHandler } from "../../shared/ResponseHandler";
 import { ParticipantProfile } from "../../enums/ParticipantProfile";
 import { prisma } from "../../infra/prismaClient";
 import { DesignationStatus } from "@prisma/client";
+import { FakeImage } from "shared/FakeImage";
 
 interface IncidentOutput {
   id: string;
@@ -77,7 +78,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
         id: participant.participant.id,
         name: participant.participant.name,
         phone: participant.participant.phone,
-        profile_photo: participant.participant.profile_photo || "",
+        profile_photo: FakeImage(participant.participant).profile_photo || "",
         profile: participant.participant.profile as ParticipantProfile,
         incident_history: incidentHistoryOutput,
       };

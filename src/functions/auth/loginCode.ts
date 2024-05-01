@@ -8,12 +8,13 @@ import { prisma } from "../../infra/prismaClient";
 import { DesignationRepository } from "../../repositories/DesignationRepository";
 import { LoginService } from "../../services/LoginService";
 import { ParticipantProfile } from "@prisma/client";
+import { FakeImage } from "shared/FakeImage";
 
 const designationRepository = new DesignationRepository();
 const loginService = new LoginService(designationRepository);
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
- const responseHandler = new ResponseHandler(_event);
+  const responseHandler = new ResponseHandler(_event);
   try {
     const body = JsonHandler.parse<InputLoginCode>(_event.body || "{}");
     console.log(`Usuário ${body.phone} está tentando recuperar a senha`);
@@ -25,17 +26,17 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       throw new Exception(404, "Usuário não encontrado ou código de recuperação inválido");
     }
 
-    if (participant.profile === ParticipantProfile.PARTICIPANT){
+    if (participant.profile === ParticipantProfile.PARTICIPANT) {
       console.log(`Usuário ${participant.name} não tem permissão para logar`);
       throw new Exception(403, "Usuário não tem permissão para logar");
     }
 
     if (participant.Auth.resetPasswordCode !== params.code) {
-      throw new BadRequestException( "Código de recuperação inválido");
+      throw new BadRequestException("Código de recuperação inválido");
     }
 
     if (new Date() > participant.Auth.expiredAt) {
-      throw new BadRequestException( "Código de recuperação expirado");
+      throw new BadRequestException("Código de recuperação expirado");
     }
 
     const payload = await loginService.execute({
@@ -43,7 +44,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       cpf: participant.cpf || "",
       profile: participant.profile,
       participantId: participant.id,
-      profile_photo: participant.profile_photo || "",
+      profile_photo: FakeImage(participant).profile_photo || "",
     });
 
     return responseHandler.success({

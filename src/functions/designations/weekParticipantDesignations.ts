@@ -1,16 +1,16 @@
 import type { Context, APIGatewayProxyStructuredResultV2, APIGatewayProxyEventV2, Handler } from "aws-lambda";
 import { ResponseHandler } from "../../shared/ResponseHandler";
 import { BadRequestException, Exception } from "../../shared/Exception";
-import { ParticipantSex } from "../../enums/ParticipantSex";
 import { IncidentStatus } from "../../enums/IncidentStatus";
 import { DesignationRepository } from "../../repositories/DesignationRepository";
 import { prisma } from "../../infra/prismaClient";
 import { DesignationStatus, ParticipantProfile } from "@prisma/client";
+import { FakeImage } from "shared/FakeImage";
 
 const designationRepository = new DesignationRepository();
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
- const responseHandler = new ResponseHandler(_event);
+  const responseHandler = new ResponseHandler(_event);
   try {
     const participantId = _event.pathParameters?.participantId;
     const designationId = _event.pathParameters?.designationId;
@@ -30,7 +30,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     }
 
     designation.assignments = designation.assignments.filter((a) => a.participants.some((p) => p.id === participantId));
-  
+
     const participant = await prisma.participants.findUnique({
       where: {
         id: participantId,
@@ -60,12 +60,10 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
 
     return responseHandler.success(
       [designation].map((d) => {
-       
-
         const [assignments] = d.assignments.map((a) => ({
           point: a.point.name,
           publication_carts: a.publication_carts.map((p) => p.name),
-          participants: a.participants.map((p) => ({name: p.name, profile_photo: p.profile_photo})),
+          participants: a.participants.map((p) => ({ name: p.name, profile_photo: FakeImage(p).profile_photo })),
         }));
 
         const isParticipantAssigned = d.assignments.some((a) => a.participants.some((p) => p.id === participantId));
@@ -78,7 +76,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
                 point: "Sem designação",
                 participants: {
                   name: participant.name,
-                  profile_photo: participant.profile_photo,
+                  profile_photo: FakeImage(participant).profile_photo,
                 },
                 publication_carts: [],
               }
@@ -92,7 +90,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
           const captais = d.participants.filter((p) => p.profile == ParticipantProfile.CAPTAIN || p.profile == ParticipantProfile.COORDINATOR);
           details = {
             point: "Visitas de Encorajamento",
-            participants: captais.map((p) => ({name: p.name, profile_photo: p.profile_photo})),
+            participants: captais.map((p) => ({ name: p.name, profile_photo: FakeImage(p).profile_photo })),
             publication_carts: [],
           };
         }

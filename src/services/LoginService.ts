@@ -1,3 +1,4 @@
+import { FakeImage } from "shared/FakeImage";
 import { Designation } from "../domain/Designation";
 import { prisma } from "../infra/prismaClient";
 import { DesignationRepository } from "../repositories/DesignationRepository";
@@ -7,7 +8,7 @@ export interface IParticipant {
   cpf: string;
   profile: string;
   participantId: string;
-  profile_photo?: string;
+  profile_photo: string;
 }
 
 export class LoginService {
@@ -25,14 +26,14 @@ export class LoginService {
       designation = await this.designationRepository.findOne(group.groupId).catch((error) => {
         console.error(`Error: ${error}`);
         return null;
-      })
+      });
     }
 
     const payload = {
       name: name,
       cpf: cpf,
       profile: profile,
-      profile_photo: profile_photo || "",
+      profile_photo: FakeImage({ name, profile_photo }).profile_photo || "",
       groupId: group?.groupId,
       id: participantId,
       designation: designation

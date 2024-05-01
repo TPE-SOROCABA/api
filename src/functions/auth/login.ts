@@ -8,6 +8,7 @@ import { DesignationRepository } from "../../repositories/DesignationRepository"
 import { prisma } from "../../infra/prismaClient";
 import { LoginService } from "../../services/LoginService";
 import { ParticipantProfile } from "@prisma/client";
+import { FakeImage } from "shared/FakeImage";
 
 interface IParticipant {
   id: string;
@@ -27,7 +28,7 @@ const designationRepository = new DesignationRepository();
 const loginService = new LoginService(designationRepository);
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
- const responseHandler = new ResponseHandler(_event);
+  const responseHandler = new ResponseHandler(_event);
   try {
     const body = JsonHandler.parse<InputLogin>(_event.body);
     const login = await InputLogin.create(body.phone, body.password);
@@ -43,7 +44,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       console.log(`Usuário ${login.phone} não encontrado`);
       throw new Exception(401, "Credenciais inválidas");
     }
-    if (participant.profile === ParticipantProfile.PARTICIPANT){
+    if (participant.profile === ParticipantProfile.PARTICIPANT) {
       console.log(`Usuário ${participant.name} não tem permissão para logar`);
       throw new Exception(403, "Usuário não tem permissão para logar");
     }
@@ -54,7 +55,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       name: participant.name,
       profile: participant.profile,
       participantId: participant.participant_id,
-      profile_photo: participant.profile_photo || "",
+      profile_photo: FakeImage(participant).profile_photo || "",
     });
     console.log(`Usuário ${payload.name} logado com sucesso`);
     return responseHandler.success({
@@ -64,5 +65,3 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     return responseHandler.error(error);
   }
 };
-
-
