@@ -14,35 +14,31 @@ export interface IParticipant {
 export class LoginService {
   constructor(private designationRepository: DesignationRepository) {}
   async execute({ participantId, name, cpf, profile, profile_photo }: IParticipant) {
-    const group = await prisma.participantsGroups.findFirst({
+    const groups = await prisma.participantsGroups.findMany({
       where: {
         participantId: participantId,
       },
+      include: {
+        group: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      }
     });
 
-    let designation: Designation | null = null;
-
-    if (group) {
-      designation = await this.designationRepository.findOne(group.groupId).catch((error) => {
-        console.error(`Error: ${error}`);
-        return null;
-      });
-    }
 
     const payload = {
       name: name,
       cpf: cpf,
       profile: profile,
       profile_photo: FakeImage({ name, profile_photo }).profile_photo || "",
-      groupId: group?.groupId,
+      groups: groups.map((gp) => ({
+        id: gp.group.id,
+        name: gp.group.name,
+      })),
       id: participantId,
-      designation: designation
-        ? {
-            id: designation.id,
-            expiration: designation.getNextDate(),
-            name: designation.group.name,
-          }
-        : null,
     };
 
     console.log(`Payload: ${JSON.stringify(payload, null, 2)}`);
