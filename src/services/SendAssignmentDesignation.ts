@@ -5,18 +5,21 @@ import { BadRequestException } from "shared/Exception";
 import { DesignationStatus, IncidentStatus, ParticipantProfile } from "@prisma/client";
 import { Weekday_PT_BR } from "src/enums/Weekday";
 import { DesignationStatusPT_BR } from "enums/DesignationStatusPT_BR";
+import { ParticipantsNotAssignment } from "domain/DesignationRulesValidation/ParticipantsNotAssignment";
 
 const whatsaapService = new WhatsAppService(new Z_APIWhatsAppAdapter());
 
 export async function SendAssignmentDesignation(designation: Designation) {
   console.log(`Verificando se a designação possui participantes sem atribuições`);
-  designation.applyValidations()
+  const participantsNotAssignment = new ParticipantsNotAssignment();
+  designation.addValidationPlugin(participantsNotAssignment);
+  designation.applyValidations();
   console.log(`Designação não possui participantes sem atribuições`);
 
   console.log(`Verificando se a designação está aberta ou em andamento`);
   if (designation.status !== DesignationStatus.OPEN) {
     console.log(`Designação ${designation.status}`);
-    throw new BadRequestException( `Designação não pode ser enviada, pois está ${DesignationStatusPT_BR[designation.status]}`);
+    throw new BadRequestException(`Designação não pode ser enviada, pois está ${DesignationStatusPT_BR[designation.status]}`);
   }
 
   let captain = designation.captainsAndCoordinators.find((participant) => participant.profile === ParticipantProfile.CAPTAIN);
@@ -55,7 +58,7 @@ export async function SendAssignmentDesignation(designation: Designation) {
         console.log(`Erro ao enviar mensagem para ${participant.name} - ${participant.phone}`);
         console.error(error);
       });
-    console.log(`Mensagem enviada para ${participant.name} - ${participant.phone} - ${ `${process.env.FRONTEND_URL}/week-designation/${designation.id}/${participant.id}`} com sucesso`);
+    console.log(`Mensagem enviada para ${participant.name} - ${participant.phone} - ${`${process.env.FRONTEND_URL}/week-designation/${designation.id}/${participant.id}`} com sucesso`);
   }
 }
 

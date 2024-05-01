@@ -4,9 +4,6 @@ import { IDesignationModel } from "../functions/designations/interfaces/IDesigna
 import { GenderRequirementRule } from "domain/DesignationRulesValidation/GenderRequirementRule";
 import { OccupancyLimitRule } from "domain/DesignationRulesValidation/OccupancyLimitRule";
 import { ParticipantsNotAloneRule } from "domain/DesignationRulesValidation/ParticipantsNotAloneRule";
-import { ParticipantsNotAssignment } from "domain/DesignationRulesValidation/ParticipantsNotAssignment";
-
-
 
 export abstract class DesignationMapper {
   static toDomain(designationModel: IDesignationModel): Designation {
@@ -74,7 +71,6 @@ export abstract class DesignationMapper {
     const participantsNotAloneRule = new ParticipantsNotAloneRule();
     const occupancyLimitRule = new OccupancyLimitRule();
     const genderRequirementRule = new GenderRequirementRule();
-    const participantsNotAssignment = new ParticipantsNotAssignment();
 
     const designation = new Designation(
       designationModel.id,
@@ -102,7 +98,6 @@ export abstract class DesignationMapper {
     designation.addValidationPlugin(participantsNotAloneRule);
     designation.addValidationPlugin(occupancyLimitRule);
     designation.addValidationPlugin(genderRequirementRule);
-    designation.addValidationPlugin(participantsNotAssignment);
     return designation;
   }
 }
