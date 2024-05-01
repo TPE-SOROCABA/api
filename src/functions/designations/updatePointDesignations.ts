@@ -34,7 +34,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
 
     await sendUpdateDesignation.execute(designation);
 
-    return responseHandler.success({ message: "Ponto atualizado com sucesso" });
+    return responseHandler.success(designation.toJson());
   } catch (error) {
     return responseHandler.error(error);
   }
