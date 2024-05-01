@@ -4,6 +4,7 @@ import { IDesignationModel } from "../functions/designations/interfaces/IDesigna
 import { GenderRequirementRule } from "domain/DesignationRulesValidation/GenderRequirementRule";
 import { OccupancyLimitRule } from "domain/DesignationRulesValidation/OccupancyLimitRule";
 import { ParticipantsNotAloneRule } from "domain/DesignationRulesValidation/ParticipantsNotAloneRule";
+import { FakeImage } from "shared/FakeImage";
 
 export abstract class DesignationMapper {
   static toDomain(designationModel: IDesignationModel): Designation {
@@ -24,7 +25,7 @@ export abstract class DesignationMapper {
         name: participant.participant.name,
         cpf: participant.participant.cpf,
         phone: participant.participant.phone,
-        profile_photo: participant.participant.profile_photo,
+        profile_photo: FakeImage(participant.participant).profile_photo,
         sex: participant.participant.sex as any,
         incident_history: incidentHistory || null,
         profile: participant.participant.profile as any,
@@ -55,7 +56,7 @@ export abstract class DesignationMapper {
               name: participant.participant.name,
               cpf: participant.participant.cpf,
               phone: participant.participant.phone,
-              profile_photo: participant.participant.profile_photo,
+              profile_photo: FakeImage(participant.participant).profile_photo,
               sex: participant.participant.sex as any,
               incident_history: incidentHistory || null,
               profile: participant.participant.profile as any,
