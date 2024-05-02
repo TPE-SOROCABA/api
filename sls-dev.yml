@@ -38,13 +38,13 @@ provider:
       - 'multipart/form-data'
   iamRoleStatements:
     - Effect: Allow
-      Action:
-        - "sqs:SendMessage"
-        - "sqs:ReceiveMessage"
-        - "sqs:SendMessage"
-        - "sqs:GetQueueAttributes"
-      Resource: 
-        - "arn:aws:sqs:us-east-1:533267195262:api-tpe-digital-dev-designation-queue.fifo"
+        Action:
+          - "sqs:SendMessage"
+          - "sqs:ReceiveMessage"
+          - "sqs:SendMessage"
+          - "sqs:GetQueueAttributes"
+        Resource: 
+          - "arn:aws:sqs:us-east-1:533267195262:api-tpe-digital-dev-designation-queue.fifo"
     - Effect: "Allow"
         Action:
           - "s3:GetObject"
