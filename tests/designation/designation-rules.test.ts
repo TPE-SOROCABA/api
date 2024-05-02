@@ -79,7 +79,7 @@ describe("Designação Semana - Rules", () => {
       incident_history: null,
     } as any);
 
-    expect(() => designation.applyValidations()).toThrow("O ponto Bolsas (Adicional) não pode ter 2 participantes de sexos diferentes");
+    expect(() => designation.applyValidations()).toThrow("O ponto não pode ter 2 participantes de sexos diferentes");
   })
 
   test("Deve validar a regra de gênero dentro de uma atribuição - mesmo gênero", () => {

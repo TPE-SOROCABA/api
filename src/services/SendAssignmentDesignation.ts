@@ -5,23 +5,21 @@ import { BadRequestException } from "shared/Exception";
 import { DesignationStatus, IncidentStatus, ParticipantProfile } from "@prisma/client";
 import { Weekday_PT_BR } from "src/enums/Weekday";
 import { DesignationStatusPT_BR } from "enums/DesignationStatusPT_BR";
+import { ParticipantsNotAssignment } from "domain/DesignationRulesValidation/ParticipantsNotAssignment";
 
 const whatsaapService = new WhatsAppService(new Z_APIWhatsAppAdapter());
 
 export async function SendAssignmentDesignation(designation: Designation) {
   console.log(`Verificando se a designação possui participantes sem atribuições`);
-  designation.applyValidations()
+  const participantsNotAssignment = new ParticipantsNotAssignment();
+  designation.addValidationPlugin(participantsNotAssignment);
+  designation.applyValidations();
   console.log(`Designação não possui participantes sem atribuições`);
 
   console.log(`Verificando se a designação está aberta ou em andamento`);
   if (designation.status !== DesignationStatus.OPEN) {
     console.log(`Designação ${designation.status}`);
-    throw new BadRequestException( `Designação não pode ser enviada, pois está ${DesignationStatusPT_BR[designation.status]}`);
-  }
-
-  let captain = designation.captainsAndCoordinators.find((participant) => participant.profile === ParticipantProfile.CAPTAIN);
-  if (!captain) {
-    captain = designation.captainsAndCoordinators.find((participant) => participant.profile === ParticipantProfile.COORDINATOR);
+    throw new BadRequestException(`Designação não pode ser enviada, pois está ${DesignationStatusPT_BR[designation.status]}`);
   }
 
   const participants: Participant[] = [];
@@ -37,11 +35,10 @@ export async function SendAssignmentDesignation(designation: Designation) {
   participants.push(...designation.participants.filter((participant) => participant.profile !== ParticipantProfile.PARTICIPANT && participant?.incident_history?.status !== IncidentStatus.OPEN));
   console.log(`Enviando mensagens`);
   for (const participant of participants) {
-    const message = getMessage(designation, participant, captain);
+    const message = getMessage(designation, participant);
     if (participant.phone.includes("FAKE")) {
       continue;
     }
-    console.log(`Enviando mensagem para ${participant.name} - ${participant.phone} tipo: ${designation.status}`);
 
     await whatsaapService
       .sendMessage({
@@ -49,28 +46,28 @@ export async function SendAssignmentDesignation(designation: Designation) {
         message,
         title: "*TPE Digital - Designação*",
         linkUrl: `${process.env.FRONTEND_URL}/week-designation/${designation.id}/${participant.id}`,
-        linkDescription: "Clique aqui para acessar a designação",
+        linkDescription: "Clique aqui para acessar mais informações",
       })
       .catch((error) => {
         console.log(`Erro ao enviar mensagem para ${participant.name} - ${participant.phone}`);
         console.error(error);
       });
-    console.log(`Mensagem enviada para ${participant.name} - ${participant.phone} - ${ `${process.env.FRONTEND_URL}/week-designation/${designation.id}/${participant.id}`} com sucesso`);
+    console.log(`Mensagem enviada para ${participant.name} - ${participant.phone} - ${`${process.env.FRONTEND_URL}/week-designation/${designation.id}/${participant.id}`} com sucesso`);
   }
 }
 
-function getMessage(designation: Designation, participant: Participant, captain: Participant | undefined) {
-  return `*Grupo de Designação: ${designation.group.name}*
+function getMessage(designation: Designation, participant: Participant) {
+  return `*Grupo: ${designation.group.name}*
   
-  Olá, ${participant.name}, 
+Olá, ${participant.name}, 
   
-  Você está designado para ${Weekday_PT_BR[designation.group.config.weekday]}, das *${designation.group.config.startHour} às ${designation.group.config.endHour}*.
+Você está designado para ${Weekday_PT_BR[designation.group.config.weekday]}, das *${designation.group.config.startHour} às ${designation.group.config.endHour}*.
   
-  Para acessar a designação, clique no link abaixo.
+Para acessar a designação, clique no link abaixo.
+
+Qualquer dúvida, entre em contato com o capitão do seu grupo.
   
-  Se surgirem dúvidas ou preocupações, não hesite em entrar em contato com o capitão ${captain ? `${captain?.name} pelo telefone ${captain?.phone}` : ""}.
-  
-  Atenciosamente,
-  TPE - Digital.
+Atenciosamente,
+TPE - Digital.
   `;
 }

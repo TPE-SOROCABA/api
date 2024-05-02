@@ -76,13 +76,16 @@ export const handler: Handler = async (_event: APIGatewayEventCustom): Promise<A
         });
 
       designation.filterAssignment(participant.name);
-      if (designation.assignmentsFiltered.length){
+      if (designation.assignmentsFiltered.length) {
         const assignment = designation.assignmentsFiltered.filter((a) => a.participants.some((p) => p.id === id))[0];
-        console.log(`Removendo participante ${participant.name} da designação`);
-        designation.assignments.push(assignment);
-        const participants = assignment.participants.filter((p) => p.id !== id).map((p) => p.id);
-        designation.updateParticipants(assignment.point.id, participants);
-        await sendUpdateDesignation.execute(designation);
+        if (assignment?.participants?.length) {
+          console.log(`Removendo participante ${participant?.name} da designação`);
+          designation.assignments.push(assignment);
+          const participants = assignment.participants.filter((p) => p.id !== id).map((p) => p.id);
+          console.log({ participants });
+          designation.updateParticipants(assignment.point.id, participants);
+          await sendUpdateDesignation.execute(designation);
+        }
       }
     });
 

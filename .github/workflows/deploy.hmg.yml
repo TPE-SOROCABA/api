@@ -7,6 +7,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: acceptance
 
     strategy:
       matrix:
@@ -27,11 +28,10 @@ jobs:
         echo INSTANCE_ID=${{ secrets.INSTANCE_ID }} >> .env
         echo INSTANCE_TOKEN=${{ secrets.INSTANCE_TOKEN }} >> .env
         echo USER_TOKEN_ID=${{ secrets.USER_TOKEN_ID }} >> .env
-        echo JWT_SECRET=${{ secrets.HMG_JWT_SECRET }} >> .env
-        echo DATABASE_URL=${{ secrets.HMG_DATABASE_URL }} >> .env
-        echo FRONTEND_URL=${{ secrets.HMG_FRONTEND_URL }} >> .env
-        echo DESIGNATION_UPDATE_QUEUE=${{ secrets.HMG_DESIGNATION_UPDATE_QUEUE }} >> .env
-        echo .env
+        echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> .env
+        echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env
+        echo FRONTEND_URL=${{ secrets.FRONTEND_URL }} >> .env
+        echo DESIGNATION_UPDATE_QUEUE=${{ secrets.DESIGNATION_UPDATE_QUEUE }} >> .env
         cat .env
     - name: Install dependencies
       run: npm install

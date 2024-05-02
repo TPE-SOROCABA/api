@@ -24,12 +24,15 @@ export async function TransactionDesignationClosedEndMore48Hours(designationClos
 
   const designation = await designationRepository.findByDesignationId(designationClosed.id);
 
+  console.log("Criando nova designação");
+  await createDesignationUseCase.execute(designation.group.id);
+
   console.log("Enviando notificação de encerramento de designação para os coordenadores");
   for (const coordinator of designation.captainsAndCoordinators) {
     await whatsaapService
       .sendMessage({
         phone: coordinator.phone,
-        message: `Olá, a designação ${designation.group.name} foi encerrada.\n\nAgora não é mais possível justificar a falta.\n\nTPE Digital!\n\n`,
+        message: `Olá, a designação do grupo ${designation.group.name} foi ENCERRADA.\n\nAgora é possível realizar novas designações.\n\nObs: O publicadores não podem mais justificar a ausência desta semana.\n\nTPE Digital!`,
         title: "*TPE Digital - Designação Encerrada*",
         linkUrl: `${process.env.FRONTEND_URL}`,
         linkDescription: "Clique aqui para acessar o sistema",
@@ -38,24 +41,5 @@ export async function TransactionDesignationClosedEndMore48Hours(designationClos
         console.error(`Erro ao enviar notificação de designação para ${coordinator.name}`, error);
       });
   }
-  
-  console.log("Criando nova designação"); 
-  await createDesignationUseCase.execute(designation.group.id);
-  
-  console.log("Enviando notificação de nova designação para os coordenadores");
-  for (const coordinator of designation.captainsAndCoordinators) {
-    await whatsaapService
-      .sendMessage({
-        phone: coordinator.phone,
-        message: `Olá, uma nova designação foi criada para o grupo ${designation.group.name}.\n\nAgora é possível realizar novas designações.\n\nTPE Digital!\n\n`,
-        title: "*TPE Digital - Nova Designação*",
-        linkUrl: `${process.env.FRONTEND_URL}`,
-        linkDescription: "Clique aqui para acessar o sistema",
-      })
-      .catch((error) => {
-        console.error(`Erro ao enviar notificação de designação para ${coordinator.name}`, error);
-      });
-  }
-
   console.log("Designação arquivada com sucesso");
 }

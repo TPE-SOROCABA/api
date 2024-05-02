@@ -1,6 +1,7 @@
 service: api-tpe-digital
 
 plugins:
+  - serverless-prune-plugin
   - serverless-domain-manager
   - serverless-dotenv-plugin
   - serverless-esbuild
@@ -20,6 +21,9 @@ custom:
     autoDomain: false
   esbuild:
       exclude: []
+  prune:
+    automatic: true
+    number: 3
 
 provider:
   name: aws
@@ -36,7 +40,7 @@ provider:
         - "sqs:SendMessage"
         - "sqs:GetQueueAttributes"
       Resource: 
-        - "arn:aws:sqs:us-east-1:533267195262:api-tpe-digital-dev-designation-queue.fifo"
+      - "arn:aws:sqs:us-east-1:533267195262:api-tpe-digital-dev-designation-queue.fifo"
   environment:
     NODE_ENV: ${self:provider.stage}
 

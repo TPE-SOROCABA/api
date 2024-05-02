@@ -167,7 +167,7 @@ model Groups {
   config_weekday    Weekday @map("config_weekday")
 
   coordinator   Participants? @relation(fields: [coordinatorId], references: [id])
-  coordinatorId String?        @map("coordinator_id")
+  coordinatorId String?       @map("coordinator_id")
 
   Designations         Designations[]
   ParticipantsGroup    ParticipantsGroups[]
@@ -209,6 +209,7 @@ model Designations {
   createdAt                 DateTime          @default(now()) @map("created_at")
   updatedAt                 DateTime          @updatedAt @map("updated_at")
   designationDate           DateTime          @default(now()) @map("designation_date")
+  designationEndDate        DateTime          @default(now()) @map("designation_end_date")
   mandatoryPresence         Boolean           @default(true) @map("mandatory_presence")
   cancellationJustification String?           @map("cancellation_justification")
 

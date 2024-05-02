@@ -13,6 +13,10 @@ export class Designation {
   public cancellationJustification: string = "";
   public mandatoryPresence: boolean = true;
   private validations: ValidationPlugin[] = [];
+  public total = {
+    participants: 0,
+    vacancies: 0
+  }
 
   constructor(
     readonly id: string,
@@ -136,9 +140,9 @@ export class Designation {
   }
 
   // atualizar participantes em um ponto
-  public updateParticipants(pointId: string, participantsIds: string[]): void {
+  public updateParticipants(pointId: string, participantsIds: string[]): boolean {
     const designationState = new DesignationState(this);
-    designationState.updateParticipants(pointId, participantsIds);
+    return designationState.updateParticipants(pointId, participantsIds);
   }
 
   public updateStatus(status: DesignationStatus): void {
@@ -169,6 +173,8 @@ export class Designation {
   toJson(){
     const designationClone = JSON.parse(JSON.stringify(this))
     delete designationClone['validations']
+    designationClone.total.participants = this.participantsCount
+    designationClone.total.vacancies = this.totalVacancies
     return designationClone
   }
 }
@@ -203,6 +209,7 @@ export type Assignments = {
     min: number;
     max: number;
   };
+  error?: string;
 };
 
 export type Group = {

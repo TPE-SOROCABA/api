@@ -6,23 +6,24 @@ import { Z_APIWhatsAppAdapter } from "../../infra/adapter/Z_APIWhatsAppAdapter";
 import { Weekday_PT_BR } from "../../enums/Weekday";
 import { DesignationStatus } from "@prisma/client";
 import { BadRequestException } from "shared/Exception";
+import { SendUpdateDesignation } from "services/SendUpdateDesignation";
 
 const designationRepository = new DesignationRepository();
 const whatsaapService = new WhatsAppService(new Z_APIWhatsAppAdapter());
+const sendUpdateDesignation = new SendUpdateDesignation();
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
- const responseHandler = new ResponseHandler(_event);
+  const responseHandler = new ResponseHandler(_event);
   try {
-    
     const designationId = _event.pathParameters?.designationId;
     const body = JSON.parse(_event.body || "{}");
     if (!designationId || !body?.justification) {
-      throw new BadRequestException( "Parâmetros inválidos")
+      throw new BadRequestException("Parâmetros inválidos");
     }
 
     const designation = await designationRepository.findByDesignationId(designationId);
     designation.cancelDesignation(body.justification);
-    await designationRepository.update(designation);
+    await sendUpdateDesignation.execute(designation);
 
     console.log(`Procurando capitão`);
     let captain = designation.participants.find((p) => p.profile === "CAPTAIN");
@@ -34,30 +35,30 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
 
     for (const assignment of designation.assignments) {
       for (const participant of assignment.participants) {
-        const message = `*Grupo de Designação: ${designation.group.name}*
+        const message = `*Grupo: ${designation.group.name}*
 
 Olá, ${participant.name}, 
 
-A designação para ${Weekday_PT_BR[designation.group.config.weekday]}, das *${designation.group.config.startHour} às ${designation.group.config.endHour}* foi cancelada.
+A designação para ${Weekday_PT_BR[designation.group.config.weekday]}, das *${designation.group.config.startHour} às ${designation.group.config.endHour}*, foi CANCELADA.
 
-Se surgirem dúvidas ou preocupações, não hesite em entrar em contato com o capitão ${captain?.name} pelo telefone ${captain?.phone}.
+Qualquer dúvida, entre em contato com o capitão do seu grupo.
 
 Atenciosamente,
 TPE - Digital.
 `;
-        if(participant.phone.includes("FAKE")) {
+        if (participant.phone.includes("FAKE")) {
           continue;
         }
-        await whatsaapService.sendMessage({ 
+        await whatsaapService.sendMessage({
           title: "*TPE Digital - Designação Cancelada*",
-          phone: participant.phone, 
+          phone: participant.phone,
           message,
           linkUrl: `${process.env.FRONTEND_URL}/week-designation/${participant.id}`,
-          linkDescription: "Clique aqui para acessar a designação"
+          linkDescription: "Clique aqui para acessar mais informações",
         });
       }
     }
-    return responseHandler.success({ message: "Designação cancelada com sucesso!" });
+    return responseHandler.success(designation.toJson());
   } catch (error) {
     return responseHandler.error(error);
   }

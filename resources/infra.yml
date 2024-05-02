@@ -18,15 +18,4 @@ transactionStatusDesignations:
       - schedule: cron(35 13 ? * * *)  # Para BR seria 10:35
       - schedule: cron(10 16 ? * * *)  # Para BR seria 13:05
       - schedule: cron(10 20 ? * * *)  # Para BR seria 17:05
-      - schedule: cron(0/10 * ? * * *) # Para BR seria a cada 10 minutos
-             
-hookMessage:
-    handler: src/functions/hookMessage.handler
-    description: Enviar mensagem para um webhook
-    events:
-      - http:
-          path: hooks/message
-          method: POST
-          cors: true
-
-        
+                     

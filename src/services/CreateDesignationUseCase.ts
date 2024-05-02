@@ -43,6 +43,7 @@ export class CreateDesignationUseCase {
             groupId,
             status: DesignationStatus.OPEN,
             designationDate: this.getNextDate(new Date(), group),
+            designationEndDate: this.getEndDateTime(this.getNextDate(new Date(), group), group),
           },
         });
         console.log(`Designação ${designation.name} criada com sucesso`);
@@ -91,5 +92,13 @@ export class CreateDesignationUseCase {
     }
 
     return nextDate;
+  }
+
+  private getEndDateTime(designationDate: Date, group: Groups): Date {
+    const endDateTime = new Date(designationDate);
+    endDateTime.setHours(+group.config_end_hour.split(":")[0]);
+    endDateTime.setMinutes(+group.config_end_hour.split(":")[1]);
+
+    return endDateTime;
   }
 }
