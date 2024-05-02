@@ -25,6 +25,7 @@
     "@serverless/typescript": "^3.38.0",
     "@types/aws-lambda": "^8.10.134",
     "@types/axios": "^0.14.0",
+    "@types/busboy": "^1.5.3",
     "@types/jest": "^29.5.12",
     "@types/jsonwebtoken": "^9.0.5",
     "@types/node": "^20.11.20",
@@ -57,6 +58,7 @@
   },
   "dependencies": {
     "@prisma/client": "^5.12.1",
+    "busboy": "^1.6.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "dayjs": "^1.11.10",

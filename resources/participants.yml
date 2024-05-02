@@ -36,3 +36,13 @@ deleteIncidences:
           method: DELETE
           cors: true
           authorizer: check-authorizer
+
+uploadPhoto:
+    handler: src/functions/participants/uploadPhoto.handler
+    description: Upload de foto de perfil
+    events:
+      - http:
+          path: participants/{participantId}/photo
+          method: POST
+          cors: true
+          authorizer: check-authorizer

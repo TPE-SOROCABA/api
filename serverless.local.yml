@@ -14,6 +14,17 @@ provider:
   profile: tpe
   timeout: 30
   memorySize: 128
+  apiGateway:
+    # accepted binary type for file uploads
+    binaryMediaTypes:
+      - 'multipart/form-data'
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:GetObject"
+        - "s3:PutObject"
+        - "s3:ListBucket"
+      Resource: "*"
 
 custom:
   dotenv:
