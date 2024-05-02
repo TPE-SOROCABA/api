@@ -32,9 +32,6 @@ provider:
   stage: ${opt:stage}
   timeout: 30
   memorySize: 128
-  apiGateway:
-    binaryMediaTypes:
-      - 'multipart/form-data'
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -44,12 +41,6 @@ provider:
         - "sqs:GetQueueAttributes"
       Resource: 
       - "arn:aws:sqs:us-east-1:533267195262:api-tpe-digital-dev-designation-queue.fifo"
-    - Effect: "Allow"
-      Action:
-        - "s3:GetObject"
-        - "s3:PutObject"
-        - "s3:ListBucket"
-      Resource: "*"
   environment:
     NODE_ENV: ${self:provider.stage}
 
