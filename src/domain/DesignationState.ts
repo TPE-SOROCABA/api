@@ -44,7 +44,6 @@ export class DesignationState {
       this.designation.applyValidations();
       return true;
     } catch (erro: any) {
-      assignment.error = erro.message;
       return false;
     }
   }
