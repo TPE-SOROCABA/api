@@ -33,24 +33,23 @@ provider:
   timeout: 30
   memorySize: 128
   apiGateway:
-    # accepted binary type for file uploads
     binaryMediaTypes:
       - 'multipart/form-data'
   iamRoleStatements:
     - Effect: Allow
-        Action:
-          - "sqs:SendMessage"
-          - "sqs:ReceiveMessage"
-          - "sqs:SendMessage"
-          - "sqs:GetQueueAttributes"
-        Resource: 
-          - "arn:aws:sqs:us-east-1:533267195262:api-tpe-digital-dev-designation-queue.fifo"
+      Action:
+        - "sqs:SendMessage"
+        - "sqs:ReceiveMessage"
+        - "sqs:SendMessage"
+        - "sqs:GetQueueAttributes"
+      Resource: 
+      - "arn:aws:sqs:us-east-1:533267195262:api-tpe-digital-dev-designation-queue.fifo"
     - Effect: "Allow"
-        Action:
-          - "s3:GetObject"
-          - "s3:PutObject"
-          - "s3:ListBucket"
-        Resource: "*"
+      Action:
+        - "s3:GetObject"
+        - "s3:PutObject"
+        - "s3:ListBucket"
+      Resource: "*"
   environment:
     NODE_ENV: ${self:provider.stage}
 
