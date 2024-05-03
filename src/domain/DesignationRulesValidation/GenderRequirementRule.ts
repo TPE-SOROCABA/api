@@ -10,6 +10,8 @@ export class GenderRequirementRule implements ValidationPlugin {
         const message = `O ponto ${assignment.point.name} não pode ter 2 participantes de sexos diferentes`;
         assignment.error = message;
         count++;
+      } else {
+        assignment.error = "";
       }
     });
     if (count) throw new BadRequestException("O ponto não pode ter 2 participantes de sexos diferentes");

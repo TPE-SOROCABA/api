@@ -9,8 +9,10 @@ export class ParticipantsNotAloneRule implements ValidationPlugin {
       if (assignment.participants.length === 1) {
         assignment.error = `O ponto ${assignment.point.name} não pode ter apenas um participante`;
         count++;
+      } else {
+        assignment.error = "";
       }
-    })
+    });
     if (count) throw new BadRequestException("O ponto não pode ter apenas um participante");
   }
 }

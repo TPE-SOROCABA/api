@@ -99,6 +99,11 @@ export abstract class DesignationMapper {
     designation.addValidationPlugin(participantsNotAloneRule);
     designation.addValidationPlugin(occupancyLimitRule);
     designation.addValidationPlugin(genderRequirementRule);
+    try {
+    designation.applyValidations()
+    } catch (error) {
+      console.log(error)
+    }
     return designation;
   }
 }
