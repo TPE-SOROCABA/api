@@ -37,6 +37,9 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       },
       include: {
         IncidentParticipant: {
+          where: {
+            designationId: designationId,
+          },
           select: {
             reason: true,
             status: true,
