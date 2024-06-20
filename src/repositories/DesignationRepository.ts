@@ -13,7 +13,7 @@ export class DesignationRepository {
         groupId: groupId,
         status: {
           not: DesignationStatus.ARCHIVED,
-        }
+        },
       },
       include: {
         group: {
@@ -110,25 +110,35 @@ export class DesignationRepository {
           },
         }),
       ]);
-
       console.log("Designação salva com sucesso");
 
-      console.log("Atualizando designação");
-      await prisma.$transaction(
-        designation.assignments.map((assignment) => {
-          return prisma.assignments.update({
+      console.log("Atualizando designação que teve alteração de ponto");
+      await prisma.$transaction(async (tsx) => {
+        const assignmentsOld = await tsx.assignments.findMany({ where: { designationsId: designation.id } });
+        const assignmentsNew = designation.assignments;
+
+        for (const old of assignmentsOld) {
+          const newAssignment = assignmentsNew.find((a: any) => a.id === old.id);
+          if (!newAssignment) continue;
+
+          let isEquals = old.config_status === newAssignment.point.status;
+          if (isEquals) continue;
+
+          console.log("Atualizando ponto", newAssignment.point.name);
+          await tsx.assignments.update({
             where: {
-              id: assignment.id,
+              id: old.id,
             },
             data: {
-              pointId: assignment.point.id,
-              config_max: assignment.config.max,
-              config_min: assignment.config.min,
-              config_status: assignment.point.status,
+              pointId: newAssignment.point.id,
+              config_max: newAssignment.config.max,
+              config_min: newAssignment.config.min,
+              config_status: newAssignment.point.status,
             },
           });
-        })
-      );
+          console.log("Ponto atualizado com sucesso");
+        }
+      });
       console.log("Designação atualizada com sucesso");
     } catch (error) {
       console.log("Erro ao atualizar designação", error);
