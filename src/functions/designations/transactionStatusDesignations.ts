@@ -14,7 +14,7 @@ export const handler: ScheduledHandler = async (): Promise<void> => {
       Designations: {
         where: {
           status: {
-            in: [DesignationStatus.OPEN, DesignationStatus.IN_PROGRESS, DesignationStatus.CLOSED],
+            in: [DesignationStatus.OPEN, DesignationStatus.IN_PROGRESS, DesignationStatus.CLOSED, DesignationStatus.CANCELLED],
           },
         },
       },
@@ -38,7 +38,7 @@ export const handler: ScheduledHandler = async (): Promise<void> => {
         }
 
         if (groupTimeCalculate.isDesignationEndMore48Hours) {
-          if (designation.status === DesignationStatus.CLOSED) {
+          if (designation.status === DesignationStatus.CLOSED || designation.status === DesignationStatus.CANCELLED) {
             await TransactionDesignationClosedEndMore48Hours(designation);
           }
         }
