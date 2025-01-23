@@ -71,6 +71,73 @@ export class DesignationRepository {
     return DesignationMapper.toDomain(designationModel as unknown as IDesignationModel);
   }
 
+  async findOneOld(groupId: string) {
+    const designationModel = await prisma.designations.findFirst({
+      where: {
+        groupId: groupId,
+        status: DesignationStatus.ARCHIVED,
+        
+      },
+      include: {
+        group: {
+          include: {
+            EventDayGroup: {
+              include: {
+                eventDay: true,
+              },
+            },
+            ParticipantsGroup: {
+              include: {
+                participant: {
+                  include: {
+                    IncidentParticipant: {
+                      orderBy: {
+                        createdAt: "desc",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        assignments: {
+          include: {
+            point: true,
+            AssignmentsParticipants: {
+              include: {
+                participant: {
+                  include: {
+                    IncidentParticipant: {
+                      orderBy: {
+                        createdAt: "desc",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            AssignmentsPublicationCart: {
+              include: {
+                publicationCart: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy:{
+        updatedAt: "desc"
+      }
+    });
+
+    if (!designationModel) {
+      throw new Exception(404, "Designação não encontrada");
+    }
+
+    return DesignationMapper.toDomain(designationModel as unknown as IDesignationModel);
+  }
+
+
   async update(designation: Designation) {
     try {
       console.log(`Salvando designação ${designation.id}`);
