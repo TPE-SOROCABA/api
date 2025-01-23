@@ -25,8 +25,8 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       designation.generateAssignment();
 
       let retryCount = 0;
-      while (isSameAsPreviousDesignation(designation, previousDesignation) && retryCount < 5) {
-        console.log("A designação gerada é igual à anterior, tentando novamente...");
+      while (isSameAsPreviousDesignation(designation, previousDesignation) && retryCount < 20) {
+        console.log(`A designação gerada é igual à anterior, tentando novamente ${retryCount}`);
         designation.generateAssignment();
         retryCount++;
       }
