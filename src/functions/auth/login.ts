@@ -34,30 +34,39 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     const login = await InputLogin.create(body.phone, body.password);
     console.log(`Usuário ${login.phone} está tentando logar`);
 
-    const [participant] = await prisma.$queryRaw<IParticipant[]>`
-    select * from participants p 
-    inner join auths a on a.participant_id = p.id
-    where p.phone = ${login.phone} and a.password = ${LoginUtils.encryptPassword(login.password)}
-  `;
-
+    const participant = await prisma.participants.findUnique({
+      where: { phone: login.phone, }, include: {
+        Auth: {
+          where: { password: LoginUtils.encryptPassword(login.password) },
+        }, ParticipantsGroup: true
+      }
+    });
+    console.log(participant)
     if (!participant) {
       console.log(`Usuário ${login.phone} não encontrado`);
       throw new Exception(401, "Credenciais inválidas");
     }
-    if (participant.profile === ParticipantProfile.PARTICIPANT) {
+
+    let profile: string = "";
+    if (participant.profile === ParticipantProfile.COORDINATOR || participant.profile === ParticipantProfile.ADMIN_ANALYST) {
+      profile = participant.profile;
+    } else {
+      profile = participant.ParticipantsGroup.length > 0 ? participant.ParticipantsGroup[0].profile : ParticipantProfile.PARTICIPANT;
+    }
+
+    if (profile === ParticipantProfile.PARTICIPANT) {
       console.log(`Usuário ${participant.name} não tem permissão para logar`);
       throw new Exception(403, "Usuário não tem permissão para logar");
     }
-    console.log(`Usuário ${participant.name} logado com sucesso`);
 
     const payload = await loginService.execute({
-      cpf: participant.cpf,
+      cpf: participant?.cpf || "",
       name: participant.name,
-      profile: participant.profile,
-      participantId: participant.participant_id,
+      profile: profile,
+      participantId: participant.id,
       profile_photo: FakeImage(participant).profile_photo || "",
     });
-    console.log(`Usuário ${payload.name} logado com sucesso`);
+    console.log(`Usuário ${payload.name} logado com sucesso`, payload);
     return responseHandler.success({
       token: LoginUtils.createJWT(payload),
     });

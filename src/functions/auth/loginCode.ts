@@ -21,14 +21,9 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     const params = await InputLoginCode.create(body.phone, body.code);
 
     const participant = await prisma.participants.findUnique({ where: { phone: params.phone }, include: { Auth: true, ParticipantsGroup: true } });
-
+    console.log(participant)
     if (!participant || !participant.Auth?.expiredAt) {
       throw new Exception(404, "Usuário não encontrado ou código de recuperação inválido");
-    }
-
-    if (participant.profile === ParticipantProfile.PARTICIPANT) {
-      console.log(`Usuário ${participant.name} não tem permissão para logar`);
-      throw new Exception(403, "Usuário não tem permissão para logar");
     }
 
     if (participant.Auth.resetPasswordCode !== params.code) {
@@ -46,6 +41,11 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       profile = participant.ParticipantsGroup.length > 0 ? participant.ParticipantsGroup[0].profile : ParticipantProfile.PARTICIPANT;
     }
 
+    if (profile === ParticipantProfile.PARTICIPANT) {
+      console.log(`Usuário ${participant.name} não tem permissão para logar`);
+      throw new Exception(403, "Usuário não tem permissão para logar");
+    }
+
     const payload = await loginService.execute({
       name: participant.name,
       cpf: participant.cpf || "",
@@ -53,7 +53,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       participantId: participant.id,
       profile_photo: FakeImage(participant).profile_photo || "",
     });
-
+    console.log(`Usuário ${payload.name} logado com sucesso`, payload);
     return responseHandler.success({
       token: LoginUtils.createJWT(payload),
     });
