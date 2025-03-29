@@ -11,6 +11,7 @@ createDesignation:
 sendDesignation:
     handler: src/functions/designations/sendDesignations.handler
     description: Enviar uma designação
+    timeout: 150
     events:
       - http:
           path: designations/{designationId}/send

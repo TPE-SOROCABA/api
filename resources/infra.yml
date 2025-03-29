@@ -13,6 +13,7 @@ healthcheck:
 transactionStatusDesignations:
     handler: src/functions/designations/transactionStatusDesignations.handler
     description: Atualizar status de designações
+    timeout: 150
     events: # BR 06:35, 10:35, 13:05, 17:05
       - schedule: cron(35 9 ? * * *)  # Para BR seria 06:35
       - schedule: cron(35 13 ? * * *)  # Para BR seria 10:35
