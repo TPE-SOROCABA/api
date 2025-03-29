@@ -20,7 +20,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     console.log(`Usuário ${body.phone} está tentando recuperar a senha`);
     const params = await InputLoginCode.create(body.phone, body.code);
 
-    const participant = await prisma.participants.findUnique({ where: { phone: params.phone }, include: { Auth: true } });
+    const participant = await prisma.participants.findUnique({ where: { phone: params.phone }, include: { Auth: true, ParticipantsGroup: true } });
 
     if (!participant || !participant.Auth?.expiredAt) {
       throw new Exception(404, "Usuário não encontrado ou código de recuperação inválido");
@@ -39,10 +39,17 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       throw new BadRequestException("Código de recuperação expirado");
     }
 
+    let profile: string = "";
+    if (participant.profile === ParticipantProfile.COORDINATOR || participant.profile === ParticipantProfile.ADMIN_ANALYST) {
+      profile = participant.profile;
+    } else {
+      profile = participant.ParticipantsGroup.length > 0 ? participant.ParticipantsGroup[0].profile : ParticipantProfile.PARTICIPANT;
+    }
+
     const payload = await loginService.execute({
       name: participant.name,
       cpf: participant.cpf || "",
-      profile: participant.profile,
+      profile,
       participantId: participant.id,
       profile_photo: FakeImage(participant).profile_photo || "",
     });
