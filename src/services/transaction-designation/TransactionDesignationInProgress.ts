@@ -40,7 +40,7 @@ Os participantes terão 48 horas para justificar a ausência desta semana.
   
 TPE Digital!`,
             title: "*TPE Digital - Designação Concluída*",
-            linkUrl: `${process.env.FRONTEND_URL}/week-designation/${designation.id}/${participant.id}`,
+            linkUrl: `${process.env.FRONTEND_URL}/designacao/${designation.id}/${participant.id}`,
             linkDescription: "Clique aqui para justificar a ausência",
           })
           .catch((error) => {
@@ -59,7 +59,7 @@ Os participantes terão 48 horas para justificar a ausência desta semana.
   
 TPE Digital!`,
             title: "*TPE Digital - Designação Concluída*",
-            linkUrl: `${process.env.FRONTEND_URL}/week-designation/${designation.id}/${participant.id}`,
+            linkUrl: `${process.env.FRONTEND_URL}/designacao/${designation.id}/${participant.id}`,
             linkDescription: "Clique aqui para justificar a ausência",
           })
           .catch((error) => {

@@ -14,14 +14,14 @@ export async function TransactionStatusDesignationOpenLess2Hours(designationOpen
   console.log("Gerando designação automaticamente");
   const designation = await designationRepository.findByDesignationId(designationOpen.id);
   designation.generateAssignment();
-  
+
   console.log("Enviando notificação de designação");
   await SendAssignmentDesignation(designation).catch(async (error) => {
     console.error("Erro ao enviar notificação de designação", error);
     designation.updateStatus(DesignationStatus.OPEN);
     await designationRepository.update(designation);
   })
-  
+
   designation.updateStatus(DesignationStatus.IN_PROGRESS);
   await designationRepository.update(designation);
 
@@ -33,7 +33,7 @@ export async function TransactionStatusDesignationOpenLess2Hours(designationOpen
       phone: coordinator.phone,
       message: `Olá, a designação ${designation.group.name} foi aberta com menos de 2 horas para o início. Por favor, verifique se todos os participantes estão cientes e prontos para a designação.`,
       title: "*TPE Digital - Atraso da Designação*",
-      linkUrl: `${process.env.FRONTEND_URL}/week-designation/${designation.id}`,
+      linkUrl: `${process.env.FRONTEND_URL}/designacao/${designation.id}`,
       linkDescription: "Clique aqui para ver mais detalhes",
     });
   }

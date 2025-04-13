@@ -53,7 +53,7 @@ TPE - Digital.
           title: "*TPE Digital - Designação Cancelada*",
           phone: participant.phone,
           message,
-          linkUrl: `${process.env.FRONTEND_URL}/week-designation/${participant.id}`,
+          linkUrl: `${process.env.FRONTEND_URL}/designacao/${participant.id}`,
           linkDescription: "Clique aqui para acessar mais informações",
         });
       }

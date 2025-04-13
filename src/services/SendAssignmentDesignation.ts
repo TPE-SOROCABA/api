@@ -45,14 +45,14 @@ export async function SendAssignmentDesignation(designation: Designation) {
         phone: participant.phone,
         message,
         title: "*TPE Digital - Designação*",
-        linkUrl: `${process.env.FRONTEND_URL}/week-designation/${designation.id}/${participant.id}`,
+        linkUrl: `${process.env.FRONTEND_URL}/designacao/${designation.id}/${participant.id}`,
         linkDescription: "Clique aqui para acessar mais informações",
       })
       .catch((error) => {
         console.log(`Erro ao enviar mensagem para ${participant.name} - ${participant.phone}`);
         console.error(error);
       });
-    console.log(`Mensagem enviada para ${participant.name} - ${participant.phone} - ${`${process.env.FRONTEND_URL}/week-designation/${designation.id}/${participant.id}`} com sucesso`);
+    console.log(`Mensagem enviada para ${participant.name} - ${participant.phone} - ${`${process.env.FRONTEND_URL}/designacao/${designation.id}/${participant.id}`} com sucesso`);
   }
 }
 
