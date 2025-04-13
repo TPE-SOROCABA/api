@@ -25,7 +25,6 @@ updateIncidences:
           path: participants/{participantId}/incidences/{incidentId}
           method: PUT
           cors: true
-          authorizer: check-authorizer
      
 deleteIncidences:
     handler: src/functions/participants/incidences/deleteIncidences.handler
