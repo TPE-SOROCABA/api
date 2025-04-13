@@ -41,6 +41,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
             designationId: designationId,
           },
           select: {
+            id: true,
             reason: true,
             status: true,
           },
@@ -76,18 +77,18 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
         let details =
           Boolean(status == IncidentStatus.OPEN) || !isParticipantAssigned
             ? {
-                point: "Sem designação",
-                participants: {
-                  name: participant.name,
-                  profile_photo: FakeImage(participant).profile_photo,
-                },
-                publication_carts: [],
-              }
+              point: "Sem designação",
+              participants: {
+                name: participant.name,
+                profile_photo: FakeImage(participant).profile_photo,
+              },
+              publication_carts: [],
+            }
             : {
-                point: assignments.point,
-                participants: assignments.participants,
-                publication_carts: assignments.publication_carts,
-              };
+              point: assignments.point,
+              participants: assignments.participants,
+              publication_carts: assignments.publication_carts,
+            };
 
         if (participant.profile == ParticipantProfile.CAPTAIN || participant.profile == ParticipantProfile.COORDINATOR) {
           const captais = d.participants.filter((p) => p.profile == ParticipantProfile.CAPTAIN || p.profile == ParticipantProfile.COORDINATOR);
@@ -106,9 +107,10 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
           ...details,
           incident_history: incident
             ? {
-                reason: incident.reason,
-                status: incident.status,
-              }
+              id: incident.id,
+              reason: incident.reason,
+              status: incident.status,
+            }
             : null,
           status: d.status,
         };
