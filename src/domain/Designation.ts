@@ -170,10 +170,6 @@ export class Designation {
     this.validations.push(validation);
   }
 
-  removeAllValidationPlugins(): void {
-    this.validations = [];
-  }
-
   toJson() {
     const designationClone = JSON.parse(JSON.stringify(this))
     delete designationClone['validations']
