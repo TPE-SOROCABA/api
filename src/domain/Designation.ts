@@ -170,7 +170,11 @@ export class Designation {
     this.validations.push(validation);
   }
 
-  toJson(){
+  removeAllValidationPlugins(): void {
+    this.validations = [];
+  }
+
+  toJson() {
     const designationClone = JSON.parse(JSON.stringify(this))
     delete designationClone['validations']
     designationClone.total.participants = this.participantsCount

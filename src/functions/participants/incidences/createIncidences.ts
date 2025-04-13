@@ -57,6 +57,8 @@ export const handler: Handler = async (_event: APIGatewayEventCustom): Promise<A
       throw new Exception(404, "Designação não encontrada");
     }
 
+    designation.removeAllValidationPlugins();
+
     console.log(`Criando incidente para o participante ${participant.name}`);
     await prisma.$transaction(async (tx) => {
       console.log(`Criando incidente para o participante ${participant.name}`);
