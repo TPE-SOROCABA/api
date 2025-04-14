@@ -30,7 +30,7 @@ provider:
   region: us-east-1
   stage: ${opt:stage}
   timeout: 30
-  memorySize: 128
+  memorySize: 256
   iamRoleStatements:
     - Effect: Allow
       Action:
