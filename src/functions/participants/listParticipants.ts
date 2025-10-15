@@ -21,7 +21,7 @@ interface ParticipantOutput {
 }
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
- const responseHandler = new ResponseHandler(_event);
+  const responseHandler = new ResponseHandler(_event);
   try {
     const query = _event.queryStringParameters as { filter: string };
     const groupId = _event.queryStringParameters?.groupId;
@@ -60,26 +60,29 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
                 createdAt: "desc",
               },
             },
+            ParticipantsGroup: {
+              where: { groupId: groupId },
+            },
           },
         },
       },
     });
 
-    const participantsOutput = participants.map((participant) => {
-      const [incidentHistory] = participant.participant.IncidentParticipant;
+    const participantsOutput = participants.map((participantGroup) => {
+      const [incidentHistory] = participantGroup.participant.IncidentParticipant;
       const incidentHistoryOutput: IncidentOutput | null = incidentHistory
         ? {
-            id: incidentHistory.id,
-            reason: incidentHistory.reason,
-            status: incidentHistory.status,
-          }
+          id: incidentHistory.id,
+          reason: incidentHistory.reason,
+          status: incidentHistory.status,
+        }
         : null;
       const participantOutput: ParticipantOutput = {
-        id: participant.participant.id,
-        name: participant.participant.name,
-        phone: participant.participant.phone,
-        profile_photo: FakeImage(participant.participant).profile_photo || "",
-        profile: participant.participant.profile as ParticipantProfile,
+        id: participantGroup.participant.id,
+        name: participantGroup.participant.name,
+        phone: participantGroup.participant.phone,
+        profile_photo: FakeImage(participantGroup.participant).profile_photo || "",
+        profile: participantGroup.profile as ParticipantProfile,
         incident_history: incidentHistoryOutput,
       };
       return participantOutput;
