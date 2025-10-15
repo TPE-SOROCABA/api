@@ -50,6 +50,7 @@ export class DesignationRepository {
                         createdAt: "desc",
                       },
                     },
+                    ParticipantsGroup: true,
                   },
                 },
               },
@@ -113,6 +114,7 @@ export class DesignationRepository {
                         createdAt: "desc",
                       },
                     },
+                    ParticipantsGroup: true,
                   },
                 },
               },
@@ -220,7 +222,11 @@ export class DesignationRepository {
               include: {
                 participant: {
                   include: {
-                    IncidentParticipant: true,
+                    IncidentParticipant: {
+                      orderBy: {
+                        createdAt: "desc",
+                      },
+                    },
                   },
                 },
               },
@@ -234,7 +240,11 @@ export class DesignationRepository {
               include: {
                 participant: {
                   include: {
-                    IncidentParticipant: true,
+                    IncidentParticipant: {
+                      orderBy: {
+                        createdAt: "desc",
+                      },
+                    },
                     ParticipantsGroup: true,
                   },
                 },
