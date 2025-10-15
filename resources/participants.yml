@@ -1,41 +1,40 @@
 listParticipants:
-    handler: src/functions/participants/listParticipants.handler
-    description: Listar todos os participantes
-    events:
-      - http:
-          path: participants
-          method: GET
-          cors: true
-          authorizer: check-authorizer
+  handler: src/functions/participants/listParticipants.handler
+  description: Listar todos os participantes
+  events:
+    - http:
+        path: participants
+        method: GET
+        cors: true
+        authorizer: check-authorizer
 
 createIncidences:
-    handler: src/functions/participants/incidences/createIncidences.handler
-    description: Criar incidências para um participante
-    events:
-      - http:
-          path: participants/{participantId}/incidences
-          method: POST
-          cors: true
+  handler: src/functions/participants/incidences/createIncidences.handler
+  description: Criar incidências para um participante
+  events:
+    - http:
+        path: designations/{designationId}/participants/{participantId}/incidences
+        method: POST
+        cors: true
 
 updateIncidences:
-    handler: src/functions/participants/incidences/updateIncidences.handler
-    description: Atualizar incidências de um participante
-    events:
-      - http:
-          path: participants/{participantId}/incidences/{incidentId}
-          method: PUT
-          cors: true
-     
-deleteIncidences:
-    handler: src/functions/participants/incidences/deleteIncidences.handler
-    description: Deletar incidências de um participante
-    events:
-      - http:
-          path: participants/{participantId}/incidences/{incidentId}
-          method: DELETE
-          cors: true
-          authorizer: check-authorizer
+  handler: src/functions/participants/incidences/updateIncidences.handler
+  description: Atualizar incidências de um participante
+  events:
+    - http:
+        path: designations/{designationId}/participants/{participantId}/incidences/{incidentId}
+        method: PUT
+        cors: true
 
+deleteIncidences:
+  handler: src/functions/participants/incidences/deleteIncidences.handler
+  description: Deletar incidências de um participante
+  events:
+    - http:
+        path: designations/{designationId}/participants/{participantId}/incidences/{incidentId}
+        method: DELETE
+        cors: true
+        authorizer: check-authorizer
 # uploadPhoto:
 #     handler: src/functions/participants/uploadPhoto.handler
 #     description: Upload de foto de perfil

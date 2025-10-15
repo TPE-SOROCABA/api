@@ -6,9 +6,8 @@ import { IncidentStatus } from "../../../enums/IncidentStatus";
 import { BadRequestException, Exception } from "../../../shared/Exception";
 import { decode } from "jsonwebtoken";
 import { prisma } from "../../../infra/prismaClient";
-import { DesignationStatus } from "@prisma/client";
-import { DesignationRepository } from "repositories/DesignationRepository";
-import { SendUpdateDesignation } from "services/SendUpdateDesignation";
+import { DesignationRepository } from "../../../repositories/DesignationRepository";
+import { SendUpdateDesignation } from "../../../services/SendUpdateDesignation";
 
 type APIGatewayEventCustom = APIGatewayProxyEventV2WithRequestContext<
   APIGatewayEventRequestContextWithAuthorizer<{
@@ -23,16 +22,21 @@ const sendUpdateDesignation = new SendUpdateDesignation();
 export const handler: Handler = async (_event: APIGatewayEventCustom): Promise<APIGatewayProxyStructuredResultV2> => {
   const responseHandler = new ResponseHandler(_event);
   try {
-    const id = _event.pathParameters?.participantId;
+    const participantId = _event.pathParameters?.participantId;
+    const designationId = _event.pathParameters?.designationId;
     const body = JsonHandler.parse<InputParticipantIncidents>(_event.body || "{}");
-    const reporterId = getToken(_event) ?? id;
+    const reporterId = getToken(_event) ?? participantId;
 
     const params = await InputParticipantIncidents.create({
       reason: body?.reason,
     });
 
-    if (!id) {
+    if (!participantId) {
       throw new BadRequestException("Id do participante não informado");
+    }
+
+    if (!designationId) {
+      throw new BadRequestException("Id da designação não informado");
     }
 
     if (!params.reason) {
@@ -43,18 +47,55 @@ export const handler: Handler = async (_event: APIGatewayEventCustom): Promise<A
       throw new BadRequestException("Id do reporter não informado");
     }
 
-    const participant = await prisma.participants.findFirst({ where: { id } });
+    const participant = await prisma.participants.findFirst({ where: { id: participantId } });
     const reporter = await prisma.participants.findFirst({ where: { id: reporterId } });
-    const group = await prisma.participantsGroups.findFirst({ where: { participantId: id } });
 
-    if (!participant || !reporter || !group) {
-      throw new Exception(404, "Parâmetros inválidos");
+    // Verificar se o participante está associado à designação específica
+    const participantInGroup = await prisma.participantsGroups.findFirst({
+      where: {
+        participantId: participantId,
+        group: {
+          Designations: {
+            some: {
+              id: designationId
+            }
+          }
+        }
+      },
+      include: {
+        group: {
+          include: {
+            Designations: {
+              where: {
+                id: designationId
+              }
+            }
+          }
+        }
+      }
+    });
+
+    if (!participant || !reporter || !participantInGroup) {
+      throw new Exception(404, "Parâmetros inválidos ou participante não encontrado na designação");
     }
 
-    const designation = await designationRepository.findOne(group.groupId);
+    const designation = await designationRepository.findByDesignationId(designationId);
 
     if (!designation) {
       throw new Exception(404, "Designação não encontrada");
+    }
+
+    // Verificar se já existe um incidente aberto para este participante nesta designação
+    const existingIncident = await prisma.incidentHistories.findFirst({
+      where: {
+        participantId: participantId,
+        designationId: designationId,
+        status: IncidentStatus.OPEN
+      }
+    });
+
+    if (existingIncident) {
+      throw new BadRequestException("Já existe um incidente aberto para este participante nesta designação");
     }
 
     console.log(`Criando incidente para o participante ${participant.name}`);
@@ -77,11 +118,11 @@ export const handler: Handler = async (_event: APIGatewayEventCustom): Promise<A
 
       designation.filterAssignment(participant.name);
       if (designation.assignmentsFiltered.length) {
-        const assignment = designation.assignmentsFiltered.filter((a) => a.participants.some((p) => p.id === id))[0];
+        const assignment = designation.assignmentsFiltered.filter((a) => a.participants.some((p) => p.id === participantId))[0];
         if (assignment?.participants?.length) {
           console.log(`Removendo participante ${participant?.name} da designação`);
           designation.assignments.push(assignment);
-          const participants = assignment.participants.filter((p) => p.id !== id).map((p) => p.id);
+          const participants = assignment.participants.filter((p) => p.id !== participantId).map((p) => p.id);
           console.log({ participants });
           designation.updateParticipants(assignment.point.id, participants);
           await sendUpdateDesignation.execute(designation);
