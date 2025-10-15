@@ -4,8 +4,8 @@ import { BadRequestException, Exception } from "../../shared/Exception";
 import { IncidentStatus } from "../../enums/IncidentStatus";
 import { DesignationRepository } from "../../repositories/DesignationRepository";
 import { prisma } from "../../infra/prismaClient";
-import { DesignationStatus, ParticipantProfile } from "@prisma/client";
-import { FakeImage } from "shared/FakeImage";
+import { DesignationStatus, ParticipantGroupProfile, ParticipantProfile } from "@prisma/client";
+import { FakeImage } from "../../shared/FakeImage";
 
 const designationRepository = new DesignationRepository();
 
@@ -46,11 +46,20 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
             status: true,
           },
         },
+        ParticipantsGroup: {
+          where: {
+            groupId: designation.group.id,
+          }
+        },
       },
     });
 
     if (!participant) {
       throw new Exception(404, "Participante não encontrado");
+    }
+
+    if (!participant.ParticipantsGroup || participant.ParticipantsGroup.length === 0) {
+      throw new Exception(400, "Participante não está associado ao grupo");
     }
 
     const eventDay = await prisma.eventDayGroups.findFirst({
@@ -64,14 +73,20 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
 
     return responseHandler.success(
       [designation].map((d) => {
-        const [assignments] = d.assignments.map((a) => ({
-          point: a.point.name,
-          publication_carts: a.publication_carts.map((p) => p.name),
-          participants: a.participants.map((p) => ({ name: p.name, profile_photo: FakeImage(p).profile_photo })),
-        }));
+        // Segurança: verificar se assignments existe e não está vazio
+        const firstAssignment = d.assignments && d.assignments.length > 0 ? d.assignments[0] : null;
+        const assignments = firstAssignment ? {
+          point: firstAssignment.point.name,
+          publication_carts: firstAssignment.publication_carts.map((p) => p.name),
+          participants: firstAssignment.participants.map((p) => ({ name: p.name, profile_photo: FakeImage(p).profile_photo })),
+        } : null;
 
         const isParticipantAssigned = d.assignments.some((a) => a.participants.some((p) => p.id === participantId));
-        const [incident] = participant?.IncidentParticipant;
+        
+        // Segurança: verificar se IncidentParticipant existe e não está vazio
+        const incident = participant.IncidentParticipant && participant.IncidentParticipant.length > 0 
+          ? participant.IncidentParticipant[0] 
+          : null;
         const status = incident ? incident.status : IncidentStatus.CLOSED;
 
         let details =
@@ -84,13 +99,22 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
               },
               publication_carts: [],
             }
-            : {
+            : assignments ? {
               point: assignments.point,
               participants: assignments.participants,
               publication_carts: assignments.publication_carts,
+            } : {
+              point: "Sem designação",
+              participants: {
+                name: participant.name,
+                profile_photo: FakeImage(participant).profile_photo,
+              },
+              publication_carts: [],
             };
 
-        if (participant.profile == ParticipantProfile.CAPTAIN || participant.profile == ParticipantProfile.COORDINATOR) {
+        // Segurança: verificar se ParticipantsGroup existe antes de acessar
+        const participantGroup = participant.ParticipantsGroup[0]; // Já validamos que existe acima
+        if (participantGroup.profile == ParticipantGroupProfile.CAPTAIN || participantGroup.profile == ParticipantGroupProfile.ASSISTANT_CAPTAIN) {
           const captais = d.participants.filter((p) => p.profile == ParticipantProfile.CAPTAIN || p.profile == ParticipantProfile.COORDINATOR);
           details = {
             point: "Capitães",
@@ -100,7 +124,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
         }
 
         return {
-          event: `${eventDay?.eventDay.name} - ${d.group.name}`,
+          event: eventDay?.eventDay.name ? `${eventDay?.eventDay.name} - ${d.group.name}` : d.group.name,
           createdAt: d.createdAt,
           updatedAt: d.updatedAt,
           expirationDate: d.getNextDate(),

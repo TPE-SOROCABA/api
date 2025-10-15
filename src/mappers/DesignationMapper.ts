@@ -1,4 +1,4 @@
-import { DesignationStatus } from "@prisma/client";
+import { DesignationStatus, ParticipantGroupProfile, ParticipantProfile, ParticipantSex } from "@prisma/client";
 import { Designation, Participant, Assignments } from "../domain/Designation";
 import { IDesignationModel } from "../functions/designations/interfaces/IDesignationModel";
 import { GenderRequirementRule } from "domain/DesignationRulesValidation/GenderRequirementRule";
@@ -8,7 +8,7 @@ import { FakeImage } from "shared/FakeImage";
 
 export abstract class DesignationMapper {
   static toDomain(designationModel: IDesignationModel): Designation {
-    const incidentMapper = (incident:any) => {
+    const incidentMapper = (incident: any) => {
       if (incident.designationId !== designationModel.id) return null;
       if (incident.status !== "OPEN") return null;
       return {
@@ -18,17 +18,17 @@ export abstract class DesignationMapper {
       };
     }
 
-    const participants: Participant[] = designationModel.group.ParticipantsGroup.map((participant) => {
-      const [incidentHistory] = participant.participant.IncidentParticipant.map(incidentMapper).filter(Boolean);
+    const participants: Participant[] = designationModel.group.ParticipantsGroup.map((participantGroup) => {
+      const [incidentHistory] = participantGroup.participant.IncidentParticipant.map(incidentMapper).filter(Boolean);
       return {
-        id: participant.participant.id,
-        name: participant.participant.name,
-        cpf: participant.participant.cpf,
-        phone: participant.participant.phone,
-        profile_photo: FakeImage(participant.participant).profile_photo,
-        sex: participant.participant.sex as any,
+        id: participantGroup.participant.id,
+        name: participantGroup.participant.name,
+        cpf: participantGroup.participant.cpf,
+        phone: participantGroup.participant.phone,
+        profile_photo: FakeImage(participantGroup.participant).profile_photo,
+        sex: participantGroup.participant.sex as any,
         incident_history: incidentHistory || null,
-        profile: participant.participant.profile as any,
+        profile: participantGroup.profile as any,
       };
     });
 
@@ -47,19 +47,20 @@ export abstract class DesignationMapper {
           };
         }),
         participants:
-          assignment.AssignmentsParticipants.map((participant) => {
-            const participantIndex = participants.findIndex((p) => p.id === participant.participant.id);
+          assignment.AssignmentsParticipants.map((assignmentsParticipant) => {
+            const participantIndex = participants.findIndex((p) => p.id === assignmentsParticipant.participant.id);
             if (participantIndex !== -1) participants.splice(participantIndex, 1);
-            const [incidentHistory] = participant.participant.IncidentParticipant.map(incidentMapper).filter(Boolean);
+            const [incidentHistory] = assignmentsParticipant.participant.IncidentParticipant.map(incidentMapper).filter(Boolean);
+            const groupProfile = assignmentsParticipant.participant.ParticipantsGroup.find(pg => pg.groupId === designationModel.groupId)?.profile;
             return {
-              id: participant.participant.id,
-              name: participant.participant.name,
-              cpf: participant.participant.cpf,
-              phone: participant.participant.phone,
-              profile_photo: FakeImage(participant.participant).profile_photo,
-              sex: participant.participant.sex as any,
+              id: assignmentsParticipant.participant.id,
+              name: assignmentsParticipant.participant.name,
+              cpf: assignmentsParticipant.participant.cpf,
+              phone: assignmentsParticipant.participant.phone,
+              profile_photo: FakeImage(assignmentsParticipant.participant).profile_photo,
+              sex: assignmentsParticipant.participant.sex as any,
               incident_history: incidentHistory || null,
-              profile: participant.participant.profile as any,
+              profile: groupProfile as any,
             };
           }) || [],
         config: {
@@ -100,7 +101,7 @@ export abstract class DesignationMapper {
     designation.addValidationPlugin(occupancyLimitRule);
     designation.addValidationPlugin(genderRequirementRule);
     try {
-    designation.applyValidations()
+      designation.applyValidations()
     } catch (error) {
       console.log(error)
     }

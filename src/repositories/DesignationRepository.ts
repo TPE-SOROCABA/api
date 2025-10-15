@@ -76,7 +76,7 @@ export class DesignationRepository {
       where: {
         groupId: groupId,
         status: DesignationStatus.ARCHIVED,
-        
+
       },
       include: {
         group: {
@@ -125,7 +125,7 @@ export class DesignationRepository {
           },
         },
       },
-      orderBy:{
+      orderBy: {
         updatedAt: "desc"
       }
     });
@@ -235,6 +235,7 @@ export class DesignationRepository {
                 participant: {
                   include: {
                     IncidentParticipant: true,
+                    ParticipantsGroup: true,
                   },
                 },
               },

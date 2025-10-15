@@ -11,6 +11,7 @@ datasource db {
 model Participants {
   id                      String                    @id @default(uuid())
   name                    String
+  cpf                     String?
   phone                   String                    @unique
   profile_photo           String?
   profile                 ParticipantProfile?       @default(PARTICIPANT)
@@ -29,9 +30,9 @@ model Participants {
   spouse_participant      Boolean?
   state                   String?
   zip_code                String?
-  cpf                     String?
   congregation_id         Int?
   availability            Json[]
+  last_training_date      DateTime?
   AssignmentsParticipants AssignmentsParticipants[]
   Auth                    Auth?
   Groups                  Groups[]
@@ -233,7 +234,13 @@ model petitions {
   created_at   DateTime       @default(now())
   updated_at   DateTime
   name         String
+  hash         String         @unique
   participants Participants[]
+}
+
+model firebase {
+  id     Int  @id @unique @default(autoincrement())
+  config Json
 }
 
 enum ParticipantProfile {

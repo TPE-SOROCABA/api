@@ -22,7 +22,5 @@ node_modules/
 build/
 .esbuild/
 
-.vscode/
-
 src/scripts
 

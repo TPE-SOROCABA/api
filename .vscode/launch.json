@@ -1,0 +1,38 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Api - Serverless Offline",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "${env:HOME}/.nvm/versions/node/v20.9.0/bin/node",
+      "runtimeArgs": [
+        "--inspect=9229",
+        "--enable-source-maps"
+      ],
+      "program": "${workspaceFolder}/node_modules/serverless/bin/serverless",
+      "args": [
+        "offline",
+        "-c",
+        "serverless.local.yml",
+        "-s",
+        "dev"
+      ],
+      "env": {
+        "SLS_DEBUG": "*"
+      },
+      "sourceMaps": true,
+      "console": "integratedTerminal",
+      "restart": true,
+      "autoAttachChildProcesses": true,
+      "resolveSourceMapLocations": [
+        "${workspaceFolder}/**",
+        "!**/node_modules/**"
+      ]
+    }
+  ]
+}
