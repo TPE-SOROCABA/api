@@ -13,19 +13,26 @@ const whatsAppAdapter = new Z_APIWhatsAppAdapter();
 const whatsAppService = new WhatsAppService(whatsAppAdapter);
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
- const responseHandler = new ResponseHandler(_event);
+  const responseHandler = new ResponseHandler(_event);
   try {
 
     const body = JsonHandler.parse<InputRecoverPassword>(_event.body || "{}");
     console.log(`Usuário ${body.phone} está tentando recuperar a senha`);
     const params = await InputRecoverPassword.create(body.phone);
 
-    const participant = await prisma.participants.findUnique({ where: { phone: params.phone } });
+    const participant = await prisma.participants.findUnique({ where: { phone: params.phone }, include: { ParticipantsGroup: true } });
     if (!participant) {
       throw new Exception(404, "Usuário não encontrado");
     }
 
-    if (participant.profile === ParticipantProfile.PARTICIPANT){
+    let profile: string = ParticipantProfile.PARTICIPANT;
+    if (participant.profile === ParticipantProfile.COORDINATOR || participant.profile === ParticipantProfile.ADMIN_ANALYST) {
+      profile = participant.profile;
+    } else {
+      profile = participant.ParticipantsGroup.find(pg => pg.profile === ParticipantProfile.CAPTAIN || pg.profile === ParticipantProfile.ASSISTANT_CAPTAIN)?.profile || ParticipantProfile.PARTICIPANT;
+    }
+
+    if (profile === ParticipantProfile.PARTICIPANT) {
       console.log(`Usuário ${participant.name} não tem permissão para logar`);
       throw new Exception(403, "Usuário não tem permissão para logar");
     }
@@ -34,13 +41,13 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
 
     await prisma.auth.update({
       where: { participantId: participant.id },
-      data: { 
+      data: {
         resetPasswordCode: String(code),
         updatedAt: new Date(),
         expiredAt: new Date(new Date().getTime() + 5 * 60000) // 5 minutos
       }
     });
-   
+
     const payload = LoginUtils.createJWT({
       phone: participant.phone,
       code

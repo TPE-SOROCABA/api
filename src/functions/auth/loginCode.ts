@@ -34,11 +34,11 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       throw new BadRequestException("Código de recuperação expirado");
     }
 
-    let profile: string = "";
+    let profile: string = ParticipantProfile.PARTICIPANT;
     if (participant.profile === ParticipantProfile.COORDINATOR || participant.profile === ParticipantProfile.ADMIN_ANALYST) {
       profile = participant.profile;
     } else {
-      profile = participant.ParticipantsGroup.length > 0 ? participant.ParticipantsGroup[0].profile : ParticipantProfile.PARTICIPANT;
+      profile = participant.ParticipantsGroup.find(pg => pg.profile === ParticipantProfile.CAPTAIN || pg.profile === ParticipantProfile.ASSISTANT_CAPTAIN)?.profile || ParticipantProfile.PARTICIPANT;
     }
 
     if (profile === ParticipantProfile.PARTICIPANT) {
