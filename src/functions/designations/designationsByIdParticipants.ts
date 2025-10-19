@@ -36,9 +36,35 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       },
     });
 
-    return responseHandler.success(
-      designation.assignments.map((assignment) => {
+    // Filtra participantes não designados que são capitães ou coordenadores
+    const unassignedCaptains = designation.participants.filter((participant) => {
+      // Verifica se NÃO está designado em nenhum ponto
+      const isAssigned = designation.assignments.some((assignment) =>
+        assignment.participants.some((p) => p.id === participant.id)
+      );
 
+      // Verifica se é capitão ou coordenador
+      const isCaptainOrCoordinator = participant.profile === "CAPTAIN" || participant.profile === "COORDINATOR";
+
+      return !isAssigned && isCaptainOrCoordinator;
+    });
+
+    return responseHandler.success([
+      // Se há capitães/coordenadores não designados, cria uma única entrada agrupada
+      ...(unassignedCaptains.length > 0 ? [{
+        event: eventDay?.eventDay.name ? `${eventDay?.eventDay.name} - ${designation.group.name}` : designation.group.name,
+        createdAt: designation.createdAt,
+        updatedAt: designation.updatedAt,
+        expirationDate: designation.getNextDate(),
+        point: "Capitães",
+        participants: unassignedCaptains.map((participant) => ({
+          name: participant.name,
+          profile_photo: participant.profile_photo
+        })),
+        publication_carts: [],
+        status: designation.status,
+      }] : []),
+      ...designation.assignments.map((assignment) => {
         const assignmentData = {
           point: assignment.point.name,
           publication_carts: assignment.publication_carts.map((p) => p.name),
@@ -49,7 +75,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
         };
 
         return {
-          event: `${eventDay?.eventDay.name} - ${designation.group.name}`,
+          event: eventDay?.eventDay.name ? `${eventDay?.eventDay.name} - ${designation.group.name}` : designation.group.name,
           createdAt: designation.createdAt,
           updatedAt: designation.updatedAt,
           expirationDate: designation.getNextDate(),
@@ -59,7 +85,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
           status: designation.status,
         };
       })
-    );
+    ]);
   } catch (error) {
     return responseHandler.error(error);
   }

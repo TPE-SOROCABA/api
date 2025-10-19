@@ -82,10 +82,10 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
         } : null;
 
         const isParticipantAssigned = d.assignments.some((a) => a.participants.some((p) => p.id === participantId));
-        
+
         // Segurança: verificar se IncidentParticipant existe e não está vazio
-        const incident = participant.IncidentParticipant && participant.IncidentParticipant.length > 0 
-          ? participant.IncidentParticipant[0] 
+        const incident = participant.IncidentParticipant && participant.IncidentParticipant.length > 0
+          ? participant.IncidentParticipant[0]
           : null;
         const status = incident ? incident.status : IncidentStatus.CLOSED;
 
@@ -114,10 +114,10 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
 
         // Segurança: verificar se ParticipantsGroup existe antes de acessar
         const participantGroup = participant.ParticipantsGroup[0]; // Já validamos que existe acima
-        
+
         // Nova lógica: Capitães só vão para seção "Capitães" se NÃO estiverem designados
         const isCaptainOrAssistant = participantGroup.profile == ParticipantGroupProfile.CAPTAIN || participantGroup.profile == ParticipantGroupProfile.ASSISTANT_CAPTAIN;
-        
+
         if (isCaptainOrAssistant && (!isParticipantAssigned && status !== IncidentStatus.OPEN)) {
           // Capitão não designado e sem incidente: mostrar apenas ele na seção "Capitães"
           details = {
