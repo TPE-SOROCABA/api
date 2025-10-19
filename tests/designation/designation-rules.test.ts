@@ -56,12 +56,12 @@ describe("Designação Semana - Rules", () => {
   })
 
   
-  test("Deve validar a regra de genero dentro de uma atribuição - gênero diferente", () => {
+  test("Deve validar a regra de genero dentro de uma atribuição - gênero diferente sem sobrenome comum", () => {
     const designation = setupDesignationMock();
 
     designation.assignments[0].participants.push({
       id: "65fe049ce62483e5e175815b",
-      name: "Giulia Felipe",
+      name: "Giulia Santos",
       phone: "(01) 6972-5473FAKE",
       profile: "PARTICIPANT",
       profile_photo: "",
@@ -71,7 +71,7 @@ describe("Designação Semana - Rules", () => {
 
     designation.assignments[0].participants.push({
       id: "65fe049ce62483e5e175815b",
-      name: "Wilson Felipe",
+      name: "Wilson Silva",
       phone: "(01) 6972-5473FAKE",
       profile: "PARTICIPANT",
       profile_photo: "",
@@ -80,6 +80,62 @@ describe("Designação Semana - Rules", () => {
     } as any);
 
     expect(() => designation.applyValidations()).toThrow("O ponto não pode ter 2 participantes de sexos diferentes");
+  })
+
+  test("Deve permitir gêneros diferentes com sobrenome comum (casal)", () => {
+    const designation = setupDesignationMock();
+
+    designation.assignments[0].participants.push({
+      id: "65fe049ce62483e5e175815b",
+      name: "Giulia Felipe de Souza",
+      phone: "(01) 6972-5473FAKE",
+      profile: "PARTICIPANT",
+      profile_photo: "",
+      sex: ParticipantSex.FEMALE,
+      incident_history: null,
+    } as any);
+
+    designation.assignments[0].participants.push({
+      id: "65fe049ce62483e5e175815c",
+      name: "Wilson Felipe da Silva",
+      phone: "(01) 6972-5474FAKE",
+      profile: "PARTICIPANT",
+      profile_photo: "",
+      sex: ParticipantSex.MALE,
+      incident_history: null,
+    } as any);
+
+    designation.participants = []
+
+    expect(() => designation.applyValidations()).not.toThrow();
+  })
+
+  test("Deve permitir gêneros diferentes com sobrenome no final (casal Andrade)", () => {
+    const designation = setupDesignationMock();
+
+    designation.assignments[0].participants.push({
+      id: "65fe049ce62483e5e175815b",
+      name: "Ruzinei Magalhaes Andrade",
+      phone: "(01) 6972-5473FAKE",
+      profile: "PARTICIPANT",
+      profile_photo: "",
+      sex: ParticipantSex.MALE,
+      incident_history: null,
+    } as any);
+
+    designation.assignments[0].participants.push({
+      id: "65fe049ce62483e5e175815c",
+      name: "Simone Cristina Araujo Andrade",
+      phone: "(01) 6972-5474FAKE",
+      profile: "PARTICIPANT",
+      profile_photo: "",
+      sex: ParticipantSex.FEMALE,
+      incident_history: null,
+    } as any);
+
+    designation.participants = []
+
+    expect(() => designation.applyValidations()).not.toThrow();
   })
 
   test("Deve validar a regra de gênero dentro de uma atribuição - mesmo gênero", () => {
