@@ -21,14 +21,15 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     const designation = await designationRepository.findOne(groupId);
     console.timeEnd("Designation");
     if (random) {
-      const previousDesignation = await designationRepository.findOneOld(groupId);
+      const previousDesignation = await designationRepository.findOneOld(groupId).catch(() => null);
       designation.generateAssignment();
-
-      let retryCount = 0;
-      while (isSameAsPreviousDesignation(designation, previousDesignation) && retryCount < 20) {
-        console.log(`A designação gerada é igual à anterior, tentando novamente ${retryCount}`);
-        designation.generateAssignment();
-        retryCount++;
+      if (previousDesignation) {
+        let retryCount = 0;
+        while (isSameAsPreviousDesignation(designation, previousDesignation) && retryCount < 20) {
+          console.log(`A designação gerada é igual à anterior, tentando novamente ${retryCount}`);
+          designation.generateAssignment();
+          retryCount++;
+        }
       }
       await sendUpdateDesignation.execute(designation);
     }
@@ -80,6 +81,5 @@ function isSameAsPreviousDesignation(newDesignation: Designation, oldDesignation
   });
 
   console.log(`Aceita ${maleCount > 2 ? 0 : 1} duplicações, porque tem ${maleCount} homens`);
-  
   return compareGroups(newSimpleAssignments, oldSimpleAssignments, maleCount > 2 ? 0 : 1);
 }
