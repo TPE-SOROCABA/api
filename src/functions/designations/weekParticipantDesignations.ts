@@ -114,14 +114,19 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
 
         // Segurança: verificar se ParticipantsGroup existe antes de acessar
         const participantGroup = participant.ParticipantsGroup[0]; // Já validamos que existe acima
-        if (participantGroup.profile == ParticipantGroupProfile.CAPTAIN || participantGroup.profile == ParticipantGroupProfile.ASSISTANT_CAPTAIN) {
-          const captais = d.participants.filter((p) => p.profile == ParticipantProfile.CAPTAIN || p.profile == ParticipantProfile.COORDINATOR);
+        
+        // Nova lógica: Capitães só vão para seção "Capitães" se NÃO estiverem designados
+        const isCaptainOrAssistant = participantGroup.profile == ParticipantGroupProfile.CAPTAIN || participantGroup.profile == ParticipantGroupProfile.ASSISTANT_CAPTAIN;
+        
+        if (isCaptainOrAssistant && (!isParticipantAssigned && status !== IncidentStatus.OPEN)) {
+          // Capitão não designado e sem incidente: mostrar apenas ele na seção "Capitães"
           details = {
             point: "Capitães",
-            participants: captais.map((p) => ({ name: p.name, profile_photo: FakeImage(p).profile_photo })),
+            participants: [{ name: participant.name, profile_photo: FakeImage(participant).profile_photo }],
             publication_carts: [],
           };
         }
+        // Se capitão estiver designado ou com incidente, usa a lógica normal (details já definido acima)
 
         return {
           event: eventDay?.eventDay.name ? `${eventDay?.eventDay.name} - ${d.group.name}` : d.group.name,
