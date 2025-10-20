@@ -12,7 +12,7 @@ export interface IParticipant {
 }
 
 export class LoginService {
-  constructor(private designationRepository: DesignationRepository) {}
+  constructor(private designationRepository: DesignationRepository) { }
   async execute({ participantId, name, cpf, profile, profile_photo }: IParticipant) {
     const group = await prisma.participantsGroups.findFirst({
       where: {
@@ -38,10 +38,10 @@ export class LoginService {
       id: participantId,
       designation: designation
         ? {
-            id: designation.id,
-            expiration: designation.getNextDate(),
-            name: designation.group.name,
-          }
+          id: designation.id,
+          expiration: designation.getNextDate(),
+          name: designation.group.name,
+        }
         : null,
     };
 
