@@ -11,7 +11,7 @@ jest.mock("../../src/repositories/DesignationRepository");
 function setupDesignationMock() {
   const weekDesignationsMockClone = JSON.parse(JSON.stringify(weekDesignationsMock));
   const participantsNotAloneRule = new ParticipantsNotAloneRule();
-  const occupancyLimitRule= new OccupancyLimitRule()
+  const occupancyLimitRule = new OccupancyLimitRule()
   const genderRequirementRule = new GenderRequirementRule()
   const participantsNotAssignment = new ParticipantsNotAssignment()
   const designation = new Designation(
@@ -34,7 +34,7 @@ describe("Designação Semana - Rules", () => {
   test("Deve validar se tem participantes sozinhos em um ponto", async () => {
     const designation = setupDesignationMock();
     designation.generateAssignment();
-    
+
     const participant = designation.assignments[0].participants[0];
     designation.assignments[0].participants = [participant];
 
@@ -55,7 +55,7 @@ describe("Designação Semana - Rules", () => {
     expect(() => designation.applyValidations()).not.toThrow();
   })
 
-  
+
   test("Deve validar a regra de genero dentro de uma atribuição - gênero diferente sem sobrenome comum", () => {
     const designation = setupDesignationMock();
 
@@ -202,5 +202,77 @@ describe("Designação Semana - Rules", () => {
     designation.participants = []
 
     expect(() => designation.applyValidations()).not.toThrow();
+  })
+
+  test("Deve permitir COORDINATOR sem atribuição", () => {
+    const designation = setupDesignationMock();
+
+    designation.participants = [{
+      id: "65fe049ce62483e5e175815b",
+      name: "João Coordinator",
+      phone: "(01) 6972-5473FAKE",
+      profile: "COORDINATOR",
+      profile_photo: "",
+      sex: ParticipantSex.MALE,
+      incident_history: null,
+    } as any];
+
+    designation.assignments.forEach(assignment => assignment.participants = []);
+
+    expect(() => designation.applyValidations()).not.toThrow();
+  })
+
+  test("Deve permitir ASSISTANT_COORDINATOR sem atribuição", () => {
+    const designation = setupDesignationMock();
+
+    designation.participants = [{
+      id: "65fe049ce62483e5e175815b",
+      name: "Maria Assistant Coordinator",
+      phone: "(01) 6972-5473FAKE",
+      profile: "ASSISTANT_COORDINATOR",
+      profile_photo: "",
+      sex: ParticipantSex.FEMALE,
+      incident_history: null,
+    } as any];
+
+    designation.assignments.forEach(assignment => assignment.participants = []);
+
+    expect(() => designation.applyValidations()).not.toThrow();
+  })
+
+  test("Deve permitir ADMIN_ANALYST sem atribuição", () => {
+    const designation = setupDesignationMock();
+
+    designation.participants = [{
+      id: "65fe049ce62483e5e175815b",
+      name: "Carlos Admin Analyst",
+      phone: "(01) 6972-5473FAKE",
+      profile: "ADMIN_ANALYST",
+      profile_photo: "",
+      sex: ParticipantSex.MALE,
+      incident_history: null,
+    } as any];
+
+    designation.assignments.forEach(assignment => assignment.participants = []);
+
+    expect(() => designation.applyValidations()).not.toThrow();
+  })
+
+  test("Deve impedir PARTICIPANT sem atribuição", () => {
+    const designation = setupDesignationMock();
+
+    designation.participants = [{
+      id: "65fe049ce62483e5e175815b",
+      name: "Ana Participant",
+      phone: "(01) 6972-5473FAKE",
+      profile: "PARTICIPANT",
+      profile_photo: "",
+      sex: ParticipantSex.FEMALE,
+      incident_history: null,
+    } as any];
+
+    designation.assignments.forEach(assignment => assignment.participants = []);
+
+    expect(() => designation.applyValidations()).toThrow("Não pode haver participantes sem atribuição");
   })
 });
