@@ -35,7 +35,8 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     console.log(`Usuário ${login.phone} está tentando logar`);
 
     const participant = await prisma.participants.findUnique({
-      where: { phone: login.phone, }, include: {
+      where: { phone: login.phone, },
+      include: {
         Auth: {
           where: { password: LoginUtils.encryptPassword(login.password) },
         },
@@ -45,6 +46,11 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     console.log(participant)
     if (!participant) {
       console.log(`Usuário ${login.phone} não encontrado`);
+      throw new Exception(401, "Credenciais inválidas");
+    }
+
+    if (!participant.Auth) {
+      console.log(`Senha incorreta para o usuário ${login.phone}`);
       throw new Exception(401, "Credenciais inválidas");
     }
 
