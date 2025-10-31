@@ -1,4 +1,4 @@
-import { DesignationStatus } from "@prisma/client";
+import { DesignationStatus, GroupStatus } from "@prisma/client";
 import type { ScheduledHandler } from "aws-lambda";
 import dayjs from "dayjs";
 import { DesignationTimeCalculate } from "domain/DesignationTimeCalculate";
@@ -10,6 +10,9 @@ import { TransactionStatusDesignationOpenLess2Hours } from "services/transaction
 export const handler: ScheduledHandler = async (): Promise<void> => {
   console.log("Running transactionStatusDesignations");
   const groups = await prisma.groups.findMany({
+    where: {
+      status: GroupStatus.OPEN
+    },
     include: {
       Designations: {
         where: {
