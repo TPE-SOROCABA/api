@@ -29,12 +29,19 @@ export async function TransactionStatusDesignationOpenLess2Hours(designationOpen
   const data = await getCoordinatorGroup(designation)
   if (data?.group?.coordinator) {
     const { coordinator } = data.group;
-    await whatsaapService.sendMessage({
+    await whatsaapService.sendButtonMessage({
       phone: coordinator.phone,
       message: `Olá, a designação ${designation.group.name} foi aberta com menos de 2 horas para o início. Por favor, verifique se todos os participantes estão cientes e prontos para a designação.`,
-      title: "*TPE Digital - Atraso da Designação*",
-      linkUrl: `${process.env.FRONTEND_URL}/designacao/${designation.id}`,
-      linkDescription: "Clique aqui para ver mais detalhes",
+      title: `${designation.group.name} - Atraso da Designação`,
+      footer: "TPE Digital",
+      buttonActions: [
+        {
+          id: "1",
+          type: "URL",
+          url: `${process.env.FRONTEND_URL}/designacao/${designation.id}`,
+          label: "Ver Detalhes"
+        }
+      ]
     });
   }
 

@@ -31,36 +31,46 @@ export async function TransactionDesignationInProgress(designationInProgress: De
     try {
       if (participant.profile === ParticipantProfile.COORDINATOR || participant.profile === ParticipantProfile.CAPTAIN) {
         await whatsaapService
-          .sendMessage({
+          .sendButtonMessage({
             phone: participant.phone,
             message: `*Atenção capitão!*
   
 A designação ${designation.group.name} foi CONCLUÍDA.
-Os participantes terão 48 horas para justificar a ausência desta semana.
-  
-TPE Digital!`,
-            title: "*TPE Digital - Designação Concluída*",
-            linkUrl: `${process.env.FRONTEND_URL}/designacao/${designation.id}/${participant.id}`,
-            linkDescription: "Clique aqui para justificar a ausência",
+Os participantes terão 48 horas para justificar a ausência desta semana.`,
+            title: `${designation.group.name} - Designação Concluída`,
+            footer: "TPE Digital",
+            buttonActions: [
+              {
+                id: "1",
+                type: "URL",
+                url: `${process.env.FRONTEND_URL}/designacao/${designation.id}/${participant.id}`,
+                label: "Justificar Ausência"
+              }
+            ]
           })
           .catch((error) => {
             console.error(`Erro ao enviar notificação de designação para ${participant.name}`, error);
           });
       } else {
         await whatsaapService
-          .sendMessage({
+          .sendButtonMessage({
             phone: participant.phone,
             message: `Olá, ${participant.name}!
   
 A designação ${designation.group.name} foi CONCLUÍDA.
 Os participantes terão 48 horas para justificar a ausência desta semana.
   
-*Por favor, desconsidere essa mensagem se você esteve presente na designação. Nesse caso, nenhuma justificativa é necessária.*
-  
-TPE Digital!`,
-            title: "*TPE Digital - Designação Concluída*",
-            linkUrl: `${process.env.FRONTEND_URL}/designacao/${designation.id}/${participant.id}`,
-            linkDescription: "Clique aqui para justificar a ausência",
+*Por favor, desconsidere essa mensagem se você esteve presente na designação. Nesse caso, nenhuma justificativa é necessária.*`,
+            title: `${designation.group.name} - Designação Concluída`,
+            footer: "TPE Digital",
+            buttonActions: [
+              {
+                id: "1",
+                type: "URL",
+                url: `${process.env.FRONTEND_URL}/designacao/${designation.id}/${participant.id}`,
+                label: "Justificar Ausência"
+              }
+            ]
           })
           .catch((error) => {
             console.error(`Erro ao enviar notificação de designação para ${participant.name}`, error);

@@ -49,7 +49,7 @@ Qualquer dúvida, entre em contato com o capitão do seu grupo.`;
           phone: participant.phone,
           message,
           title: `${designation.group.name} - Designação Cancelada`,
-          footer: "TPE - Digital.",
+          footer: "TPE Digital",
           buttonActions: [
             {
               id: "1",

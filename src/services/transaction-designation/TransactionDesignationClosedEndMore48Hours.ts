@@ -30,12 +30,19 @@ export async function TransactionDesignationClosedEndMore48Hours(designationClos
   console.log("Enviando notificação de encerramento de designação para os coordenadores");
   for (const coordinator of designation.captainsAndCoordinators) {
     await whatsaapService
-      .sendMessage({
+      .sendButtonMessage({
         phone: coordinator.phone,
-        message: `Olá, a designação do grupo ${designation.group.name} foi ENCERRADA.\n\nAgora é possível realizar novas designações.\n\nObs: O publicadores não podem mais justificar a ausência desta semana.\n\nTPE Digital!`,
-        title: "*TPE Digital - Designação Encerrada*",
-        linkUrl: `${process.env.FRONTEND_URL}`,
-        linkDescription: "Clique aqui para acessar o sistema",
+        message: `Olá, a designação do grupo ${designation.group.name} foi ENCERRADA.\n\nAgora é possível realizar novas designações.\n\nObs: O publicadores não podem mais justificar a ausência desta semana.`,
+        title: `${designation.group.name} - Designação Encerrada`,
+        footer: "TPE Digital",
+        buttonActions: [
+          {
+            id: "1",
+            type: "URL",
+            url: `${process.env.FRONTEND_URL}`,
+            label: "Acessar Sistema"
+          }
+        ]
       })
       .catch((error) => {
         console.error(`Erro ao enviar notificação de designação para ${coordinator.name}`, error);

@@ -45,7 +45,7 @@ export async function SendAssignmentDesignation(designation: Designation) {
         phone: participant.phone,
         message,
         title: `${designation.group.name} - Designação`,
-        footer: "TPE - Digital.",
+        footer: "TPE Digital",
         buttonActions: [
           {
             id: "1",
@@ -70,7 +70,7 @@ export async function SendAssignmentDesignation(designation: Designation) {
 
 function getMessage(designation: Designation, participant: Participant) {
   return `Olá, ${participant.name}, 
-  
+
 Você está designado para ${Weekday_PT_BR[designation.group.config.weekday]}, das *${designation.group.config.startHour} às ${designation.group.config.endHour}*.
 
 Qualquer dúvida, entre em contato com o capitão do seu grupo.`;
