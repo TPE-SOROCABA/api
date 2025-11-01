@@ -1,4 +1,4 @@
-import { DesignationStatus, Weekday } from "@prisma/client";
+import { DesignationStatus, GroupType, Weekday } from "@prisma/client";
 import { IncidentStatus } from "../enums/IncidentStatus";
 import { ParticipantProfile } from "../enums/ParticipantProfile";
 import { ParticipantSex } from "../enums/ParticipantSex";
@@ -215,6 +215,7 @@ export type Assignments = {
 export type Group = {
   id: string;
   name: string;
+  type: GroupType;
   config: {
     endHour: string;
     startHour: string;

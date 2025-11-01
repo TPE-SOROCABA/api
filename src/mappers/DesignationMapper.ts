@@ -86,6 +86,7 @@ export abstract class DesignationMapper {
         },
         id: designationModel?.group.id,
         name: designationModel?.group.name,
+        type: designationModel.group.type,
       },
       designationModel.status as DesignationStatus,
       assignments,

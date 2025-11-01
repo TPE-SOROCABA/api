@@ -1,4 +1,4 @@
-import { AssignmentsParticipants, ParticipantGroupProfile, ParticipantProfile, ParticipantSex, Weekday } from "@prisma/client";
+import { AssignmentsParticipants, GroupType, ParticipantGroupProfile, ParticipantProfile, ParticipantSex, Weekday } from "@prisma/client";
 
 export interface IDesignationModel {
   id: string;
@@ -48,6 +48,7 @@ export interface Point {
 export interface Group {
   id: string;
   name: string;
+  type: GroupType;
   config_max: number;
   config_min: number;
   config_start_hour: string;
