@@ -1,5 +1,5 @@
 import axios from "axios";
-import { WhatsAppAdapter, WhatsAppAdapterSendMessage } from "../../interface/WhatsAppAdapter";
+import { WhatsAppAdapter, WhatsAppAdapterSendMessage, WhatsAppAdapterSendButtonMessage, ButtonAction } from "../../interface/WhatsAppAdapter";
 
 const { Z_API_URL, INSTANCE_ID, INSTANCE_TOKEN, USER_TOKEN_ID } = process.env;
 
@@ -13,7 +13,7 @@ type Z_ApiInput = {
 };
 
 export class Z_APIWhatsAppAdapter implements WhatsAppAdapter {
-  async sendMessage({ phone, message, linkUrl,  title, linkDescription }: WhatsAppAdapterSendMessage) {
+  async sendMessage({ phone, message, linkUrl, title, linkDescription }: WhatsAppAdapterSendMessage) {
     const data: any = {
       message: message,
       phone: "55" + phone,
@@ -44,6 +44,40 @@ export class Z_APIWhatsAppAdapter implements WhatsAppAdapter {
       console.log(`Sending to ${phone} using Z_API, response: ${JSON.stringify(response?.data, null, 2)}`);
     } catch (error) {
       console.error(`Error sending message to ${phone} using Z_API: ${JSON.stringify(error)}`);
+      throw new Error("Internal server error")
+    }
+  }
+
+  async sendButtonMessage({ phone, message, title, footer, buttonActions }: WhatsAppAdapterSendButtonMessage) {
+    const data: any = {
+      phone: "55" + phone,
+      message: message,
+      buttonActions: buttonActions
+    };
+
+    // Adiciona campos opcionais se fornecidos
+    if (title) {
+      data.title = title;
+    }
+    if (footer) {
+      data.footer = footer;
+    }
+
+    const options = {
+      method: "POST",
+      url: `${Z_API_URL}/${INSTANCE_ID}/token/${INSTANCE_TOKEN}/send-button-actions`,
+      headers: {
+        "Content-Type": "application/json",
+        "client-token": USER_TOKEN_ID,
+      },
+      data: data,
+    };
+
+    try {
+      const response = await axios.request(options);
+      console.log(`Sending button message to ${phone} using Z_API, response: ${JSON.stringify(response?.data, null, 2)}`);
+    } catch (error) {
+      console.error(`Error sending button message to ${phone} using Z_API: ${JSON.stringify(error)}`);
       throw new Error("Internal server error")
     }
   }

@@ -35,26 +35,28 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
 
     for (const assignment of designation.assignments) {
       for (const participant of assignment.participants) {
-        const message = `*Grupo: ${designation.group.name}*
-
-Olá, ${participant.name}, 
+        const message = `Olá, ${participant.name}, 
 
 A designação para ${Weekday_PT_BR[designation.group.config.weekday]}, das *${designation.group.config.startHour} às ${designation.group.config.endHour}*, foi CANCELADA.
 
-Qualquer dúvida, entre em contato com o capitão do seu grupo.
+Qualquer dúvida, entre em contato com o capitão do seu grupo.`;
 
-Atenciosamente,
-TPE - Digital.
-`;
         if (participant.phone.includes("FAKE")) {
           continue;
         }
-        await whatsaapService.sendMessage({
-          title: "*TPE Digital - Designação Cancelada*",
+
+        await whatsaapService.sendButtonMessage({
           phone: participant.phone,
           message,
-          linkUrl: `${process.env.FRONTEND_URL}/designacao/${participant.id}`,
-          linkDescription: "Clique aqui para acessar mais informações",
+          title: `${designation.group.name} - Designação Cancelada`,
+          footer: "TPE - Digital.",
+          buttonActions: [
+            {
+              id: "1",
+              type: "REPLY",
+              label: "Entendido"
+            }
+          ]
         });
       }
     }

@@ -41,33 +41,37 @@ export async function SendAssignmentDesignation(designation: Designation) {
     }
 
     await whatsaapService
-      .sendMessage({
+      .sendButtonMessage({
         phone: participant.phone,
         message,
-        title: "*TPE Digital - Designação*",
-        linkUrl: `${process.env.FRONTEND_URL}/designacao/${designation.id}/${participant.id}`,
-        linkDescription: "Clique aqui para acessar mais informações",
+        title: `${designation.group.name} - Designação`,
+        footer: "TPE - Digital.",
+        buttonActions: [
+          {
+            id: "1",
+            type: "REPLY",
+            label: "Confirmar Presença"
+          },
+          {
+            id: "2",
+            type: "URL",
+            url: `${process.env.FRONTEND_URL}/designacao/${designation.id}/${participant.id}`,
+            label: "Ver Detalhes"
+          }
+        ]
       })
       .catch((error) => {
         console.log(`Erro ao enviar mensagem para ${participant.name} - ${participant.phone}`);
         console.error(error);
       });
-    console.log(`Mensagem enviada para ${participant.name} - ${participant.phone} - ${`${process.env.FRONTEND_URL}/designacao/${designation.id}/${participant.id}`} com sucesso`);
+    console.log(`Mensagem com botões enviada para ${participant.name} - ${participant.phone} com sucesso`);
   }
 }
 
 function getMessage(designation: Designation, participant: Participant) {
-  return `*Grupo: ${designation.group.name}*
-  
-Olá, ${participant.name}, 
+  return `Olá, ${participant.name}, 
   
 Você está designado para ${Weekday_PT_BR[designation.group.config.weekday]}, das *${designation.group.config.startHour} às ${designation.group.config.endHour}*.
-  
-Para acessar a designação, clique no link abaixo.
 
-Qualquer dúvida, entre em contato com o capitão do seu grupo.
-  
-Atenciosamente,
-TPE - Digital.
-  `;
+Qualquer dúvida, entre em contato com o capitão do seu grupo.`;
 }

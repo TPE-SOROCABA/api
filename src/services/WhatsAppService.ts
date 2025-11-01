@@ -1,4 +1,4 @@
-import { WhatsAppAdapterSendMessage, WhatsAppAdapter } from "../interface/WhatsAppAdapter";
+import { WhatsAppAdapterSendMessage, WhatsAppAdapter, WhatsAppAdapterSendButtonMessage } from "../interface/WhatsAppAdapter";
 
 export class WhatsAppService {
   constructor(readonly whatsAppAdapter: WhatsAppAdapter) { }
@@ -11,5 +11,15 @@ export class WhatsAppService {
       return;
     }
     await this.whatsAppAdapter.sendMessage(data);
+  }
+
+  async sendButtonMessage(data: WhatsAppAdapterSendButtonMessage) {
+    if (data.phone.includes("***")) {
+      console.log(`Simulating WhatsApp button message sending in dev mode`);
+      console.log(data);
+      await new Promise((resolve) => setTimeout(resolve, Math.floor(Math.random() * 300)));
+      return;
+    }
+    await this.whatsAppAdapter.sendButtonMessage(data);
   }
 }
