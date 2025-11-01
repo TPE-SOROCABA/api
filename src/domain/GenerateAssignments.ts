@@ -1,4 +1,4 @@
-import { DesignationStatus, ParticipantProfile } from "@prisma/client";
+import { DesignationStatus, ParticipantProfile, GroupType } from "@prisma/client";
 import { Designation } from "./Designation";
 import { BadRequestException } from "../shared/Exception";
 import { DesignationStatusPT_BR } from "../enums/DesignationStatusPT_BR";
@@ -7,7 +7,7 @@ const randomIndex = (array: Array<number>) => Math.floor(Math.random() * array.l
 
 export class GenerateAssignments {
   count = 0;
-  constructor(public designation: Designation) {}
+  constructor(public designation: Designation) { }
 
   public generateAssignment(retry = 500): void {
     if (this.designation.status !== DesignationStatus.OPEN) {
@@ -57,6 +57,11 @@ export class GenerateAssignments {
       if (this.count < retry) {
         this.generateAssignment(retry);
       } else {
+        // Para grupos especiais, permite que participantes fiquem sem atribuição
+        if (this.designation.group.type === GroupType.SPECIAL) {
+          console.log(`Grupo especial: alguns participantes podem ficar sem atribuição`);
+          return;
+        }
         throw new BadRequestException(`Não foi possível designar todos os participantes. Total participantes: ${this.designation.participantsCount}, Total vagas: ${this.designation.totalVacancies}`);
       }
     }
