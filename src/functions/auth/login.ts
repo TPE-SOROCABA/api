@@ -27,6 +27,8 @@ interface IParticipant {
 const designationRepository = new DesignationRepository();
 const loginService = new LoginService(designationRepository);
 
+const loginAttempts: Record<string, number> = {};
+
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
   const responseHandler = new ResponseHandler(_event);
   try {
@@ -46,13 +48,21 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     console.log(participant)
     if (!participant) {
       console.log(`Usuário ${login.phone} não encontrado`);
-      throw new Exception(401, "Credenciais inválidas");
+      throw new Exception(401, "Usuário não encontrado");
     }
 
     if (!participant.Auth) {
       console.log(`Senha incorreta para o usuário ${login.phone}`);
-      throw new Exception(401, "Credenciais inválidas");
+      loginAttempts[login.phone] = (loginAttempts[login.phone] || 0) + 1;
+
+      if (loginAttempts[login.phone] > 3) {
+        throw new Exception(429, "Muitas tentativas incorretas. Por favor, redefina sua senha.");
+      }
+
+      throw new Exception(401, "Senha inválida");
     }
+
+    delete loginAttempts[login.phone];
 
     let profile: string = ParticipantProfile.PARTICIPANT;
     if (participant.profile === ParticipantProfile.COORDINATOR || participant.profile === ParticipantProfile.ADMIN_ANALYST) {
