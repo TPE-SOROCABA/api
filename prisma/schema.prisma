@@ -63,6 +63,7 @@ model Auth {
   participantId     String       @unique @map("participant_id")
   expiredAt         DateTime?    @map("expired_at")
   updatedAt         DateTime     @default(now()) @updatedAt @map("updated_at")
+  loginAttempts     Int          @default(0) @map("login_attempts")
   participant       Participants @relation(fields: [participantId], references: [id])
 
   @@map("auths")
@@ -220,8 +221,11 @@ model Assignments {
 model congregations {
   id           Int            @id @default(autoincrement())
   name         String
-  city         String
-  state        String
+  city         String?
+  state        String?
+  address      String?
+  latitude     Float?
+  longitude    Float?
   participants Participants[]
 }
 

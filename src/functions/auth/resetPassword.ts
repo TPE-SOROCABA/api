@@ -40,6 +40,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
         expiredAt: null,
         updatedAt: new Date(),
         resetPasswordCode: null,
+        loginAttempts: 0,
       },
     });
 
