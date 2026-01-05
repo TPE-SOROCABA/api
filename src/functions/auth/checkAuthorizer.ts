@@ -13,7 +13,7 @@ export const handler = async (event: CustomAuthorizerEvent, _: Context, callback
     console.log("Policy document gerado com sucesso")
     callback(null, policyDocument)
   } catch (err) {
-    console.log("Erro ao gerar policy document")
+    console.error("Erro ao gerar policy document:", err)
     callback(new Error('Unauthorized'))
   }
 }
@@ -43,6 +43,7 @@ function checkAccessToken(accessToken: string): any {
   try {
     return jwt.verify(accessToken.trim(), process.env.JWT_SECRET!) 
   } catch (error) {
+    console.error("Erro na verificação do JWT:", error)
     throw new Error('Unauthorized')
   }
 }
