@@ -7,7 +7,7 @@ import { prisma } from "../infra/prismaClient";
 import { DesignationStatus } from "@prisma/client";
 
 export class DesignationRepository {
-  async findOne(groupId: string) {
+  async findOne(groupId: string, skipValidations = false) {
     const designationModel = await prisma.designations.findFirst({
       where: {
         groupId: groupId,
@@ -69,10 +69,10 @@ export class DesignationRepository {
       throw new Exception(404, "Designação não encontrada");
     }
 
-    return DesignationMapper.toDomain(designationModel as unknown as IDesignationModel);
+    return DesignationMapper.toDomain(designationModel as unknown as IDesignationModel, skipValidations);
   }
 
-  async findOneOld(groupId: string) {
+  async findOneOld(groupId: string, skipValidations = false) {
     const designationModel = await prisma.designations.findFirst({
       where: {
         groupId: groupId,
@@ -136,7 +136,7 @@ export class DesignationRepository {
       throw new Exception(404, "Designação não encontrada");
     }
 
-    return DesignationMapper.toDomain(designationModel as unknown as IDesignationModel);
+    return DesignationMapper.toDomain(designationModel as unknown as IDesignationModel, skipValidations);
   }
 
 
@@ -205,7 +205,7 @@ export class DesignationRepository {
     }
   }
 
-  async findByDesignationId(designationId: string): Promise<Designation> {
+  async findByDesignationId(designationId: string, skipValidations = false): Promise<Designation> {
     const designationModel = await prisma.designations.findFirst({
       where: {
         id: designationId,
@@ -264,10 +264,10 @@ export class DesignationRepository {
       throw new Exception(404, "Designação não encontrada");
     }
 
-    return DesignationMapper.toDomain(designationModel as unknown as IDesignationModel);
+    return DesignationMapper.toDomain(designationModel as unknown as IDesignationModel, skipValidations);
   }
 
-  async findByParticipantId(participantId: string): Promise<Designation[]> {
+  async findByParticipantId(participantId: string, skipValidations = false): Promise<Designation[]> {
     const participantsGroups = await prisma.participantsGroups.findMany({
       where: {
         participantId: participantId,
@@ -281,6 +281,6 @@ export class DesignationRepository {
       throw new Exception(404, "Participante não encontrado");
     }
 
-    return Promise.all(participantsGroups.map(async (pg) => this.findOne(pg.groupId)));
+    return Promise.all(participantsGroups.map(async (pg) => this.findOne(pg.groupId, skipValidations)));
   }
 }

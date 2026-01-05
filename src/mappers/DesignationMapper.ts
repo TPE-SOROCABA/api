@@ -7,7 +7,7 @@ import { ParticipantsNotAloneRule } from "domain/DesignationRulesValidation/Part
 import { FakeImage } from "shared/FakeImage";
 
 export abstract class DesignationMapper {
-  static toDomain(designationModel: IDesignationModel): Designation {
+  static toDomain(designationModel: IDesignationModel, skipValidations = false): Designation {
     const incidentMapper = (incident: any) => {
       if (incident.designationId !== designationModel.id) return null;
       if (incident.status !== "OPEN") return null;
@@ -98,13 +98,15 @@ export abstract class DesignationMapper {
     designation.mandatoryPresence = designationModel.mandatoryPresence;
     designation.cancellationJustification = designationModel?.cancellationJustification || ""
 
-    designation.addValidationPlugin(participantsNotAloneRule);
-    designation.addValidationPlugin(occupancyLimitRule);
-    designation.addValidationPlugin(genderRequirementRule);
-    try {
-      designation.applyValidations()
-    } catch (error) {
-      console.log(error)
+    if (!skipValidations) {
+      designation.addValidationPlugin(participantsNotAloneRule);
+      designation.addValidationPlugin(occupancyLimitRule);
+      designation.addValidationPlugin(genderRequirementRule);
+      try {
+        designation.applyValidations()
+      } catch (error) {
+        console.log(error)
+      }
     }
     return designation;
   }
