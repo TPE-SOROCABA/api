@@ -1,23 +1,24 @@
 import { DesignationStatus, Designations, ParticipantProfile } from "@prisma/client";
 import { Designation } from "domain/Designation";
-import { Z_APIWhatsAppAdapter } from "infra/adapter/Z_APIWhatsAppAdapter";
 import { prisma } from "infra/prismaClient";
 import { DesignationRepository } from "repositories/DesignationRepository";
 import { SendAssignmentDesignation } from "services/SendAssignmentDesignation";
-import { WhatsAppService } from "services/WhatsAppService";
+import { SQSMessageDispatcher } from "services/SQSMessageDispatcher";
+import { MessageGenerator, MessageType } from "services/MessageGenerator";
 
 const designationRepository = new DesignationRepository();
-const whatsaapService = new WhatsAppService(new Z_APIWhatsAppAdapter());
+const sqsDispatcher = new SQSMessageDispatcher();
+const messageGenerator = new MessageGenerator();
 
 export async function TransactionStatusDesignationOpenLess2Hours(designationOpen: Designations) {
-  console.log(`Designação ${designationOpen.id} aberta com menos de 2 horas para o início`);
-  console.log("Gerando designação automaticamente");
+  console.log(`[TRANSACAO-DESIGNACAO] Designação ${designationOpen.id} aberta com menos de 2 horas para o início.`);
+  console.log("[TRANSACAO-DESIGNACAO] Gerando atribuições automáticas...");
   const designation = await designationRepository.findByDesignationId(designationOpen.id);
   designation.generateAssignment();
 
-  console.log("Enviando notificação de designação");
+  console.log("[TRANSACAO-DESIGNACAO] Iniciando notificações de designação via SQS.");
   await SendAssignmentDesignation(designation).catch(async (error) => {
-    console.error("Erro ao enviar notificação de designação", error);
+    console.error(`[TRANSACAO-DESIGNACAO] Erro ao notificar participantes:`, error);
     designation.updateStatus(DesignationStatus.OPEN);
     await designationRepository.update(designation);
   })
@@ -25,27 +26,29 @@ export async function TransactionStatusDesignationOpenLess2Hours(designationOpen
   designation.updateStatus(DesignationStatus.IN_PROGRESS);
   await designationRepository.update(designation);
 
-  console.log("Avise o coordenador sobre o atraso da designação");
+  console.log("[TRANSACAO-DESIGNACAO] Notificando coordenador sobre o atraso.");
   const data = await getCoordinatorGroup(designation)
   if (data?.group?.coordinator) {
     const { coordinator } = data.group;
-    await whatsaapService.sendButtonMessage({
+    const message = messageGenerator.generate(MessageType.COORDINATOR_ALERT, {
+      recipientName: "Coordenador", // getCoordinatorGroup sub-query only retrieves phone
+      details: designation.group.name,
+    });
+
+    await sqsDispatcher.dispatch({
       phone: coordinator.phone,
-      message: `Olá, a designação ${designation.group.name} foi aberta com menos de 2 horas para o início. Por favor, verifique se todos os participantes estão cientes e prontos para a designação.`,
+      message,
       title: `${designation.group.name} - Atraso da Designação`,
       footer: "TPE Digital",
-      buttonActions: [
-        {
-          id: "1",
-          type: "URL",
-          url: `${process.env.FRONTEND_URL}/designacao/${designation.id}`,
-          label: "Ver Detalhes"
-        }
-      ]
+      type: "text",
+      linkUrl: `${process.env.FRONTEND_URL}/designacao/${designation.id}`,
+      linkDescription: "Ver Detalhes",
+    }).catch((error) => {
+      console.error(`[TRANSACAO-DESIGNACAO] Erro ao enfileirar alerta para o coordenador:`, error);
     });
   }
 
-  console.log("Designação aberta com sucesso")
+  console.log("[TRANSACAO-DESIGNACAO] Processamento finalizado com sucesso.")
 }
 
 async function getCoordinatorGroup(designation: Designation) {

@@ -36,12 +36,15 @@ provider:
       Action:
         - "sqs:SendMessage"
         - "sqs:ReceiveMessage"
-        - "sqs:SendMessage"
         - "sqs:GetQueueAttributes"
       Resource: 
         - "arn:aws:sqs:us-east-1:533267195262:api-tpe-digital-hmg-designation-queue.fifo"
+        - "arn:aws:sqs:us-east-1:533267195262:api-tpe-digital-hmg-whatsapp-message-queue"
+        - "arn:aws:sqs:us-east-1:533267195262:api-tpe-digital-hmg-whatsapp-message-queue-dlq"
   environment:
     NODE_ENV: ${self:provider.stage}
+    WHATSAPP_MESSAGE_QUEUE: { Ref: WhatsAppMessageQueue }
+    WHATSAPP_MESSAGE_DLQ: { Ref: WhatsAppMessageQueueDLQ }
 
 
 functions: 
@@ -60,6 +63,18 @@ resources:
         FifoQueue: true
         ContentBasedDeduplication: true
         VisibilityTimeout: 60 # serve para garantir que a mensagem não será processada por outro lambda antes de ser excluída
+    WhatsAppMessageQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:service}-${self:provider.stage}-whatsapp-message-queue
+        VisibilityTimeout: 60
+        RedrivePolicy:
+          deadLetterTargetArn: !GetAtt WhatsAppMessageQueueDLQ.Arn
+          maxReceiveCount: 5
+    WhatsAppMessageQueueDLQ:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:service}-${self:provider.stage}-whatsapp-message-queue-dlq
     GatewayResponseDefault4XX:
       Type: 'AWS::ApiGateway::GatewayResponse'
       Properties:

@@ -3,7 +3,8 @@ export type WhatsAppAdapterSendMessage = {
     message: string;
     title: string;
     linkUrl?: string;
-    linkDescription?: string
+    linkDescription?: string;
+    delayMessage?: number;
 }
 
 export type ButtonAction = {
@@ -20,6 +21,7 @@ export type WhatsAppAdapterSendButtonMessage = {
     title?: string;
     footer?: string;
     buttonActions: ButtonAction[];
+    delayMessage?: number;
 }
 
 export interface WhatsAppAdapter {

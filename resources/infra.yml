@@ -21,3 +21,21 @@ transactionStatusDesignations:
     - schedule: cron(10 20 ? * * *) # Para BR seria 17:05
     - schedule: cron(0 23 ? * * *) # Para BR seria 20:00
     - schedule: cron(0 1 ? * * *) # Para BR seria 22:00
+
+whatsappMessageHandler:
+  handler: src/functions/whatsapp/handler.handler
+  description: Consumidor de mensagens do WhatsApp com cadência humana
+  reservedConcurrency: 1
+  events:
+    - sqs:
+        arn: !GetAtt WhatsAppMessageQueue.Arn
+        batchSize: 1 # Para garantir concorrência 1 e ordem de cadência humana
+
+testSqsWhatsapp:
+  handler: src/functions/whatsapp/testSqsWhatsapp.handler
+  description: Endpoint de teste para envio SQS (Human Delay)
+  events:
+    - http:
+        path: test/sqs-whatsapp
+        method: POST
+        cors: true

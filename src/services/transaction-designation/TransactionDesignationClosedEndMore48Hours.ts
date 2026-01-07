@@ -1,17 +1,18 @@
 import { DesignationStatus, Designations } from "@prisma/client";
-import { Z_APIWhatsAppAdapter } from "infra/adapter/Z_APIWhatsAppAdapter";
 import { prisma } from "infra/prismaClient";
 import { DesignationRepository } from "repositories/DesignationRepository";
 import { CreateDesignationUseCase } from "services/CreateDesignationUseCase";
-import { WhatsAppService } from "services/WhatsAppService";
+import { SQSMessageDispatcher } from "services/SQSMessageDispatcher";
+import { MessageGenerator, MessageType } from "services/MessageGenerator";
 
 const designationRepository = new DesignationRepository();
-const whatsaapService = new WhatsAppService(new Z_APIWhatsAppAdapter());
+const sqsDispatcher = new SQSMessageDispatcher();
+const messageGenerator = new MessageGenerator();
 const createDesignationUseCase = new CreateDesignationUseCase();
 
 export async function TransactionDesignationClosedEndMore48Hours(designationClosed: Designations) {
-  console.log(`Designação ${designationClosed.id} encerrada com mais de 48 horas`);
-  console.log("Arquivando designação");
+  console.log(`[TRANSACAO-DESIGNACAO] Designação ${designationClosed.id} encerrada há mais de 48h. Iniciando arquivamento.`);
+  console.log("[TRANSACAO-DESIGNACAO] Alterando status para ARCHIVED...");
   await prisma.designations.update({
     where: {
       id: designationClosed.id,
@@ -24,29 +25,31 @@ export async function TransactionDesignationClosedEndMore48Hours(designationClos
 
   const designation = await designationRepository.findByDesignationId(designationClosed.id);
 
-  console.log("Criando nova designação");
+  console.log("[TRANSACAO-DESIGNACAO] Gerando nova designação automática.");
   await createDesignationUseCase.execute(designation.group.id);
 
-  console.log("Enviando notificação de encerramento de designação para os coordenadores");
-  for (const coordinator of designation.captainsAndCoordinators) {
-    await whatsaapService
-      .sendButtonMessage({
-        phone: coordinator.phone,
-        message: `Olá, a designação do grupo ${designation.group.name} foi ENCERRADA.\n\nAgora é possível realizar novas designações.\n\nObs: O publicadores não podem mais justificar a ausência desta semana.`,
-        title: `${designation.group.name} - Designação Encerrada`,
-        footer: "TPE Digital",
-        buttonActions: [
-          {
-            id: "1",
-            type: "URL",
-            url: `${process.env.FRONTEND_URL}`,
-            label: "Acessar Sistema"
-          }
-        ]
-      })
-      .catch((error) => {
-        console.error(`Erro ao enviar notificação de designação para ${coordinator.name}`, error);
-      });
-  }
-  console.log("Designação arquivada com sucesso");
+  console.log(`[TRANSACAO-DESIGNACAO] Notificando ${designation.captainsAndCoordinators.length} coordenadores sobre o arquivamento via SQS.`);
+
+  const messages = designation.captainsAndCoordinators.map((coordinator) => {
+    const message = messageGenerator.generate(MessageType.ARCHIVE_NOTIFICATION, {
+      recipientName: coordinator.name,
+      details: designation.group.name,
+    });
+
+    return {
+      phone: coordinator.phone,
+      message,
+      title: `${designation.group.name} - Designação Encerrada`,
+      footer: "TPE Digital",
+      linkUrl: process.env.FRONTEND_URL,
+      linkDescription: "Acessar Sistema",
+      type: "text" as const
+    };
+  });
+
+  await sqsDispatcher.dispatchBatch(messages).catch((error) => {
+    console.error(`[TRANSACAO-DESIGNACAO] Erro ao enfileirar notificações de arquivamento:`, error);
+  });
+
+  console.log("[TRANSACAO-DESIGNACAO] Arquivamento finalizado com sucesso.");
 }

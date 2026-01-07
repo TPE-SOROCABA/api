@@ -1,27 +1,28 @@
-import { WhatsAppService } from '../../services/WhatsAppService';
 import type { Context, APIGatewayProxyStructuredResultV2, APIGatewayProxyEventV2, Handler } from "aws-lambda";
 import { ResponseHandler } from "../../shared/ResponseHandler";
 import { JsonHandler } from "../../shared/JsonHandler";
 import { InputRecoverPassword } from "../../contracts/InputRecoverPassword";
 import { Exception } from "../../shared/Exception";
-import { Z_APIWhatsAppAdapter } from '../../infra/adapter/Z_APIWhatsAppAdapter';
 import { prisma } from '../../infra/prismaClient';
 import { LoginUtils } from "./../../domain/Login";
 import { ParticipantProfile } from '@prisma/client';
+import { MessageGenerator, MessageType } from "../../services/MessageGenerator";
+import { SQSMessageDispatcher } from "../../services/SQSMessageDispatcher";
 
-const whatsAppAdapter = new Z_APIWhatsAppAdapter();
-const whatsAppService = new WhatsAppService(whatsAppAdapter);
+const messageGenerator = new MessageGenerator();
+const sqsDispatcher = new SQSMessageDispatcher();
 
 export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
   const responseHandler = new ResponseHandler(_event);
   try {
 
     const body = JsonHandler.parse<InputRecoverPassword>(_event.body || "{}");
-    console.log(`Usuário ${body.phone} está tentando recuperar a senha`);
+    console.log(`[AUTH-RECOVER] Iniciando recuperação de senha para: ${body.phone}`);
     const params = await InputRecoverPassword.create(body.phone);
 
     const participant = await prisma.participants.findUnique({ where: { phone: params.phone }, include: { ParticipantsGroup: true } });
     if (!participant) {
+      console.log(`[AUTH-RECOVER] Falha: Usuário ${body.phone} não encontrado.`);
       throw new Exception(404, "Usuário não encontrado");
     }
 
@@ -33,12 +34,13 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     }
 
     if (profile === ParticipantProfile.PARTICIPANT) {
-      console.log(`Usuário ${participant.name} não tem permissão para logar`);
+      console.log(`[AUTH-RECOVER] Falha: Usuário ${participant.name} não possui perfil de acesso.`);
       throw new Exception(403, "Usuário não tem permissão para logar");
     }
 
     const code = generateCode();
 
+    console.log(`[AUTH-RECOVER] Gerando novo código OTP para ${participant.name}.`);
     await prisma.auth.update({
       where: { participantId: participant.id },
       data: {
@@ -53,16 +55,24 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       code
     })
 
-    const message = `Olá, ${participant.name}! Seu código de recuperação de senha é \n\n*${code}*\n\nEle expirará em 5 minutos.\nNão compartilhe com ninguém.\n\nAtenciosamente, TPE Digital`;
-    await whatsAppService.sendMessage({
+    const message = messageGenerator.generate(MessageType.OTP, {
+      recipientName: participant.name,
+      code: String(code)
+    });
+
+    console.log(`[AUTH-RECOVER] Enfileirando mensagem OTP via SQS.`);
+    await sqsDispatcher.dispatch({
       phone: participant.phone,
       message,
       title: "*TPE Digital - Recuperação de senha*",
+      type: "text",
       linkUrl: `${process.env.FRONTEND_URL}/forgot-password/check-number?code=${payload}`,
       linkDescription: "Clique aqui para acessar a recuperação de senha",
     });
+
     return responseHandler.success({ message: "Código de recuperação enviado com sucesso" });
   } catch (error) {
+    console.error(`[AUTH-RECOVER] Erro no fluxo de recuperação:`, error);
     return responseHandler.error(error);
   }
 };

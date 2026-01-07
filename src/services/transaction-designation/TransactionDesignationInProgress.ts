@@ -1,16 +1,17 @@
 import { DesignationStatus, Designations } from "@prisma/client";
 import { ParticipantProfile } from "enums/ParticipantProfile";
-import { Z_APIWhatsAppAdapter } from "infra/adapter/Z_APIWhatsAppAdapter";
 import { prisma } from "infra/prismaClient";
 import { DesignationRepository } from "repositories/DesignationRepository";
-import { WhatsAppService } from "services/WhatsAppService";
+import { SQSMessageDispatcher } from "services/SQSMessageDispatcher";
+import { MessageGenerator, MessageType } from "services/MessageGenerator";
 
 const designationRepository = new DesignationRepository();
-const whatsaapService = new WhatsAppService(new Z_APIWhatsAppAdapter());
+const sqsDispatcher = new SQSMessageDispatcher();
+const messageGenerator = new MessageGenerator();
 
 export async function TransactionDesignationInProgress(designationInProgress: Designations) {
-  console.log(`Designação ${designationInProgress.id} em andamento`);
-  console.log("Encerrando designação");
+  console.log(`[TRANSACAO-DESIGNACAO] Designação ${designationInProgress.id} entrando em conclusão.`);
+  console.log("[TRANSACAO-DESIGNACAO] Alterando status para CLOSED...");
   await prisma.designations.update({
     where: {
       id: designationInProgress.id,
@@ -25,61 +26,36 @@ export async function TransactionDesignationInProgress(designationInProgress: De
   const participants = designation.participants.map((participant) => participant);
   const participantesAssignments = designation.assignments.map((assignment) => assignment.participants.map((participant) => participant)).flat();
   const participantsNotify = [...participants, ...participantesAssignments];
-  console.log("Enviando notificação de conclusão de designação para os participantes");
+  console.log(`[TRANSACAO-DESIGNACAO] Notificando ${participantsNotify.length} participantes sobre conclusão via SQS.`);
 
-  for (const participant of participantsNotify) {
-    try {
-      if (participant.profile === ParticipantProfile.COORDINATOR || participant.profile === ParticipantProfile.CAPTAIN) {
-        await whatsaapService
-          .sendButtonMessage({
-            phone: participant.phone,
-            message: `*Atenção capitão!*
-  
-A designação ${designation.group.name} foi CONCLUÍDA.
-Os participantes terão 48 horas para justificar a ausência desta semana.`,
-            title: `${designation.group.name} - Designação Concluída`,
-            footer: "TPE Digital",
-            buttonActions: [
-              {
-                id: "1",
-                type: "URL",
-                url: `${process.env.FRONTEND_URL}/designacao/${designation.id}/${participant.id}`,
-                label: "Justificar Ausência"
-              }
-            ]
-          })
-          .catch((error) => {
-            console.error(`Erro ao enviar notificação de designação para ${participant.name}`, error);
-          });
-      } else {
-        await whatsaapService
-          .sendButtonMessage({
-            phone: participant.phone,
-            message: `Olá, ${participant.name}!
-  
-A designação ${designation.group.name} foi CONCLUÍDA.
-Os participantes terão 48 horas para justificar a ausência desta semana.
-  
-*Por favor, desconsidere essa mensagem se você esteve presente na designação. Nesse caso, nenhuma justificativa é necessária.*`,
-            title: `${designation.group.name} - Designação Concluída`,
-            footer: "TPE Digital",
-            buttonActions: [
-              {
-                id: "1",
-                type: "URL",
-                url: `${process.env.FRONTEND_URL}/designacao/${designation.id}/${participant.id}`,
-                label: "Justificar Ausência"
-              }
-            ]
-          })
-          .catch((error) => {
-            console.error(`Erro ao enviar notificação de designação para ${participant.name}`, error);
-          });
-      }
-    } catch (error) {
-      console.error(`Erro ao enviar notificação de designação para ${participant.name}`, error);
-    }
-  }
+  const messages = participantsNotify.map((participant) => {
+    const isCoordinatorOrCaptain = participant.profile === ParticipantProfile.COORDINATOR || participant.profile === ParticipantProfile.CAPTAIN;
 
-  console.log("Designação concluída com sucesso");
+    const message = messageGenerator.generate(MessageType.COMPLETED_NOTIFICATION, {
+      recipientName: participant.name,
+      details: designation.group.name,
+    });
+
+    return {
+      phone: participant.phone,
+      message,
+      title: `${designation.group.name} - Designação Concluída`,
+      footer: "TPE Digital",
+      buttonActions: [
+        {
+          id: "1",
+          type: "URL" as const,
+          url: `${process.env.FRONTEND_URL}/designacao/${designation.id}/${participant.id}`,
+          label: "Justificar Ausência"
+        }
+      ],
+      type: "button" as const
+    };
+  });
+
+  await sqsDispatcher.dispatchBatch(messages).catch((error) => {
+    console.error(`[TRANSACAO-DESIGNACAO] Erro ao enfileirar notificações de conclusão:`, error);
+  });
+
+  console.log("[TRANSACAO-DESIGNACAO] Fluxo de conclusão finalizado.");
 }
