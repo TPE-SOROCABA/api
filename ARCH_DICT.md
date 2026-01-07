@@ -54,3 +54,12 @@ Este documento descreve os recursos técnicos do projeto, suas finalidades e com
 | `designationsByIdParticipants` | Lambda | Lista participantes de uma designação específica | HTTP GET `/designations/{designationId}/participants` |
 | `weekParticipantDesignations` | Lambda | Lista designações da semana para um participante específico | HTTP GET `/designations/{designationId}/participants/{participantId}` |
 | `updateDesignation` | Lambda | Processa atualizações de designação de forma assíncrona | SQS (`DesignationQueue`) |
+
+## Outros Componentes
+
+| Recurso | Tipo | Finalidade | Gatilho |
+| :--- | :--- | :--- | :--- |
+| `uploadPhoto` | Lambda | Realiza o upload da foto de perfil do participante | HTTP POST `/participants/{participantId}/photo` |
+| `Z_API / WhatsApp` | API Externa | Serviço terceiro para envio real das mensagens de WhatsApp | `whatsappMessageHandler` |
+| `S3 (participants-photo)` | Bucket S3 | Armazenamento de fotos de perfil dos participantes | `uploadPhoto` |
+| `Prisma / RDS` | Banco de Dados | Camada de persistência (PostgreSQL) para todo o sistema | Diversas Lambdas |

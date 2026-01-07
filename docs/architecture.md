@@ -47,8 +47,15 @@ graph LR
     PartFuncs --> DB
     DesigFuncs --> DB
     
-    %% Saída Externa
-    WhatsAppLambda -- envia --> WA_Provider((WhatsApp API))
+    %% Saída Externa e Integrações
+    WhatsAppLambda -- API Request --> Z_API((Z-API / WhatsApp))
+    
+    subgraph Storage [Armazenamento de Arquivos]
+        uploadPhoto[uploadPhoto]
+        S3Bucket[(S3: participants-photo)]
+        uploadPhoto --> S3Bucket
+    end
+    PartFuncs -.-> uploadPhoto
 ```
 
 ## Fluxos Críticos
