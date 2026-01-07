@@ -2,9 +2,6 @@ export enum MessageType {
   INVITATION = "INVITATION",
   CANCELLATION = "CANCELLATION",
   OTP = "OTP",
-  IN_PROGRESS_REMINDER = "IN_PROGRESS_REMINDER",
-  CRITICAL_REMINDER = "CRITICAL_REMINDER",
-  POST_EVENT_FOLLOW_UP = "POST_EVENT_FOLLOW_UP",
   COORDINATOR_ALERT = "COORDINATOR_ALERT",
   COMPLETED_NOTIFICATION = "COMPLETED_NOTIFICATION",
   ARCHIVE_NOTIFICATION = "ARCHIVE_NOTIFICATION",
@@ -18,60 +15,45 @@ export interface MessageData {
 
 export class MessageGenerator {
   private variations = {
-    greetings: ["Olá", "Oi", "Tudo bem,", "Saudações"],
+    greetings: ["Olá", "Oi", "Tudo bem?", "Oi!"],
     closings: [
-      "Atenciosamente, TPE Digital.",
-      "Até logo!",
-      "Tenha um ótimo dia!",
-      "Qualquer dúvida, entre em contato.",
+      "Um abraço!",
+      "Até mais.",
+      "Contamos com seu apoio.",
+      "Equipe TPE.",
     ],
   };
 
   private templates: Record<MessageType, string[]> = {
     [MessageType.INVITATION]: [
-      "[GREETING] [NAME], você tem uma nova designação. [DETAILS]. [CLOSING]",
-      "[GREETING] [NAME]! Passando para avisar da sua nova designação: [DETAILS]. [CLOSING]",
-      "[GREETING] [NAME], sua presença é solicitada para: [DETAILS]. [CLOSING]",
+      "[GREETING] [NAME],\n\nVocê recebeu uma nova designação:\n[DETAILS].\n\n[CLOSING]",
+      "[GREETING] [NAME]!\n\nPassando para avisar que confirmamos sua escala:\n[DETAILS].\n\n[CLOSING]",
+      "[GREETING] [NAME],\n\nFicamos felizes em contar com sua ajuda para:\n[DETAILS].\n\n[CLOSING]",
     ],
     [MessageType.CANCELLATION]: [
-      "[GREETING] [NAME], infelizmente sua designação foi cancelada: [DETAILS]. [CLOSING]",
-      "[GREETING] [NAME], houve uma alteração e sua participação não será mais necessária em: [DETAILS]. [CLOSING]",
-      "[GREETING] [NAME], avisamos que a atividade [DETAILS] foi cancelada. [CLOSING]",
+      "[GREETING] [NAME],\n\nPrecisamos cancelar sua designação desta vez:\n[DETAILS].\n\n[CLOSING]",
+      "[GREETING] [NAME],\n\nHouve um imprevisto e sua participação não será mais necessária em:\n[DETAILS].\n\n[CLOSING]",
+      "[GREETING] [NAME],\n\nAvisamos que a atividade a seguir foi cancelada:\n[DETAILS].\n\n[CLOSING]",
     ],
     [MessageType.OTP]: [
-      "[GREETING] [NAME], seu código de acesso é *[CODE]*. Expira em 5 min. [CLOSING]",
-      "[GREETING] [NAME], use o código *[CODE]* para validar seu login no TPE Digital. [CLOSING]",
-      "[GREETING] [NAME], seu código de verificação: *[CODE]*. Não compartilhe. [CLOSING]",
-    ],
-    [MessageType.IN_PROGRESS_REMINDER]: [
-      "[GREETING] [NAME], sua designação já está em andamento: [DETAILS]. [CLOSING]",
-      "[GREETING] [NAME], lembramos que você está em atividade agora: [DETAILS]. [CLOSING]",
-      "[GREETING] [NAME], não esqueça da sua designação atual: [DETAILS]. [CLOSING]",
-    ],
-    [MessageType.CRITICAL_REMINDER]: [
-      "[GREETING] [NAME]! Sua designação começa em menos de 2 horas: [DETAILS]. [CLOSING]",
-      "[GREETING] [NAME], lembrete importante: faltam menos de 2h para sua atividade [DETAILS]. [CLOSING]",
-      "[GREETING] [NAME], você tem uma designação começando em breve: [DETAILS]. [CLOSING]",
-    ],
-    [MessageType.POST_EVENT_FOLLOW_UP]: [
-      "[GREETING] [NAME], como foi sua participação em [DETAILS]? Deixe seu feedback. [CLOSING]",
-      "[GREETING] [NAME], esperamos que tenha corrido tudo bem em [DETAILS]. [CLOSING]",
-      "[GREETING] [NAME], obrigado por sua ajuda em [DETAILS]. [CLOSING]",
+      "[GREETING] [NAME],\n\nRecebemos uma solicitação para redefinir sua senha.\nSeu código de verificação é: *[CODE]*.\n\n[CLOSING]",
+      "[GREETING] [NAME],\n\nPara criar uma nova senha, utilize o código abaixo:\n*[CODE]*\n\n[CLOSING]",
+      "[GREETING] [NAME],\n\nSeu código para recuperação de senha é *[CODE]*.\nEle é válido por 5 minutos.\n\n[CLOSING]",
     ],
     [MessageType.COORDINATOR_ALERT]: [
-      "[GREETING] [NAME], a designação [DETAILS] foi aberta com menos de 2 horas para o início. Por favor, verifique se todos estão cientes. [CLOSING]",
-      "[GREETING] [NAME]! Alerta de designação próxima: [DETAILS] foi aberta recentemente e começa em menos de 2h. [CLOSING]",
-      "[GREETING] [NAME], atenção: a atividade [DETAILS] inicia em breve e foi aberta agora. [CLOSING]",
+      "[GREETING] [NAME],\n\nAlerta: A designação [DETAILS] foi aberta agora e inicia em menos de 2h.\nVerifique se os participantes estão avisados.\n\n[CLOSING]",
+      "[GREETING] [NAME]!\n\nAviso de urgência:\n[DETAILS] foi criada recentemente e começa logo.\n\n[CLOSING]",
+      "[GREETING] [NAME],\n\nAtenção para designação de última hora:\n[DETAILS].\n\n[CLOSING]",
     ],
     [MessageType.COMPLETED_NOTIFICATION]: [
-      "[GREETING] [NAME]! A designação [DETAILS] foi CONCLUÍDA. Os participantes têm 48 horas para justificar ausências. [CLOSING]",
-      "[GREETING] [NAME], informamos que a atividade [DETAILS] terminou. Justificativas em até 48h. [CLOSING]",
-      "[GREETING] [NAME], participação em [DETAILS] encerrada. Se não esteve presente, favor justificar no app. [CLOSING]",
+      "[GREETING] [NAME]!\n\nA designação [DETAILS] foi CONCLUÍDA.\nLembre-se de conferir os detalhes em até 48h.\n\n[CLOSING]",
+      "[GREETING] [NAME],\n\nO turno em [DETAILS] terminou.\nSe houve ausências, ajuste na designação em até 48h.\n\n[CLOSING]",
+      "[GREETING] [NAME],\n\nFinalizamos a atividade [DETAILS].\nA designação ficará disponível para ajustes por 48h.\n\n[CLOSING]",
     ],
     [MessageType.ARCHIVE_NOTIFICATION]: [
-      "[GREETING] [NAME], a designação de [DETAILS] foi arquivada. Novas designações já podem ser feitas. [CLOSING]",
-      "[GREETING] [NAME]! Atividade [DETAILS] finalizada no sistema. Período de justificativa encerrado. [CLOSING]",
-      "[GREETING] [NAME], passando para avisar que [DETAILS] foi arquivada com sucesso. [CLOSING]",
+      "[GREETING] [NAME],\n\nA designação de [DETAILS] foi fechada/arquivada.\nNovas designações já podem ser criadas.\n\n[CLOSING]",
+      "[GREETING] [NAME]!\n\nAtividade [DETAILS] encerrada no sistema.\nNão é mais possível editar a designação.\n\n[CLOSING]",
+      "[GREETING] [NAME],\n\nInformamos que [DETAILS] foi arquivada com sucesso.\n\n[CLOSING]",
     ],
   };
 
