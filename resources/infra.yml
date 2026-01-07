@@ -25,11 +25,10 @@ transactionStatusDesignations:
 whatsappMessageHandler:
   handler: src/functions/whatsapp/handler.handler
   description: Consumidor de mensagens do WhatsApp com cadência humana
-  reservedConcurrency: 1
   events:
     - sqs:
         arn: !GetAtt WhatsAppMessageQueue.Arn
-        batchSize: 1 # Para garantir concorrência 1 e ordem de cadência humana
+        batchSize: 1 # Processar uma mensagem por vez para facilitar o controle de cadência humana
 
 testSqsWhatsapp:
   handler: src/functions/whatsapp/testSqsWhatsapp.handler
