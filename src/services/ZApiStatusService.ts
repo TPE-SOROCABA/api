@@ -1,6 +1,7 @@
 import { prisma } from "../infra/prismaClient";
 import { IConnectionObserver } from "../shared/observers/IConnectionObserver";
 import { LoggingConnectionObserver } from "../shared/observers/LoggingConnectionObserver";
+import { WebhookNotificationObserver } from "../shared/observers/WebhookNotificationObserver";
 
 export const ZAPI_CONNECTION_STATUS_KEY = "ZAPI_CONNECTION_STATUS";
 export const STATUS_CONNECTED = "CONNECTED";
@@ -11,6 +12,7 @@ export class ZApiStatusService {
 
     constructor() {
         this.addObserver(new LoggingConnectionObserver());
+        this.addObserver(new WebhookNotificationObserver());
     }
 
     addObserver(observer: IConnectionObserver) {
