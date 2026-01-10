@@ -2,9 +2,11 @@ import { SQSEvent } from "aws-lambda";
 import { SQSMessageDispatcher, QueueMessagePayload } from "../../services/SQSMessageDispatcher";
 import { WhatsAppService } from "../../services/WhatsAppService";
 import { Z_APIWhatsAppAdapter } from "../../infra/adapter/Z_APIWhatsAppAdapter";
+import { ZApiStatusService, STATUS_CONNECTED } from "../../services/ZApiStatusService";
 
 const sqsDispatcher = new SQSMessageDispatcher();
 const whatsappService = new WhatsAppService(new Z_APIWhatsAppAdapter());
+const zApiStatusService = new ZApiStatusService();
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -12,6 +14,33 @@ export const handler = async (event: SQSEvent) => {
     for (const record of event.Records) {
         const payload: QueueMessagePayload = JSON.parse(record.body);
         const now = Math.floor(Date.now() / 1000);
+
+        // 1. Verificação do Circuit Breaker (Z-API Status)
+        const status = await zApiStatusService.getStatus();
+
+        if (status !== STATUS_CONNECTED) {
+            console.warn(`[CIRCUIT-BREAKER] Circuito ABERTO (Status: ${status}). Mensagem para ${payload.phone} retida.`);
+            if (!payload.scheduledAt) {
+                // Define um scheduledAt inicial se não existir
+                console.log(`[CIRCUIT-BREAKER] Definindo scheduledAt inicial para mensagem de ${payload.phone}.`);
+                payload.scheduledAt = now;
+            }
+            // Lógica de Snooze Cíclico (10 minutos)
+            const snoozeMinutes = 10;
+            const snoozeSeconds = snoozeMinutes * 60;
+            const nextAttempt = payload.scheduledAt + snoozeSeconds;
+
+            // Atualiza o payload para manter rastreabilidade
+            payload.scheduledAt = nextAttempt;
+
+            console.log(`[CIRCUIT-BREAKER] Re-enfileirando mensagem para ${nextAttempt} (Delay: ${snoozeSeconds}s).`);
+
+            // Reenvia para o SQS. O Dispatcher calculará o DelaySeconds baseado no scheduledAt
+            await sqsDispatcher.dispatch(payload);
+
+            // Processamento encerrado para esta mensagem (ACK implícito ao terminar sem erro)
+            continue;
+        }
 
         console.log(`[SQS-WHATSAPP-HANDLER] Iniciando processamento. Destinatário: ${payload.phone}. Agendado: ${payload.scheduledAt}, Agora: ${now}`);
 

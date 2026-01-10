@@ -38,3 +38,21 @@ testSqsWhatsapp:
         path: test/sqs-whatsapp
         method: POST
         cors: true
+
+webhookZapiConnected:
+  handler: src/functions/webhooks/zapi/handler.handleConnected
+  description: Webhook para receber evento de conexão da Z-API
+  events:
+    - http:
+        path: webhooks/zapi/connected
+        method: POST
+        cors: true
+
+webhookZapiDisconnected:
+  handler: src/functions/webhooks/zapi/handler.handleDisconnected
+  description: Webhook para receber evento de desconexão da Z-API
+  events:
+    - http:
+        path: webhooks/zapi/disconnected
+        method: POST
+        cors: true
