@@ -81,7 +81,7 @@ export class SQSMessageDispatcher {
      */
     private calculateTypingDuration(text: string): number {
         const baseDelay = text.length / this.CHARS_PER_SECOND;
-        const variation = baseDelay * 0.2;
+        const variation = baseDelay * 0.5
         const randomFactor = (Math.random() * variation * 2) - variation;
 
         return Math.round(baseDelay + randomFactor);
