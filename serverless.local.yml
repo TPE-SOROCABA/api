@@ -70,7 +70,7 @@ resources:
       Type: AWS::SQS::Queue
       Properties:
         QueueName: WhatsAppMessageQueue
-        VisibilityTimeout: 60
+        VisibilityTimeout: 300
         RedrivePolicy:
           deadLetterTargetArn: !GetAtt WhatsAppMessageQueueDLQ.Arn
           maxReceiveCount: 5

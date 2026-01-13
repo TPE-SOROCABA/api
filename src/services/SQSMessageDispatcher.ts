@@ -17,7 +17,7 @@ export type QueueMessagePayload = {
 
 export class SQSMessageDispatcher {
     private sqs: SQS;
-    private readonly CHARS_PER_SECOND = 3.3; // Média humana de digitação
+    private readonly CHARS_PER_SECOND = 12.9; // Média humana de digitação
 
     constructor() {
         this.sqs = new SQS(
@@ -81,9 +81,10 @@ export class SQSMessageDispatcher {
      */
     private calculateTypingDuration(text: string): number {
         const baseDelay = text.length / this.CHARS_PER_SECOND;
-        const variation = baseDelay * 0.5
-        const randomFactor = (Math.random() * variation * 2) - variation;
+        const variation = baseDelay * 0.9
+        const randomFactor = (Math.random() * variation * 4) - variation;
 
-        return Math.round(baseDelay + randomFactor);
+        const calculatedDelay = Math.round(baseDelay + randomFactor);
+        return Math.max(60, calculatedDelay);
     }
 }
