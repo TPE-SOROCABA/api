@@ -64,6 +64,17 @@ export class WhatsAppRateLimiterService {
 
     async resetLimit(): Promise<void> {
         console.log("[RATE-LIMITER] Resetando contador e fechando circuito.");
+
+        // Randomize limit between 40 and 60
+        const newLimit = Math.floor(Math.random() * (60 - 40 + 1)) + 40;
+        console.log(`[RATE-LIMITER] Definindo novo limite aleatório: ${newLimit}`);
+
+        await prisma.systemSettings.upsert({
+            where: { key: WHATSAPP_DAILY_LIMIT_KEY },
+            update: { value: newLimit.toString() },
+            create: { key: WHATSAPP_DAILY_LIMIT_KEY, value: newLimit.toString() }
+        });
+
         await prisma.systemSettings.upsert({
             where: { key: WHATSAPP_SENT_COUNT_KEY },
             update: { value: "0" },
