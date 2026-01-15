@@ -3,10 +3,12 @@ import { SQSMessageDispatcher, QueueMessagePayload } from "../../services/SQSMes
 import { WhatsAppService } from "../../services/WhatsAppService";
 import { Z_APIWhatsAppAdapter } from "../../infra/adapter/Z_APIWhatsAppAdapter";
 import { ZApiStatusService, STATUS_CONNECTED } from "../../services/ZApiStatusService";
+import { WhatsAppRateLimiterService } from "../../services/WhatsAppRateLimiterService";
 
 const sqsDispatcher = new SQSMessageDispatcher();
 const whatsappService = new WhatsAppService(new Z_APIWhatsAppAdapter());
 const zApiStatusService = new ZApiStatusService();
+const rateLimiter = new WhatsAppRateLimiterService();
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -17,9 +19,11 @@ export const handler = async (event: SQSEvent) => {
 
         // 1. Verificação do Circuit Breaker (Z-API Status)
         const status = await zApiStatusService.getStatus();
+        const isRateLimited = await rateLimiter.isLimitReached();
 
-        if (status !== STATUS_CONNECTED) {
-            console.warn(`[CIRCUIT-BREAKER] Circuito ABERTO (Status: ${status}). Mensagem para ${payload.phone} retida.`);
+        if (status !== STATUS_CONNECTED || isRateLimited) {
+            const reason = isRateLimited ? "Rate Limit Atingido" : `Z-API Status: ${status}`;
+            console.warn(`[CIRCUIT-BREAKER] Circuito ABERTO (${reason}). Mensagem para ${payload.phone} retida.`);
             if (!payload.scheduledAt) {
                 // Define um scheduledAt inicial se não existir
                 console.log(`[CIRCUIT-BREAKER] Definindo scheduledAt inicial para mensagem de ${payload.phone}.`);
@@ -80,6 +84,7 @@ export const handler = async (event: SQSEvent) => {
                 });
             }
             console.log(`[SQS-WHATSAPP-HANDLER] Sucesso no envio para ${payload.phone}`);
+            await rateLimiter.incrementSentCount();
         } catch (error: any) {
             const status = error.status || 500;
             console.error(`[SQS-WHATSAPP-HANDLER] Erro ao enviar para ${payload.phone} (Status: ${status}):`, error.message);
