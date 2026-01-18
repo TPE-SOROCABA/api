@@ -17,7 +17,7 @@ export type QueueMessagePayload = {
 
 export class SQSMessageDispatcher {
     private sqs: SQS;
-    private readonly CHARS_PER_SECOND = 12.9; // Média humana de digitação
+    private readonly CHARS_PER_SECOND = 8.0; // Velocidade humana rápida (aprox. 100 WPM)
     private lastScheduledAt: number;
 
     constructor() {
@@ -78,11 +78,11 @@ export class SQSMessageDispatcher {
      */
     public calculateTypingDuration(text: string): number {
         const baseDelay = text.length / this.CHARS_PER_SECOND;
-        const variation = baseDelay * 0.9
-        const randomFactor = (Math.random() * variation * 4) - variation;
+        const variation = baseDelay * 0.5; // 50% de variação para mais ou para menos
+        const randomFactor = (Math.random() * variation * 2) - variation;
 
         const calculatedDelay = Math.round(baseDelay + randomFactor);
-        return Math.max(60, calculatedDelay);
+        return Math.max(15, calculatedDelay);
     }
 
     async receiveMessagesFromDLQ(maxMessages: number = 10) {
