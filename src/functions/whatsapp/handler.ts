@@ -5,10 +5,10 @@ import { Z_APIWhatsAppAdapter } from "../../infra/adapter/Z_APIWhatsAppAdapter";
 import { ZApiStatusService, STATUS_CONNECTED } from "../../services/ZApiStatusService";
 import { WhatsAppRateLimiterService } from "../../services/WhatsAppRateLimiterService";
 
-const sqsDispatcher = new SQSMessageDispatcher();
 const whatsappService = new WhatsAppService(new Z_APIWhatsAppAdapter());
 const zApiStatusService = new ZApiStatusService();
 const rateLimiter = new WhatsAppRateLimiterService();
+const sqsDispatcher = new SQSMessageDispatcher();
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -23,26 +23,12 @@ export const handler = async (event: SQSEvent) => {
 
         if (status !== STATUS_CONNECTED || isRateLimited) {
             const reason = isRateLimited ? "Rate Limit Atingido" : `Z-API Status: ${status}`;
-            console.warn(`[CIRCUIT-BREAKER] Circuito ABERTO (${reason}). Mensagem para ${payload.phone} retida.`);
-            if (!payload.scheduledAt) {
-                // Define um scheduledAt inicial se não existir
-                console.log(`[CIRCUIT-BREAKER] Definindo scheduledAt inicial para mensagem de ${payload.phone}.`);
-                payload.scheduledAt = now;
-            }
-            // Lógica de Snooze Cíclico (10 minutos)
-            const snoozeMinutes = 10;
-            const snoozeSeconds = snoozeMinutes * 60;
-            const nextAttempt = payload.scheduledAt + snoozeSeconds;
+            console.warn(`[CIRCUIT-BREAKER] Circuito ABERTO (${reason}). Mensagem para ${payload.phone} movendo para DLQ.`);
 
-            // Atualiza o payload para manter rastreabilidade
-            payload.scheduledAt = nextAttempt;
+            // Move diretamente para a DLQ para aguardar o Redrive (Cron)
+            await sqsDispatcher.dispatchToDLQ(payload);
 
-            console.log(`[CIRCUIT-BREAKER] Re-enfileirando mensagem para ${nextAttempt} (Delay: ${snoozeSeconds}s).`);
-
-            // Reenvia para o SQS. O Dispatcher calculará o DelaySeconds baseado no scheduledAt
-            await sqsDispatcher.dispatch(payload);
-
-            // Processamento encerrado para esta mensagem (ACK implícito ao terminar sem erro)
+            // Processamento encerrado para esta mensagem
             continue;
         }
 

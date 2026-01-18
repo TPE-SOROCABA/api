@@ -37,6 +37,7 @@ provider:
       Action:
         - "sqs:SendMessage"
         - "sqs:ReceiveMessage"
+        - "sqs:DeleteMessage"
         - "sqs:GetQueueAttributes"
       Resource: 
       - "arn:aws:sqs:us-east-1:533267195262:api-tpe-digital-dev-designation-queue.fifo"
@@ -71,7 +72,7 @@ resources:
         VisibilityTimeout: 300
         RedrivePolicy:
           deadLetterTargetArn: !GetAtt WhatsAppMessageQueueDLQ.Arn
-          maxReceiveCount: 1000
+          maxReceiveCount: 3
     WhatsAppMessageQueueDLQ:
       Type: AWS::SQS::Queue
       Properties:

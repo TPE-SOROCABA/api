@@ -62,3 +62,9 @@ resetWhatsAppRateLimit:
   description: Resetar contador de mensagens e fechar circuito de rate limit
   events:
     - schedule: cron(0 0,5 ? * * *)
+
+whatsappRedriveCron:
+  handler: src/functions/whatsapp/dlqRedrive.handler
+  description: Recupera mensagens da DLQ quando o circuito do WhatsApp está saudável
+  events:
+    - schedule: rate(30 minutes)

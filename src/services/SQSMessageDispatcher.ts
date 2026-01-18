@@ -18,6 +18,7 @@ export type QueueMessagePayload = {
 export class SQSMessageDispatcher {
     private sqs: SQS;
     private readonly CHARS_PER_SECOND = 12.9; // Média humana de digitação
+    private lastScheduledAt: number;
 
     constructor() {
         this.sqs = new SQS(
@@ -25,13 +26,17 @@ export class SQSMessageDispatcher {
                 endpoint: "http://0.0.0.0:9324"
             })
         );
+        this.lastScheduledAt = Math.floor(Date.now() / 1000);
     }
 
     async dispatch(payload: QueueMessagePayload) {
         const now = Math.floor(Date.now() / 1000);
 
         if (!payload.scheduledAt) {
-            payload.scheduledAt = now + this.calculateTypingDuration(payload.message);
+            const typingDuration = this.calculateTypingDuration(payload.message);
+            // Garante que o agendamento seja incremental baseada no último agendado ou no agora
+            this.lastScheduledAt = Math.max(this.lastScheduledAt, now) + typingDuration;
+            payload.scheduledAt = this.lastScheduledAt;
         }
 
         const initialDelay = payload.scheduledAt - now;
@@ -61,30 +66,43 @@ export class SQSMessageDispatcher {
     }
 
     async dispatchBatch(messages: Omit<QueueMessagePayload, 'scheduledAt'>[]) {
-        let lastScheduledAt = Math.floor(Date.now() / 1000);
-
         console.log(`[SQS-DISPATCHER] Processando lote de ${messages.length} mensagens para distribuição humana.`);
 
         for (const message of messages) {
-            const typingDuration = this.calculateTypingDuration(message.message);
-            lastScheduledAt += typingDuration;
-
-            await this.dispatch({
-                ...message,
-                scheduledAt: lastScheduledAt
-            });
+            await this.dispatch(message as QueueMessagePayload);
         }
     }
 
     /**
      * Calcula o tempo que um humano levaria para digitar a mensagem em segundos
      */
-    private calculateTypingDuration(text: string): number {
+    public calculateTypingDuration(text: string): number {
         const baseDelay = text.length / this.CHARS_PER_SECOND;
         const variation = baseDelay * 0.9
         const randomFactor = (Math.random() * variation * 4) - variation;
 
         const calculatedDelay = Math.round(baseDelay + randomFactor);
         return Math.max(60, calculatedDelay);
+    }
+
+    async receiveMessagesFromDLQ(maxMessages: number = 10) {
+        const response = await this.sqs
+            .receiveMessage({
+                QueueUrl: process.env.WHATSAPP_MESSAGE_DLQ!,
+                MaxNumberOfMessages: Math.min(maxMessages, 10), // SQS limit is 10
+                WaitTimeSeconds: 2,
+            })
+            .promise();
+
+        return response.Messages || [];
+    }
+
+    async deleteMessageFromDLQ(receiptHandle: string) {
+        await this.sqs
+            .deleteMessage({
+                QueueUrl: process.env.WHATSAPP_MESSAGE_DLQ!,
+                ReceiptHandle: receiptHandle,
+            })
+            .promise();
     }
 }

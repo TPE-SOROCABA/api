@@ -36,6 +36,7 @@ provider:
       Action:
         - "sqs:SendMessage"
         - "sqs:ReceiveMessage"
+        - "sqs:DeleteMessage"
         - "sqs:GetQueueAttributes"
       Resource: 
         - "arn:aws:sqs:us-east-1:533267195262:api-tpe-digital-hmg-designation-queue.fifo"
