@@ -1,0 +1,17 @@
+renderLoginPage:
+    handler: src/functions/public/renderLoginPage.handler
+    description: Renderiza a página de login simplificada para designações
+    events:
+      - http:
+          path: public/start/{designationId}
+          method: GET
+          cors: true
+
+lookupParticipant:
+    handler: src/functions/public/lookupParticipant.handler
+    description: Busca um participante em uma designação pelo telefone
+    events:
+      - http:
+          path: public/start/{designationId}/lookup
+          method: POST
+          cors: true

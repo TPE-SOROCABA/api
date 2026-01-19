@@ -53,6 +53,7 @@ custom:
 functions: 
   - ${file(./resources/infra.yml)}
   - ${file(./resources/auth.yml)}
+  - ${file(./resources/public.yml)}
   - ${file(./resources/groups.yml)}
   - ${file(./resources/designations.yml)}
   - ${file(./resources/participants.yml)}
