@@ -70,8 +70,8 @@ export async function SendAssignmentDesignation(designation: Designation) {
     });
   }
 
-  if (messages.length > 0) {
-    await sqsDispatcher.dispatchBatch(messages);
-    console.log(`[ENVIO-DESIGNACAO] ${messages.length} mensagens enviadas para processamento assíncrono.`);
-  }
+  // if (messages.length > 0) {
+  //   await sqsDispatcher.dispatchBatch(messages);
+  //   console.log(`[ENVIO-DESIGNACAO] ${messages.length} mensagens enviadas para processamento assíncrono.`);
+  // }
 }

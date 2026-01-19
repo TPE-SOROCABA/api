@@ -25,11 +25,10 @@ export async function TransactionDesignationInProgress(designationInProgress: De
 
   const participants = designation.participants.map((participant) => participant);
   const participantesAssignments = designation.assignments.map((assignment) => assignment.participants.map((participant) => participant)).flat();
-  const participantsNotify = [...participants, ...participantesAssignments];
-  console.log(`[TRANSACAO-DESIGNACAO] Notificando ${participantsNotify.length} participantes sobre conclusão via SQS.`);
+  const participantsNotify = [...participants, ...participantesAssignments].filter((participant) => participant.incident_history);
+  console.log(`[TRANSACAO-DESIGNACAO] Notificando ${participantsNotify.length} participantes sobre conclusão (apenas com incidência) via SQS.`);
 
   const messages = participantsNotify.map((participant) => {
-    const isCoordinatorOrCaptain = participant.profile === ParticipantProfile.COORDINATOR || participant.profile === ParticipantProfile.CAPTAIN;
 
     const message = messageGenerator.generate(MessageType.COMPLETED_NOTIFICATION, {
       recipientName: participant.name,
