@@ -5,7 +5,7 @@ export const WHATSAPP_RATE_LIMIT_STATUS_KEY = "WHATSAPP_RATE_LIMIT_STATUS";
 export const WHATSAPP_DAILY_LIMIT_KEY = "WHATSAPP_DAILY_LIMIT";
 export const STATUS_OPEN = "OPEN";
 export const STATUS_CLOSED = "CLOSED";
-const DEFAULT_DAILY_LIMIT = 50;
+const DEFAULT_DAILY_LIMIT = 80;
 
 export class WhatsAppRateLimiterService {
     async getStatus(): Promise<string> {
@@ -65,8 +65,8 @@ export class WhatsAppRateLimiterService {
     async resetLimit(): Promise<void> {
         console.log("[RATE-LIMITER] Resetando contador e fechando circuito.");
 
-        // Randomize limit between 40 and 60
-        const newLimit = Math.floor(Math.random() * (60 - 40 + 1)) + 40;
+        // Randomize limit between 80 and 100
+        const newLimit = Math.floor(Math.random() * (100 - 80 + 1)) + 80;
         console.log(`[RATE-LIMITER] Definindo novo limite aleatório: ${newLimit}`);
 
         await prisma.systemSettings.upsert({
