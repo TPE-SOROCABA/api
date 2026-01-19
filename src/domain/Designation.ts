@@ -215,6 +215,7 @@ export type Assignments = {
 export type Group = {
   id: string;
   name: string;
+  whatsappId?: string;
   type: GroupType;
   config: {
     endHour: string;

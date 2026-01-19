@@ -1,7 +1,10 @@
 export enum MessageType {
   INVITATION = "INVITATION",
+  INVITATION_GROUP = "INVITATION_GROUP",
   CANCELLATION = "CANCELLATION",
+  CANCELLATION_GROUP = "CANCELLATION_GROUP",
   OTP = "OTP",
+  OTP_SIMPLE = "OTP_SIMPLE",
   COORDINATOR_ALERT = "COORDINATOR_ALERT",
   COMPLETED_NOTIFICATION = "COMPLETED_NOTIFICATION",
   ARCHIVE_NOTIFICATION = "ARCHIVE_NOTIFICATION",
@@ -30,15 +33,28 @@ export class MessageGenerator {
       "[GREETING] [NAME]!\n\nPassando para avisar que confirmamos sua escala:\n[DETAILS].\n\n[CLOSING]",
       "[GREETING] [NAME],\n\nFicamos felizes em contar com sua ajuda para:\n[DETAILS].\n\n[CLOSING]",
     ],
+    [MessageType.INVITATION_GROUP]: [
+      "Olá equipe! A designação para *[DETAILS]* já está disponível. Confiram os detalhes no link abaixo.",
+      "Nova designação gerada para o dia *[DETAILS]*. Por favor, verifiquem suas atribuições.",
+      "Atenção: A escala para *[DETAILS]* foi fechada. Acessem o link para ver quem está designado."
+    ],
     [MessageType.CANCELLATION]: [
       "[GREETING] [NAME],\n\nPrecisamos cancelar sua designação desta vez:\n[DETAILS].\n\n[CLOSING]",
       "[GREETING] [NAME],\n\nHouve um imprevisto e sua participação não será mais necessária em:\n[DETAILS].\n\n[CLOSING]",
       "[GREETING] [NAME],\n\nAvisamos que a atividade a seguir foi cancelada:\n[DETAILS].\n\n[CLOSING]",
     ],
+    [MessageType.CANCELLATION_GROUP]: [
+      "Aviso: A designação do dia *[DETAILS]* foi cancelada. Desconsiderem a escala anterior.",
+      "Informamos que não haverá mais a atividade programada para *[DETAILS]*. Designação cancelada.",
+      "Atualização: O carrinho/ponto do dia *[DETAILS]* foi cancelado."
+    ],
     [MessageType.OTP]: [
       "[GREETING] [NAME],\n\nRecebemos uma solicitação para redefinir sua senha.\nSeu código de verificação é: *[CODE]*.\n\n[CLOSING]",
       "[GREETING] [NAME],\n\nPara criar uma nova senha, utilize o código abaixo:\n*[CODE]*\n\n[CLOSING]",
       "[GREETING] [NAME],\n\nSeu código para recuperação de senha é *[CODE]*.\nEle é válido por 5 minutos.\n\n[CLOSING]",
+    ],
+    [MessageType.OTP_SIMPLE]: [
+      "Olá [NAME], seu código de verificação TPE Digital é:",
     ],
     [MessageType.COORDINATOR_ALERT]: [
       "[GREETING] [NAME],\n\nAlerta: A designação [DETAILS] foi aberta agora e inicia em menos de 2h.\nVerifique se os participantes estão avisados.\n\n[CLOSING]",

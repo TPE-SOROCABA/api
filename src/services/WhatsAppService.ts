@@ -1,4 +1,4 @@
-import { WhatsAppAdapterSendMessage, WhatsAppAdapter, WhatsAppAdapterSendButtonMessage } from "../interface/WhatsAppAdapter";
+import { WhatsAppAdapterSendMessage, WhatsAppAdapter, WhatsAppAdapterSendButtonMessage, WhatsAppAdapterSendButtonOTP } from "../interface/WhatsAppAdapter";
 
 export class WhatsAppService {
   constructor(readonly whatsAppAdapter: WhatsAppAdapter) { }
@@ -21,5 +21,15 @@ export class WhatsAppService {
       return;
     }
     await this.whatsAppAdapter.sendButtonMessage(data);
+  }
+
+  async sendButtonOTP(data: WhatsAppAdapterSendButtonOTP) {
+    if (data.phone.includes("***")) {
+      console.log(`Simulating WhatsApp OTP sending in dev mode`);
+      console.log(data);
+      await new Promise((resolve) => setTimeout(resolve, Math.floor(Math.random() * 300)));
+      return;
+    }
+    await this.whatsAppAdapter.sendButtonOTP(data);
   }
 }

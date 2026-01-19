@@ -59,6 +59,13 @@ export const handler = async (event: SQSEvent) => {
                     buttonActions: payload.buttonActions || [],
                     delayMessage: 0 // Já aplicamos o delay humano no SQS/Sleep
                 });
+            } else if (payload.type === "otp" && payload.code) {
+                await whatsappService.sendButtonOTP({
+                    phone: payload.phone,
+                    message: payload.message,
+                    code: payload.code,
+                    delayMessage: 0
+                });
             } else {
                 await whatsappService.sendMessage({
                     phone: payload.phone,

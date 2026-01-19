@@ -48,6 +48,7 @@ export interface Point {
 export interface Group {
   id: string;
   name: string;
+  whatsappId?: string;
   type: GroupType;
   config_max: number;
   config_min: number;

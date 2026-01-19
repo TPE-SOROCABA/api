@@ -55,19 +55,17 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
       code
     })
 
-    const message = messageGenerator.generate(MessageType.OTP, {
-      recipientName: participant.name,
-      code: String(code)
+    const message = messageGenerator.generate(MessageType.OTP_SIMPLE, {
+      recipientName: participant.name.split(" ")[0]
     });
 
     console.log(`[AUTH-RECOVER] Enfileirando mensagem OTP via SQS.`);
     await sqsDispatcher.dispatch({
       phone: participant.phone,
       message,
+      code: String(code),
       title: "*TPE Digital - Recuperação de senha*",
-      type: "text",
-      linkUrl: `${process.env.FRONTEND_URL}/forgot-password/check-number?code=${payload}`,
-      linkDescription: "Clique aqui para acessar a recuperação de senha",
+      type: "otp",
     });
 
     return responseHandler.success({ message: "Código de recuperação enviado com sucesso" });

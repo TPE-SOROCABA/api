@@ -10,8 +10,9 @@ export type QueueMessagePayload = {
     footer?: string;
     linkUrl?: string;
     linkDescription?: string;
-    type: "text" | "button";
+    type: "text" | "button" | "otp";
     buttonActions?: any[];
+    code?: string;
     scheduledAt?: number; // Unix timestamp
 };
 

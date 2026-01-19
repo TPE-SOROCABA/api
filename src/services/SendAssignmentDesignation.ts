@@ -23,55 +23,29 @@ export async function SendAssignmentDesignation(designation: Designation) {
     throw new BadRequestException(`Designação não pode ser enviada, pois está ${DesignationStatusPT_BR[designation.status]}`);
   }
 
-  const participants: Participant[] = [];
-  for (const assignment of designation.assignments) {
-    if (assignment.participants.length === 0) continue;
-    if (!assignment.point.status) continue;
-
-    for (const participant of assignment.participants) {
-      participants.push(participant);
-    }
+  if (!designation.group.whatsappId) {
+    console.log(`[ENVIO-DESIGNACAO] Grupo ${designation.group.name} sem WhatsApp ID. Nenhuma notificação será enviada.`);
+    return;
   }
 
-  participants.push(...designation.participants.filter((participant) => participant.profile !== ParticipantProfile.PARTICIPANT && participant?.incident_history?.status !== IncidentStatus.OPEN));
-  console.log(`[ENVIO-DESIGNACAO] Preparando notificações para ${participants.length} participantes via SQS.`);
+  console.log(`[ENVIO-DESIGNACAO] Grupo ${designation.group.name} possui WhatsApp ID: ${designation.group.whatsappId}. Preparando envio único.`);
 
-  const messages: Omit<QueueMessagePayload, 'scheduledAt'>[] = [];
+  const day = Weekday_PT_BR[designation.group.config.weekday];
 
-  for (const participant of participants) {
-    if (participant.phone.includes("FAKE")) {
-      continue;
-    }
+  const message = messageGenerator.generate(MessageType.INVITATION_GROUP, {
+    recipientName: "Equipe",
+    details: day
+  });
 
-    const message = messageGenerator.generate(MessageType.INVITATION, {
-      recipientName: participant.name,
-      details: `${Weekday_PT_BR[designation.group.config.weekday]}, das *${designation.group.config.startHour} às ${designation.group.config.endHour}*`
-    });
+  const payload: QueueMessagePayload = {
+    phone: designation.group.whatsappId,
+    message,
+    type: "text",
+    linkUrl: `${process.env.FRONTEND_URL}/designacao/${designation.id}`,
+    linkDescription: "Ver Designação Completa",
+    title: `${designation.group.name} - Designação`
+  };
 
-    messages.push({
-      phone: participant.phone,
-      message,
-      title: `${designation.group.name} - Designação`,
-      footer: "TPE Digital",
-      type: "button",
-      buttonActions: [
-        {
-          id: "1",
-          type: "REPLY",
-          label: "Confirmar Presença"
-        },
-        {
-          id: "2",
-          type: "URL",
-          url: `${process.env.FRONTEND_URL}/designacao/${designation.id}/${participant.id}`,
-          label: "Ver Detalhes"
-        }
-      ]
-    });
-  }
-
-  // if (messages.length > 0) {
-  //   await sqsDispatcher.dispatchBatch(messages);
-  //   console.log(`[ENVIO-DESIGNACAO] ${messages.length} mensagens enviadas para processamento assíncrono.`);
-  // }
+  await sqsDispatcher.dispatch(payload);
+  console.log(`[ENVIO-DESIGNACAO] Notificação de grupo enviada para processamento.`);
 }

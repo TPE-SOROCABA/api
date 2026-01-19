@@ -24,7 +24,16 @@ export type WhatsAppAdapterSendButtonMessage = {
     delayMessage?: number;
 }
 
+export type WhatsAppAdapterSendButtonOTP = {
+    phone: string;
+    message: string;
+    code: string;
+    buttonText?: string;
+    delayMessage?: number;
+}
+
 export interface WhatsAppAdapter {
     sendMessage: (data: WhatsAppAdapterSendMessage) => Promise<void>;
     sendButtonMessage: (data: WhatsAppAdapterSendButtonMessage) => Promise<void>;
+    sendButtonOTP: (data: WhatsAppAdapterSendButtonOTP) => Promise<void>;
 }

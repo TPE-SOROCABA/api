@@ -86,6 +86,7 @@ export abstract class DesignationMapper {
         },
         id: designationModel?.group.id,
         name: designationModel?.group.name,
+        whatsappId: designationModel?.group.whatsappId,
         type: designationModel.group.type,
       },
       designationModel.status as DesignationStatus,

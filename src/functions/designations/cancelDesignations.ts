@@ -28,38 +28,23 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     designation.cancelDesignation(body.justification);
     await sendUpdateDesignation.execute(designation);
 
-    const messages: Omit<QueueMessagePayload, 'scheduledAt'>[] = [];
-    for (const assignment of designation.assignments) {
-      for (const participant of assignment.participants) {
-        if (participant.phone.includes("FAKE")) {
-          continue;
-        }
+    if (designation.group.whatsappId) {
+      console.log(`[ENVIO-DESIGNACAO] Grupo ${designation.group.name} possui WhatsApp ID. Enviando cancelamento.`);
+      const day = Weekday_PT_BR[designation.group.config.weekday];
 
-        const message = messageGenerator.generate(MessageType.CANCELLATION, {
-          recipientName: participant.name,
-          details: `${Weekday_PT_BR[designation.group.config.weekday]}, das *${designation.group.config.startHour} às ${designation.group.config.endHour}*`
-        });
+      const message = messageGenerator.generate(MessageType.CANCELLATION_GROUP, {
+        recipientName: designation.group.name,
+        details: day
+      });
 
-        messages.push({
-          phone: participant.phone,
-          message,
-          title: `${designation.group.name} - Designação Cancelada`,
-          footer: "TPE Digital",
-          type: "button",
-          buttonActions: [
-            {
-              id: "1",
-              type: "REPLY",
-              label: "Entendido"
-            }
-          ]
-        });
-      }
-    }
-
-    if (messages.length > 0) {
-      console.log(`[ENVIO-DESIGNACAO] Enfileirando ${messages.length} notificações de cancelamento via SQS.`);
-      await sqsDispatcher.dispatchBatch(messages);
+      await sqsDispatcher.dispatch({
+        phone: designation.group.whatsappId,
+        message,
+        type: "text",
+        title: `${designation.group.name} - Cancelamento`
+      });
+    } else {
+      console.log(`[ENVIO-DESIGNACAO] Grupo ${designation.group.name} sem WhatsApp ID. Cancelamento silencioso (sem notificação).`);
     }
 
     return responseHandler.success(designation.toJson());

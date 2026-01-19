@@ -139,6 +139,7 @@ model Groups {
   config_start_hour    String                 @map("config_start_hour")
   config_weekday       Weekday                @map("config_weekday")
   coordinatorId        String?                @map("coordinator_id")
+  whatsappId           String?                @map("whatsapp_id")
   additional_info      Json?
   status               GroupStatus            @default(OPEN)
   type                 GroupType              @default(MAIN)
