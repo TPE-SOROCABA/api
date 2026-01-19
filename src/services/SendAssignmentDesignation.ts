@@ -32,17 +32,32 @@ export async function SendAssignmentDesignation(designation: Designation) {
 
   const day = Weekday_PT_BR[designation.group.config.weekday];
 
+  const loginLink = `${process.env.API_URL}/public/start/${designation.id}`;
+
   const message = messageGenerator.generate(MessageType.INVITATION_GROUP, {
     recipientName: "Equipe",
-    details: day
+    details: day,
+    loginLink
   });
 
   const payload: QueueMessagePayload = {
     phone: designation.group.whatsappId,
     message,
-    type: "text",
-    linkUrl: `${process.env.FRONTEND_URL}/designacao/${designation.id}`,
-    linkDescription: "Ver Designação Completa",
+    type: "button",
+    buttonActions: [
+      {
+        id: "general_link",
+        type: "URL",
+        url: `${process.env.FRONTEND_URL}/designacao/${designation.id}`,
+        label: "Designação Geral"
+      },
+      {
+        id: "my_designation",
+        type: "URL",
+        url: loginLink,
+        label: "Minha Designação"
+      }
+    ],
     title: `${designation.group.name} - Designação`
   };
 
