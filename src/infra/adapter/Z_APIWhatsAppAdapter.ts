@@ -7,9 +7,6 @@ type Z_ApiInput = {
   phone: string;
   message: string;
   title: string;
-  image?: string;
-  linkUrl?: string;
-  linkDescription?: string;
   delayMessage?: number;
 };
 
@@ -21,14 +18,11 @@ export class Z_APIWhatsAppAdapter implements WhatsAppAdapter {
     return "55" + phone;
   }
 
-  async sendMessage({ phone, message, linkUrl, title, linkDescription, delayMessage }: WhatsAppAdapterSendMessage) {
+  async sendMessage({ phone, message, title, delayMessage }: WhatsAppAdapterSendMessage) {
     const data: any = {
       message: message,
       phone: this.formatPhone(phone),
-      linkUrl,
-      image: `${process.env.FRONTEND_URL}/assets/logo-Uk93spzV.png`,
       title,
-      linkDescription,
       delayMessage: delayMessage || Math.floor(Math.random() * 8) + 3 // Aleatório entre 3 e 10 segundos
     };
 

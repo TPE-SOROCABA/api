@@ -73,8 +73,6 @@ export const handler = async (event: SQSEvent) => {
                     phone: payload.phone,
                     message: payload.message,
                     title: payload.title || "TPE Digital",
-                    linkUrl: payload.linkUrl,
-                    linkDescription: payload.linkDescription,
                     delayMessage: 0
                 });
             }
