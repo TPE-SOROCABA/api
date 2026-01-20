@@ -40,7 +40,7 @@ export class MessageGenerator {
       "📢 TPE Digital | Código de Verificação\n\n[GREETING], [NAME]! 😊\n\nRecebemos uma solicitação para acessar sua conta ou redefinir sua senha.\n\n👉 Seu código de verificação é: *[CODE]*\n\nEste código é válido por 5 minutos. Se você não solicitou este código, por favor, desconsidere esta mensagem.\n\n[CLOSING]"
     ],
     [MessageType.OTP_SIMPLE]: [
-      "📢 TPE Digital | Código de Verificação\n\n[GREETING], [NAME]! 😊\n\nSeu código de verificação é: *[CODE]*\n\n[CLOSING]"
+      "📢 TPE Digital | Código de Verificação\n\n[GREETING], [NAME]! 😊\n\nSegue o seu código de verificação *[CODE]*\n\n[CLOSING]"
     ],
     [MessageType.COORDINATOR_ALERT]: [
       "📢 TPE Digital | Alerta de Designação Próxima\n\n[GREETING], [NAME]! ⚠️\n\nAtenção: A designação *[DETAILS]* inicia em menos de 2 horas.\n\nPor favor, verifique se todos os participantes já estão cientes e confirmados.\n\n👉 Acesse o painel do coordenador para acompanhar.\n\n[CLOSING]"

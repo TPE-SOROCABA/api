@@ -47,6 +47,8 @@ export const handler = async (event: SQSEvent) => {
             }
         }
 
+        console.log(`[SQS-WHATSAPP-HANDLER] Mensagem pronta ${JSON.stringify(payload, null, 2)}.`);
+
         // Caso total delay atingido ou sleep finalizado, realizar o envio real
         try {
             console.log(`[SQS-WHATSAPP-HANDLER] Enviando mensagem (Tipo: ${payload.type}) para ${payload.phone}.`);
