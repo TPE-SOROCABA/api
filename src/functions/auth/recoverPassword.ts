@@ -56,7 +56,8 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
     })
 
     const message = messageGenerator.generate(MessageType.OTP_SIMPLE, {
-      recipientName: participant.name.split(" ")[0]
+      recipientName: participant.name.split(" ")[0],
+      code: String(code)
     });
 
     console.log(`[AUTH-RECOVER] Enfileirando mensagem OTP via SQS.`);

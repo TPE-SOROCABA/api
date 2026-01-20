@@ -30,11 +30,10 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
 
     if (designation.group.whatsappId) {
       console.log(`[ENVIO-DESIGNACAO] Grupo ${designation.group.name} possui WhatsApp ID. Enviando cancelamento.`);
-      const day = Weekday_PT_BR[designation.group.config.weekday];
 
       const message = messageGenerator.generate(MessageType.CANCELLATION_GROUP, {
         recipientName: designation.group.name,
-        details: day
+        details: `${Weekday_PT_BR[designation.group.config.weekday]}, das *${designation.group.config.startHour} às ${designation.group.config.endHour}*`
       });
 
       await sqsDispatcher.dispatch({

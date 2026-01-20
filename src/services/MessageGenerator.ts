@@ -19,56 +19,37 @@ export interface MessageData {
 
 export class MessageGenerator {
   private variations = {
-    greetings: ["Olá", "Oi", "Tudo bem?", "Oi!"],
-    closings: [
-      "Um abraço!",
-      "Até mais.",
-      "Contamos com seu apoio.",
-      "Equipe TPE.",
-    ],
+    greetings: ["Olá", "Oi", "Oi!", "Olá!"],
+    closings: ["Equipe TPE Digital", "Atenciosamente, TPE Digital", "Obrigado, TPE Digital"],
   };
 
   private templates: Record<MessageType, string[]> = {
     [MessageType.INVITATION]: [
-      "[GREETING] [NAME],\n\nVocê recebeu uma nova designação:\n[DETAILS].\n\n[CLOSING]",
-      "[GREETING] [NAME]!\n\nPassando para avisar que confirmamos sua escala:\n[DETAILS].\n\n[CLOSING]",
-      "[GREETING] [NAME],\n\nFicamos felizes em contar com sua ajuda para:\n[DETAILS].\n\n[CLOSING]",
+      "📢 TPE Digital | Nova Designação\n\n[GREETING], [NAME]! 😊\n\nVocê recebeu uma nova designação:\n*[DETAILS]*\n\n👉 Para consultar os detalhes e confirmar sua presença, acesse o TPE Digital.\n\nEm caso de dúvidas técnicas ou necessidade de atualização de dados, entre em contato com o SAC TPE Digital.\n\n[CLOSING]"
     ],
     [MessageType.INVITATION_GROUP]: [
-      "A designação para *[DETAILS]* já está disponível. Confiram os detalhes nos botões abaixo."
+      "📢 TPE Digital | Designação disponível\n\n[GREETING]! 😊\n\nA designação de [DETAILS] já está disponível no TPE Digital.\n\n👉 Para consultar os detalhes, utilize um dos botões abaixo:\n• Designação Geral – visão completa\n• Minha Designação – sua designação individual\n\nEm caso de dúvidas técnicas ou necessidade de atualização de dados, entre em contato com o SAC TPE Digital.\n\n[CLOSING]"
     ],
     [MessageType.CANCELLATION]: [
-      "[GREETING] [NAME],\n\nPrecisamos cancelar sua designação desta vez:\n[DETAILS].\n\n[CLOSING]",
-      "[GREETING] [NAME],\n\nHouve um imprevisto e sua participação não será mais necessária em:\n[DETAILS].\n\n[CLOSING]",
-      "[GREETING] [NAME],\n\nAvisamos que a atividade a seguir foi cancelada:\n[DETAILS].\n\n[CLOSING]",
+      "📢 TPE Digital | Designação Cancelada\n\n[GREETING], [NAME]!\n\nInformamos que sua designação para *[DETAILS]* foi cancelada.\n\nSentimos pelo imprevisto e contamos com sua ajuda em uma próxima oportunidade.\n\nEm caso de dúvidas técnicas ou necessidade de atualização de dados, entre em contato com o SAC TPE Digital.\n\n[CLOSING]"
     ],
     [MessageType.CANCELLATION_GROUP]: [
-      "Aviso: A designação do dia *[DETAILS]* foi cancelada. Desconsiderem a escala anterior.",
-      "Informamos que não haverá mais a atividade programada para *[DETAILS]*. Designação cancelada.",
-      "Atualização: O carrinho/ponto do dia *[DETAILS]* foi cancelado."
+      "📢 TPE Digital | Aviso de Cancelamento\n\n[GREETING]! 😊\n\nInformamos que a designação para *[DETAILS]* foi cancelada. Favor desconsiderar a escala anterior.\n\nEm caso de dúvidas técnicas ou necessidade de atualização de dados, entre em contato com o SAC TPE Digital.\n\n[CLOSING]"
     ],
     [MessageType.OTP]: [
-      "[GREETING] [NAME],\n\nRecebemos uma solicitação para redefinir sua senha.\nSeu código de verificação é: *[CODE]*.\n\n[CLOSING]",
-      "[GREETING] [NAME],\n\nPara criar uma nova senha, utilize o código abaixo:\n*[CODE]*\n\n[CLOSING]",
-      "[GREETING] [NAME],\n\nSeu código para recuperação de senha é *[CODE]*.\nEle é válido por 5 minutos.\n\n[CLOSING]",
+      "📢 TPE Digital | Código de Verificação\n\n[GREETING], [NAME]! 😊\n\nRecebemos uma solicitação para acessar sua conta ou redefinir sua senha.\n\n👉 Seu código de verificação é: *[CODE]*\n\nEste código é válido por 5 minutos. Se você não solicitou este código, por favor, desconsidere esta mensagem.\n\n[CLOSING]"
     ],
     [MessageType.OTP_SIMPLE]: [
-      "Olá [NAME], seu código de verificação TPE Digital é:",
+      "📢 TPE Digital | Código de Verificação\n\n[GREETING], [NAME]! 😊\n\nSeu código de verificação é: *[CODE]*\n\n[CLOSING]"
     ],
     [MessageType.COORDINATOR_ALERT]: [
-      "[GREETING] [NAME],\n\nAlerta: A designação [DETAILS] foi aberta agora e inicia em menos de 2h.\nVerifique se os participantes estão avisados.\n\n[CLOSING]",
-      "[GREETING] [NAME]!\n\nAviso de urgência:\n[DETAILS] foi criada recentemente e começa logo.\n\n[CLOSING]",
-      "[GREETING] [NAME],\n\nAtenção para designação de última hora:\n[DETAILS].\n\n[CLOSING]",
+      "📢 TPE Digital | Alerta de Designação Próxima\n\n[GREETING], [NAME]! ⚠️\n\nAtenção: A designação *[DETAILS]* inicia em menos de 2 horas.\n\nPor favor, verifique se todos os participantes já estão cientes e confirmados.\n\n👉 Acesse o painel do coordenador para acompanhar.\n\n[CLOSING]"
     ],
     [MessageType.COMPLETED_NOTIFICATION]: [
-      "[GREETING] [NAME]!\n\nA designação [DETAILS] foi CONCLUÍDA.\nLembre-se de conferir os detalhes em até 48h.\n\n[CLOSING]",
-      "[GREETING] [NAME],\n\nO turno em [DETAILS] terminou.\nSe houve ausências, ajuste na designação em até 48h.\n\n[CLOSING]",
-      "[GREETING] [NAME],\n\nFinalizamos a atividade [DETAILS].\nA designação ficará disponível para ajustes por 48h.\n\n[CLOSING]",
+      "📢 TPE Digital | Designação Concluída\n\n[GREETING], [NAME]! 😊\n\nA designação *[DETAILS]* foi finalizada com sucesso.\n\n👉 Lembre-se de realizar os ajustes necessários e conferir os detalhes no sistema em até 48 horas.\n\n[CLOSING]"
     ],
     [MessageType.ARCHIVE_NOTIFICATION]: [
-      "[GREETING] [NAME],\n\nA designação de [DETAILS] foi fechada/arquivada.\nNovas designações já podem ser criadas.\n\n[CLOSING]",
-      "[GREETING] [NAME]!\n\nAtividade [DETAILS] encerrada no sistema.\nNão é mais possível editar a designação.\n\n[CLOSING]",
-      "[GREETING] [NAME],\n\nInformamos que [DETAILS] foi arquivada com sucesso.\n\n[CLOSING]",
+      "📢 TPE Digital | Designação Arquivada\n\n[GREETING], [NAME]!\n\nA designação *[DETAILS]* foi arquivada e encerrada no sistema.\n\nA partir de agora, não é mais possível realizar edições nesta designação.\n\n[CLOSING]"
     ],
   };
 

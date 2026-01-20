@@ -30,11 +30,9 @@ export async function SendAssignmentDesignation(designation: Designation) {
 
   console.log(`[ENVIO-DESIGNACAO] Grupo ${designation.group.name} possui WhatsApp ID: ${designation.group.whatsappId}. Preparando envio único.`);
 
-  const day = Weekday_PT_BR[designation.group.config.weekday];
-
   const message = messageGenerator.generate(MessageType.INVITATION_GROUP, {
     recipientName: "Equipe",
-    details: day
+    details: `${Weekday_PT_BR[designation.group.config.weekday]}, das *${designation.group.config.startHour} às ${designation.group.config.endHour}*`
   });
 
   const frontendUrl = process.env.FRONTEND_URL || 'https://app.tpedigital.com.br';
