@@ -28,13 +28,13 @@ export class MessageGenerator {
       "📢 TPE Digital | Nova Designação\n\n[GREETING], [NAME]! 😊\n\nVocê recebeu uma nova designação:\n*[DETAILS]*\n\n👉 Para consultar os detalhes e confirmar sua presença, acesse o TPE Digital.\n\nEm caso de dúvidas técnicas ou necessidade de atualização de dados, entre em contato com o SAC TPE Digital.\n\n[CLOSING]"
     ],
     [MessageType.INVITATION_GROUP]: [
-      "📢 TPE Digital | Designação disponível\n\n[GREETING]! 😊\n\nA designação de [DETAILS] já está disponível no TPE Digital.\n\n👉 Para consultar os detalhes, utilize um dos botões abaixo:\n• Designação Geral – visão completa\n• Minha Designação – sua designação individual\n\nEm caso de dúvidas técnicas ou necessidade de atualização de dados, entre em contato com o SAC TPE Digital.\n\n[CLOSING]"
+      "📢 TPE Digital | Designação disponível\n\n[GREETING] 😊\n\nA designação de [DETAILS] já está disponível no TPE Digital.\n\n👉 Para consultar os detalhes, utilize um dos botões abaixo:\n• Designação Geral – visão completa\n• Minha Designação – sua designação individual\n\nEm caso de dúvidas técnicas ou necessidade de atualização de dados, entre em contato com o SAC TPE Digital.\n\n[CLOSING]"
     ],
     [MessageType.CANCELLATION]: [
       "📢 TPE Digital | Designação Cancelada\n\n[GREETING], [NAME]!\n\nInformamos que sua designação para *[DETAILS]* foi cancelada.\n\nSentimos pelo imprevisto e contamos com sua ajuda em uma próxima oportunidade.\n\nEm caso de dúvidas técnicas ou necessidade de atualização de dados, entre em contato com o SAC TPE Digital.\n\n[CLOSING]"
     ],
     [MessageType.CANCELLATION_GROUP]: [
-      "📢 TPE Digital | Aviso de Cancelamento\n\n[GREETING]! 😊\n\nInformamos que a designação para *[DETAILS]* foi cancelada. Favor desconsiderar a escala anterior.\n\nEm caso de dúvidas técnicas ou necessidade de atualização de dados, entre em contato com o SAC TPE Digital.\n\n[CLOSING]"
+      "📢 TPE Digital | Aviso de Cancelamento\n\n[GREETING] 😊\n\nInformamos que a designação para *[DETAILS]* foi cancelada. Favor desconsiderar a escala anterior.\n\nEm caso de dúvidas técnicas ou necessidade de atualização de dados, entre em contato com o SAC TPE Digital.\n\n[CLOSING]"
     ],
     [MessageType.OTP]: [
       "📢 TPE Digital | Código de Verificação\n\n[GREETING], [NAME]! 😊\n\nRecebemos uma solicitação para acessar sua conta ou redefinir sua senha.\n\n👉 Seu código de verificação é: *[CODE]*\n\nEste código é válido por 5 minutos. Se você não solicitou este código, por favor, desconsidere esta mensagem.\n\n[CLOSING]"
@@ -46,7 +46,7 @@ export class MessageGenerator {
       "📢 TPE Digital | Alerta de Designação Próxima\n\n[GREETING], [NAME]! ⚠️\n\nAtenção: A designação *[DETAILS]* inicia em menos de 2 horas.\n\nPor favor, verifique se todos os participantes já estão cientes e confirmados.\n\n👉 Acesse o painel do coordenador para acompanhar.\n\n[CLOSING]"
     ],
     [MessageType.COMPLETED_NOTIFICATION]: [
-      "📢 TPE Digital | Designação Concluída\n\n[GREETING], [NAME]! 😊\n\nA designação *[DETAILS]* foi finalizada com sucesso.\n\n👉 Lembre-se de realizar os ajustes necessários e conferir os detalhes no sistema em até 48 horas.\n\n[CLOSING]"
+      "📢 TPE Digital | Justificativa de Ausência\n\n[GREETING], [NAME]! 😊\n\nA designação *[DETAILS]* foi finalizada, mas notamos que você não pôde participar.\n\n👉 Por favor, utilize o botão abaixo para justificar sua ausência no sistema em até 48 horas.\n\n[CLOSING]"
     ],
     [MessageType.ARCHIVE_NOTIFICATION]: [
       "📢 TPE Digital | Designação Arquivada\n\n[GREETING], [NAME]!\n\nA designação *[DETAILS]* foi arquivada e encerrada no sistema.\n\nA partir de agora, não é mais possível realizar edições nesta designação.\n\n[CLOSING]"
