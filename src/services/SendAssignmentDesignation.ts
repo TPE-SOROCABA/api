@@ -32,13 +32,15 @@ export async function SendAssignmentDesignation(designation: Designation) {
 
   const day = Weekday_PT_BR[designation.group.config.weekday];
 
-  const loginLink = `${process.env.API_URL}/public/start/${designation.id}`;
-
   const message = messageGenerator.generate(MessageType.INVITATION_GROUP, {
     recipientName: "Equipe",
-    details: day,
-    loginLink
+    details: day
   });
+
+  const frontendUrl = process.env.FRONTEND_URL || 'https://app.tpedigital.com.br';
+  const apiUrl = process.env.API_URL || 'https://api.tpedigital.com.br/dev';
+
+  console.log(`[ENVIO-DESIGNACAO] Gerando links: FRONTEND=${frontendUrl}, API=${apiUrl}`);
 
   const payload: QueueMessagePayload = {
     phone: designation.group.whatsappId,
@@ -48,19 +50,20 @@ export async function SendAssignmentDesignation(designation: Designation) {
       {
         id: "general_link",
         type: "URL",
-        url: `${process.env.FRONTEND_URL}/designacao/${designation.id}`,
+        url: `${frontendUrl}/designacao/${designation.id}`,
         label: "Designação Geral"
       },
       {
         id: "my_designation",
         type: "URL",
-        url: loginLink,
+        url: `${apiUrl}/public/start/${designation.id}`,
         label: "Minha Designação"
       }
     ],
-    title: `${designation.group.name} - Designação`
+    title: `${designation.group.name} - Designação`,
+    footer: "TPE Digital"
   };
-
+  console.log(`[ENVIO-DESIGNACAO] Montando payload para SQS: ${JSON.stringify(payload, null, 2)}`);
   await sqsDispatcher.dispatch(payload);
-  console.log(`[ENVIO-DESIGNACAO] Notificação de grupo enviada para processamento.`);
+  console.log(`[ENVIO-DESIGNACAO] Notificação de grupo enviada para processamento com ${payload.buttonActions?.length} botões.`);
 }

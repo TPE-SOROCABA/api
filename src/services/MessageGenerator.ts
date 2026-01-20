@@ -35,9 +35,7 @@ export class MessageGenerator {
       "[GREETING] [NAME],\n\nFicamos felizes em contar com sua ajuda para:\n[DETAILS].\n\n[CLOSING]",
     ],
     [MessageType.INVITATION_GROUP]: [
-      "Olá equipe! A designação para *[DETAILS]* já está disponível. Confiram os detalhes nos botões abaixo.",
-      "Nova designação gerada para o dia *[DETAILS]*. Por favor, verifiquem suas atribuições nos botões abaixo.",
-      "Atenção: A escala para *[DETAILS]* foi fechada. Acessem os botões abaixo para ver quem está designado."
+      "A designação para *[DETAILS]* já está disponível. Confiram os detalhes nos botões abaixo."
     ],
     [MessageType.CANCELLATION]: [
       "[GREETING] [NAME],\n\nPrecisamos cancelar sua designação desta vez:\n[DETAILS].\n\n[CLOSING]",
