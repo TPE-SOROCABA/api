@@ -47,6 +47,7 @@ provider:
     NODE_ENV: ${self:provider.stage}
     WHATSAPP_MESSAGE_QUEUE: { Ref: WhatsAppMessageQueue }
     WHATSAPP_MESSAGE_DLQ: { Ref: WhatsAppMessageQueueDLQ }
+    SHORT_LINK_DOMAIN: ${env:SHORT_LINK_DOMAIN, 'https://go.tpedigital.com.br'}
 
 
 functions: 

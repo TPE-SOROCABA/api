@@ -13,7 +13,7 @@ export class ShortLinkService {
      * Encurta uma URL e retorna a URL curta
      */
     async shorten(originalUrl: string): Promise<string> {
-        const apiUrl = process.env.API_URL || 'https://api.tpedigital.com.br/dev';
+        const domain = process.env.SHORT_LINK_DOMAIN || 'https://go.tpedigital.com.br';
         let code = this.generateId();
 
         // Tenta encontrar um código único se houver colisão
@@ -28,7 +28,7 @@ export class ShortLinkService {
             },
         });
 
-        return `${apiUrl}/s/${code}`;
+        return `${domain}/s/${code}`;
     }
 
     /**

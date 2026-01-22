@@ -1,0 +1,49 @@
+service: api-tpe-shortener
+
+plugins:
+  - serverless-domain-manager
+  - serverless-dotenv-plugin
+  - serverless-esbuild
+
+custom:
+  customDomain:
+    domainName: go.tpedigital.com.br
+    basePath: ''
+    stage: ${opt:stage, 'prod'}
+    certificateName: 'go.tpedigital.com.br' # Tente usar o wildcard se existir
+    createRoute53Record: true
+    endpointType: 'regional'
+    securityPolicy: tls_1_2
+    apiType: rest
+    autoDomain: false
+  esbuild:
+      exclude: []
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: us-east-1
+  stage: ${opt:stage, 'prod'}
+  timeout: 10
+  memorySize: 128
+  environment:
+    NODE_ENV: ${self:provider.stage}
+    SHORT_LINK_DOMAIN: ${env:SHORT_LINK_DOMAIN, 'https://go.tpedigital.com.br'}
+
+functions:
+  redirectShortLink:
+    handler: src/functions/public/redirectShortLink.handler
+    description: Redireciona links encurtados para as URLs originais
+    events:
+      - http:
+          path: s/{code}
+          method: GET
+          cors: true
+
+package:
+  individually: true
+  patterns:
+    - '!node_modules/.prisma/client/libquery_engine-*'
+    - 'node_modules/.prisma/client/libquery_engine-rhel-*'
+    - '!node_modules/prisma/libquery_engine-*'
+    - '!node_modules/@prisma/engines/**'
