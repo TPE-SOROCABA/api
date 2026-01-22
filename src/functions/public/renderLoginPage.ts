@@ -38,7 +38,7 @@ export const handler: Handler = async (_event: APIGatewayProxyEventV2, _context:
         <form id="loginForm" class="space-y-6">
             <div>
                 <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
-                <input type="text" id="phone" name="phone" placeholder="(00) 00000-0000" required
+                <input type="tel" id="phone" name="phone" placeholder="(00) 00000-0000" required autocomplete="tel"
                     class="w-full px-4 py-3 rounded-md border tpe-border-secondary focus:ring-2 focus:ring-blue-100 focus:outline-none transition-all">
             </div>
 
