@@ -64,3 +64,9 @@ whatsappRedriveCron:
   description: Recupera mensagens da DLQ quando o circuito do WhatsApp está saudável
   events:
     - schedule: rate(30 minutes)
+
+cleanupShortLinks:
+  handler: src/functions/infra/cleanupShortLinks.handler
+  description: Remove links encurtados com mais de 10 dias
+  events:
+    - schedule: cron(0 3 ? * * *) # Executa diariamente às 03:00 UTC

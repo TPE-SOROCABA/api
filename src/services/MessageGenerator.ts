@@ -8,6 +8,7 @@ export enum MessageType {
   COORDINATOR_ALERT = "COORDINATOR_ALERT",
   COMPLETED_NOTIFICATION = "COMPLETED_NOTIFICATION",
   ARCHIVE_NOTIFICATION = "ARCHIVE_NOTIFICATION",
+  INVITATION_GROUP_TEXT = "INVITATION_GROUP_TEXT",
 }
 
 export interface MessageData {
@@ -15,6 +16,7 @@ export interface MessageData {
   details?: string;
   code?: string;
   loginLink?: string;
+  generalLink?: string;
 }
 
 export class MessageGenerator {
@@ -51,6 +53,9 @@ export class MessageGenerator {
     [MessageType.ARCHIVE_NOTIFICATION]: [
       "📢 TPE Digital | Designação Arquivada\n\n[GREETING], [NAME]!\n\nA designação *[DETAILS]* foi arquivada e encerrada no sistema.\n\nA partir de agora, não é mais possível realizar edições nesta designação.\n\n[CLOSING]"
     ],
+    [MessageType.INVITATION_GROUP_TEXT]: [
+      "📢 *TPE Digital | Designação disponível*\n\n[GREETING] 😊\n\nA designação de [DETAILS] já está disponível.\n\n🔗 *Para consultar os detalhes, acesse os links abaixo:*\n\n🌐 *Designação Geral*\n[GENERAL_LINK]\n\n👤 *Minha Designação*\n[LOGIN_LINK]\n\nEm caso de dúvidas técnicas ou necessidade de atualização de dados, entre em contato com o SAC TPE Digital.\n\n[CLOSING]"
+    ],
   };
 
   generate(type: MessageType, data: MessageData): string {
@@ -73,6 +78,10 @@ export class MessageGenerator {
 
     if (data.loginLink) {
       message = message.replace("[LOGIN_LINK]", data.loginLink);
+    }
+
+    if (data.generalLink) {
+      message = message.replace("[GENERAL_LINK]", data.generalLink);
     }
 
     return message;

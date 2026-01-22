@@ -15,3 +15,12 @@ lookupParticipant:
           path: public/start/{designationId}/lookup
           method: POST
           cors: true
+
+redirectShortLink:
+    handler: src/functions/public/redirectShortLink.handler
+    description: Redireciona links encurtados para as URLs originais
+    events:
+      - http:
+          path: s/{code}
+          method: GET
+          cors: true
