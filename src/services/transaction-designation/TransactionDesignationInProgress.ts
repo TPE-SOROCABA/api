@@ -26,8 +26,8 @@ export async function TransactionDesignationInProgress(designationInProgress: De
   const participants = designation.participants.map((participant) => participant);
   const participantesAssignments = designation.assignments.map((assignment) => assignment.participants.map((participant) => participant)).flat();
   const participantIncidents = designation.incidents.map((incident) => incident);
-  const participantsNotify = [...participants, ...participantesAssignments, ...participantIncidents].filter((participant) => participant.incident_history);
-  console.log(`[TRANSACAO-DESIGNACAO] Notificando ${participantsNotify.length} participantes sobre conclusão (apenas com incidência) via SQS.`);
+  const participantsNotify = [...participants, ...participantesAssignments, ...participantIncidents].filter((participant) => participant.incident_history?.reason === "Aguardando justificativa");
+  console.log(`[TRANSACAO-DESIGNACAO] Notificando ${participantsNotify.length} participantes sobre conclusão (apenas com incidente "Aguardando justificativa") via SQS.`);
 
   const messages = participantsNotify.map((participant) => {
 
