@@ -41,7 +41,11 @@ export const handler: ScheduledHandler = async (): Promise<void> => {
         }
 
         if (groupTimeCalculate.isDesignationEndMore48Hours) {
-          if (designation.status === DesignationStatus.CLOSED || designation.status === DesignationStatus.CANCELLED) {
+          if (
+            designation.status === DesignationStatus.CLOSED ||
+            designation.status === DesignationStatus.CANCELLED ||
+            designation.status === DesignationStatus.OPEN
+          ) {
             await TransactionDesignationClosedEndMore48Hours(designation);
           }
         }

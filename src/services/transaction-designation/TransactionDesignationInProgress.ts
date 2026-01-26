@@ -21,11 +21,12 @@ export async function TransactionDesignationInProgress(designationInProgress: De
       updatedAt: new Date(),
     },
   });
-  const designation = await designationRepository.findByDesignationId(designationInProgress.id);
+  const designation = await designationRepository.findByDesignationId(designationInProgress.id, true);
 
   const participants = designation.participants.map((participant) => participant);
   const participantesAssignments = designation.assignments.map((assignment) => assignment.participants.map((participant) => participant)).flat();
-  const participantsNotify = [...participants, ...participantesAssignments].filter((participant) => participant.incident_history);
+  const participantIncidents = designation.incidents.map((incident) => incident);
+  const participantsNotify = [...participants, ...participantesAssignments, ...participantIncidents].filter((participant) => participant.incident_history);
   console.log(`[TRANSACAO-DESIGNACAO] Notificando ${participantsNotify.length} participantes sobre conclusão (apenas com incidência) via SQS.`);
 
   const messages = participantsNotify.map((participant) => {

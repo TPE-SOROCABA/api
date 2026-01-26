@@ -21,6 +21,7 @@ export async function TransactionStatusDesignationOpenLess2Hours(designationOpen
     console.error(`[TRANSACAO-DESIGNACAO] Erro ao notificar participantes:`, error);
     designation.updateStatus(DesignationStatus.OPEN);
     await designationRepository.update(designation);
+    return;
   })
 
   designation.updateStatus(DesignationStatus.IN_PROGRESS);
