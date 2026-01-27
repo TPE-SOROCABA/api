@@ -26,36 +26,64 @@ export async function TransactionDesignationInProgress(designationInProgress: De
   const participants = designation.participants.map((participant) => participant);
   const participantesAssignments = designation.assignments.map((assignment) => assignment.participants.map((participant) => participant)).flat();
   const participantIncidents = designation.incidents.map((incident) => incident);
-  const participantsNotify = [...participants, ...participantesAssignments, ...participantIncidents].filter((participant) => participant.incident_history?.reason === "Aguardando justificativa");
-  console.log(`[TRANSACAO-DESIGNACAO] Notificando ${participantsNotify.length} participantes sobre conclusão (apenas com incidente "Aguardando justificativa") via SQS.`);
+  const participantsNotify = [...participants, ...participantesAssignments, ...participantIncidents].filter(
+    (participant) => participant.incident_history
+  );
 
-  const messages = participantsNotify.map((participant) => {
+  if (participantsNotify.length > 0) {
+    console.log(
+      `[TRANSACAO-DESIGNACAO] Detectados ${participantsNotify.length} participantes pendentes de justificativa. Enviando notificação coletiva.`
+    );
 
-    const message = messageGenerator.generate(MessageType.COMPLETED_NOTIFICATION, {
-      recipientName: participant.name,
-      details: designation.group.name,
+    const shortLink = await prisma.shortLink.findFirst({
+      where: {
+        originalUrl: {
+          contains: `public/start/${designationInProgress.id}`,
+        },
+      },
     });
 
-    return {
-      phone: participant.phone,
-      message,
-      title: `${designation.group.name} - Designação Concluída`,
-      footer: "TPE Digital",
-      buttonActions: [
-        {
-          id: "1",
-          type: "URL" as const,
-          url: `${process.env.FRONTEND_URL}/designacao/${designation.id}/${participant.id}`,
-          label: "Justificar Ausência"
-        }
-      ],
-      type: "button" as const
-    };
-  });
+    if (!shortLink) {
+      console.error(
+        `[TRANSACAO-DESIGNACAO] Erro ao recuperar link encurtado para designação ${designationInProgress.id}. Notificações de justificativa não serão enviadas.`
+      );
+      return;
+    }
 
-  await sqsDispatcher.dispatchBatch(messages).catch((error) => {
-    console.error(`[TRANSACAO-DESIGNACAO] Erro ao enfileirar notificações de conclusão:`, error);
-  });
+    const domain = process.env.SHORT_LINK_DOMAIN || "https://go.tpedigital.com.br";
+    const loginLink = `${domain}/s/${shortLink.code}`;
+
+    const recipientPhones: string[] = [];
+    if (designation.group.whatsappId) {
+      recipientPhones.push(designation.group.whatsappId);
+    } else {
+      const captains = designation.captainsAndCoordinators;
+      const uniquePhones = [...new Set(captains.map((p) => p.phone).filter((phone) => !!phone))];
+      recipientPhones.push(...uniquePhones);
+    }
+
+    if (recipientPhones.length > 0) {
+      const genericMessage = messageGenerator.generate(MessageType.COMPLETED_NOTIFICATION, {
+        recipientName: "Equipe",
+        details: designation.group.name,
+        loginLink,
+      });
+
+      const messages = recipientPhones.map((phone) => ({
+        phone: phone,
+        message: genericMessage,
+        title: `${designation.group.name} - Designação Concluída`,
+        footer: "TPE Digital",
+        type: "text" as const,
+      }));
+
+      await sqsDispatcher.dispatchBatch(messages).catch((error) => {
+        console.error(`[TRANSACAO-DESIGNACAO] Erro ao enfileirar notificações de conclusão coletiva:`, error);
+      });
+    } else {
+      console.log(`[TRANSACAO-DESIGNACAO] Nenhum destinatário (grupo ou capitão) encontrado para a notificação coletiva.`);
+    }
+  }
 
   console.log("[TRANSACAO-DESIGNACAO] Fluxo de conclusão finalizado.");
 }

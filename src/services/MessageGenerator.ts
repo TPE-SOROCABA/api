@@ -48,7 +48,7 @@ export class MessageGenerator {
       "📢 TPE Digital | Alerta de Designação Próxima\n\n[GREETING], [NAME]! ⚠️\n\nAtenção: A designação *[DETAILS]* inicia em menos de 2 horas.\n\nPor favor, verifique se todos os participantes já estão cientes e confirmados.\n\n👉 Acesse o painel do coordenador para acompanhar.\n\n[CLOSING]"
     ],
     [MessageType.COMPLETED_NOTIFICATION]: [
-      "📢 TPE Digital | Justificativa de Ausência\n\n[GREETING], [NAME]! 😊\n\nA designação *[DETAILS]* foi finalizada, mas notamos que você não pôde participar.\n\n👉 Por favor, utilize o botão abaixo para justificar sua ausência no sistema em até 48 horas.\n\n[CLOSING]"
+      "📢 TPE Digital | Justificativa de Ausência\n\n[GREETING]! 😊\n\nA designação *[DETAILS]* foi finalizada, mas notamos que alguns de vocês não puderam participar. Acesse o link abaixo para *Justificar*:\n\n👤 *Minha Designação*\n[LOGIN_LINK]\n\nEm caso de dúvidas técnicas ou necessidade de atualização de dados, entre em contato com o SAC TPE Digital.\n\n[CLOSING]"
     ],
     [MessageType.ARCHIVE_NOTIFICATION]: [
       "📢 TPE Digital | Designação Arquivada\n\n[GREETING], [NAME]!\n\nA designação *[DETAILS]* foi arquivada e encerrada no sistema.\n\nA partir de agora, não é mais possível realizar edições nesta designação.\n\n[CLOSING]"
