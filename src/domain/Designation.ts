@@ -155,6 +155,11 @@ export class Designation {
     designationState.cancelDesignation(justification);
   }
 
+  public reopenDesignation(): void {
+    const designationState = new DesignationState(this);
+    designationState.reopenDesignation();
+  }
+
   public setMandatoryPresence(mandatoryPresence: boolean): void {
     const designationState = new DesignationState(this);
     designationState.setMandatoryPresence(mandatoryPresence);

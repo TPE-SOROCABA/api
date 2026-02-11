@@ -29,6 +29,16 @@ cancelDesignation:
           cors: true
           authorizer: check-authorizer
 
+reopenDesignation:
+    handler: src/functions/designations/reopenDesignation.handler
+    description: Reabrir uma designação cancelada
+    events:
+      - http:
+          path: designations/{designationId}/reopen
+          method: PATCH
+          cors: true
+          authorizer: check-authorizer
+
 updatePointDesignation:
     handler: src/functions/designations/updatePointDesignations.handler
     description: Atualizar uma designação

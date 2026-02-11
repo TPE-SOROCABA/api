@@ -3,7 +3,7 @@ import { NotFoundException } from "../shared/Exception";
 import { Designation } from "./Designation";
 
 export class DesignationState {
-  constructor(public designation: Designation) {}
+  constructor(public designation: Designation) { }
 
   public updatePointStatus(pointId: string, status: boolean): void {
     const assignment = this.designation.assignments.find((assignment) => assignment.point.id === pointId);
@@ -56,6 +56,12 @@ export class DesignationState {
   public cancelDesignation(justification: string): void {
     this.designation.status = DesignationStatus.CANCELLED;
     this.designation.cancellationJustification = justification;
+    this.designation.updatedAt = new Date();
+  }
+
+  public reopenDesignation(): void {
+    this.designation.status = DesignationStatus.OPEN;
+    this.designation.cancellationJustification = "";
     this.designation.updatedAt = new Date();
   }
 
