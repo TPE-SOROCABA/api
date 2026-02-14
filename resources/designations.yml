@@ -49,6 +49,16 @@ updatePointDesignation:
           cors: true
           authorizer: check-authorizer
 
+patchMandatoryPresence:
+    handler: src/functions/designations/patchMandatoryPresence.handler
+    description: Atualizar obrigatoriedade de presença de uma designação
+    events:
+      - http:
+          path: designations/{designationId}/optional
+          method: PATCH
+          cors: true
+          authorizer: check-authorizer
+
 updateParticipantsPointDesignation:
     handler: src/functions/designations/updateParticipantsPointDesignations.handler
     description: Atualizar participantes de uma designação
