@@ -11,6 +11,7 @@
     "deploy:dev": "sls deploy -c sls-dev.yml -s dev",
     "remove:dev": "sls remove -c sls-dev.yml -s dev",
     "deploy:hmg": "sls deploy -c sls-hmg.yml -s hmg",
+    "deploy:prod": "sls deploy -c sls-prod.yml -s prod",
     "deploy:shortener": "npx sls deploy -c sls-shortener.yml -s prod",
     "remove:hmg": "sls remove -c sls-hmg.yml -s hmg",
     "logs:dev": "sls logs -c sls-dev.yml -s dev -f createIncidences -t",
